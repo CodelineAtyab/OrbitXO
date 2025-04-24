@@ -1,3 +1,4 @@
+
 def print_triangle(num_of_rows):
     current_num = 1
     for row in range(1, num_of_rows + 1):
