@@ -6,3 +6,4 @@ for i in range(1, x + 1):
     for x in range(1, i + 1):
         output.append(str(x))
     print(''.join(output))
+
