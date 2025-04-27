@@ -2,8 +2,8 @@ def print_triangle_pattern(num_of_rows):
     number = 1
     for row in range(1, num_of_rows + 1):
         for col in range(1, row + 1):
-            print(number, end=" ")
-            number += 1
+            print(col, end=" ")
+            
         print()  # Move to the next line after each row
 
 if __name__ == "__main__":
