@@ -6,11 +6,12 @@ user_choice = input("Choose your symbol (X OR O): ") .upper()
 bot_choice = 'O' if user_choice == 'X' else 'X'
 
 
-
 print(f"you are {user_choice}, the bot is {bot_choice}. Let's start!" )
 
+# creating an empty board
 board = [' ' for _ in range(9)]
 
+#board display
 def display_board(board):
     print()
     print(f" {board[0]} | {board[1]} | {board[2]}")
@@ -19,6 +20,8 @@ def display_board(board):
     print("----+---+---")
     print(f" {board[6]} | {board[7]} | {board[8]}")
     print()
+
+    #function to define player move
 
 def player_move(board, user_choice):
     while True:
@@ -43,9 +46,9 @@ def bot_move(board, bot_choice):
 
 def check_winner(board, symbol):
     win_conditions = [
-        (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Rows
-        (0, 3, 6), (1, 4, 7), (2, 5, 8),  # Columns
-        (0, 4, 8), (2, 4, 6)              # Diagonals
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+        [0, 4, 8], [2, 4, 6]              # Diagonals
     ]
     for a, b, c in win_conditions:
         if board[a] == board[b] == board[c] == symbol:
