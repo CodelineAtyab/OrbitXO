@@ -43,7 +43,7 @@ def bot_move(board, bot_choice):
     move = random.choice(available_move)
     board[move] = bot_choice
     print(f"Bot placed {bot_choice} in position {move + 1}")
-
+# using tuples for immutable and faster to read and also to protect logic
 def check_winner(board, symbol):
     win_conditions = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
