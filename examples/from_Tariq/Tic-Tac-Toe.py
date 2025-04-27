@@ -19,8 +19,8 @@ def check_winner(board):
             return board[0][2]
     return None
 
-
-playerstupid = 0
+botstupid = True
+playerstupid = True
 tictactoe = [
       [1,2,3],
       [4,5,6],
@@ -41,7 +41,7 @@ while game_active:
    print(tabulate(tictactoe, tablefmt='fancy_grid'))
 
 
-   while playerstupid == 0:
+   while playerstupid:
     m = int(input("Enter a number (1-9): "))
     r = (m - 1) // 3 
     c = (m - 1) % 3 
@@ -53,19 +53,19 @@ while game_active:
          print(f"Player {x} wins!")
          game_active = False
          break
-     playerstupid = 5
-     botstupid = 0
+     playerstupid = False
+     botstupid = True
     else:
      time.sleep(1)
      print("position taken! Try again.")
-     playerstupid = 0
+     playerstupid = True
 
    if not game_active:
      break
 
    time.sleep(1)
    print("BOT will play as "+ b)
-   while botstupid == 0:
+   while botstupid:
     m = random.randint(1, 9)
     r = (m - 1) // 3 
     c = (m - 1) % 3 
@@ -77,23 +77,23 @@ while game_active:
          print(f"Bot {b} wins!")
          game_active = False
          break
-     botstupid = 5
-     playerstupid = 0
+     botstupid = False
+     playerstupid = True
     else:
-     botstupid = 0
+     botstupid = True
 
-   is_draw = True
-   for row in tictactoe:
-      for cell in row:
-        if cell != 'X' and cell != 'O':  
+is_draw = True
+for row in tictactoe:
+     for cell in row:
+      if cell != 'X' and cell != 'O':  
             is_draw = False
             break
-   if not is_draw:
+      if not is_draw:
         break
 
-   if is_draw:
-    print("It's a draw!")
-    game_active = False
+      if is_draw:
+       print("It's a draw!")
+       game_active = False
 
 
 
