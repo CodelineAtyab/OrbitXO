@@ -3,38 +3,20 @@ import time
 import random
 
 def check_winner(board):
-    if board[0][0] == 'X' and board[0][1] == 'X' and board[0][2] == 'X':
-        return 'X'
-    if board[0][0] == 'O' and board[0][1] == 'O' and board[0][2] == 'O':
-        return 'O'
-    if board[1][0] == 'X' and board[1][1] == 'X' and board[1][2] == 'X':
-        return 'X'
-    if board[1][0] == 'O' and board[1][1] == 'O' and board[1][2] == 'O':
-        return 'O'
-    if board[2][0] == 'X' and board[2][1] == 'X' and board[2][2] == 'X':
-        return 'X'
-    if board[2][0] == 'O' and board[2][1] == 'O' and board[2][2] == 'O':
-        return 'O'
-    if board[0][0] == 'X' and board[1][0] == 'X' and board[2][0] == 'X':
-        return 'X'
-    if board[0][0] == 'O' and board[1][0] == 'O' and board[2][0] == 'O':
-        return 'O'
-    if board[0][1] == 'X' and board[1][1] == 'X' and board[2][1] == 'X':
-        return 'X'
-    if board[0][1] == 'O' and board[1][1] == 'O' and board[2][1] == 'O':
-        return 'O'
-    if board[0][2] == 'X' and board[1][2] == 'X' and board[2][2] == 'X':
-        return 'X'
-    if board[0][2] == 'O' and board[1][2] == 'O' and board[2][2] == 'O':
-        return 'O'
-    if board[0][0] == 'X' and board[1][1] == 'X' and board[2][2] == 'X':
-        return 'X'
-    if board[0][0] == 'O' and board[1][1] == 'O' and board[2][2] == 'O':
-        return 'O'
-    if board[0][2] == 'X' and board[1][1] == 'X' and board[2][0] == 'X':
-        return 'X'
-    if board[0][2] == 'O' and board[1][1] == 'O' and board[2][0] == 'O':
-        return 'O'
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2]:
+            if board[i][0] in ['X', 'O']:
+                return board[i][0]
+        if board[0][i] == board[1][i] == board[2][i]:
+            if board[0][i] in ['X', 'O']:
+                return board[0][i]
+    if board[0][0] == board[1][1] == board[2][2]:
+        if board[0][0] in ['X', 'O']:
+            return board[0][0]
+    
+    if board[0][2] == board[1][1] == board[2][0]:
+        if board[0][2] in ['X', 'O']:
+            return board[0][2]
     return None
 
 
@@ -100,16 +82,16 @@ while game_active:
     else:
      botstupid = 0
 
-is_draw = True
-for row in tictactoe:
- for cell in row:
-        if cell != 'X' and cell != 'O':  # If we find any number left
+   is_draw = True
+   for row in tictactoe:
+      for cell in row:
+        if cell != 'X' and cell != 'O':  
             is_draw = False
             break
- if not is_draw:
+   if not is_draw:
         break
 
- if is_draw:
+   if is_draw:
     print("It's a draw!")
     game_active = False
 
