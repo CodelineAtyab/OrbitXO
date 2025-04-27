@@ -9,7 +9,7 @@ bot_choice = 'O' if user_choice == 'X' else 'X'
 print(f"you are {user_choice}, the bot is {bot_choice}. Let's start!" )
 
 # creating an empty board
-board = [' ' for _ in range(9)]
+board = [' '] * 9
 
 #board display
 def display_board(board):
