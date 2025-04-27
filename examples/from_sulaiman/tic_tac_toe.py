@@ -5,10 +5,10 @@ positions = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
 
 turns = 0
 your_turn = True
-game_finish = False
+winner_found = False
 
 
-while turns < 9 and not game_finish:
+while turns < 9 and not winner_found:
     for i in range(len(positions)):
         print(positions[i][0] + " | " + positions[i][1] + " | " + positions[i][2])
         print("-----------")
@@ -43,27 +43,30 @@ while turns < 9 and not game_finish:
 
     for index in range(3):
         if positions[index][0] == positions[index][1] == positions[index][2]:
-            game_finish = True
+            winner_found = True
             print("Game ended")
             if positions[index][0] == "X":
                 print("X wins")
             else:
                 print("O wins")
         if positions[0][index] == positions[1][index] == positions[2][index]:
-            game_finish = True
+            winner_found = True
             if positions[0][index] == "X":
                 print("X wins")
             else:
                 print("O wins")
     if positions[0][0] == positions[1][1] == positions[2][2]:
-        game_finish = True
+        winner_found = True
         if positions[0][0] == "X":
             print("X wins")
         else:
             print("O wins")
     if positions[0][2] == positions[1][1] == positions[2][0]:
-        game_finish = True
+        winner_found = True
         if positions[0][0] == "X":
             print("X wins")
         else:
             print("O wins")
+
+if winner_found == False:
+    print("We have a Draw")
