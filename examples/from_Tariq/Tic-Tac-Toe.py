@@ -1,0 +1,96 @@
+from tabulate import tabulate
+import time
+import random
+
+def check_winner(board):
+ for row in board:
+    if row.count(row[0]) == len(row) and row[0] in ['X', 'O']:
+        return row[0]
+ for col in range(3):
+    if board[0][col] == board[1][col] == board[2][col] and board[0][col] in ['X', 'O']:
+        return board[0][col]
+ if board[0][0] == board[1][1] == board[2][2] and board[0][0] in ['X', 'O']:
+    return board[0][0]
+ if board[0][2] == board[1][1] == board[2][0] and board[0][2] in ['X', 'O']:
+    return board[0][2]
+ return None
+
+
+y = 0
+playerstupid = 0
+tictactoe = [
+      [1,2,3],
+      [4,5,6],
+      [7,8,9]
+      ]
+x = input("welcome to tic tac toe please choose X or O: ")
+if x == str("X"):
+   b = str("O")
+else:
+   b = str("X")
+game_active = True
+while game_active:
+   x == str(x)
+   print("you will play as "+ x)
+   time.sleep(2)
+   print("pls pick a number from the grid to proced")
+   time.sleep(2)
+   print(tabulate(tictactoe, tablefmt='fancy_grid'))
+
+
+   while playerstupid == 0:
+    m = int(input("Enter a number (1-9): "))
+    r = (m - 1) // 3 
+    c = (m - 1) % 3 
+    if tictactoe[r][c] != 'X' and tictactoe[r][c] != 'O':
+     tictactoe[r][c] = x
+     time.sleep(1)
+     print(tabulate(tictactoe, tablefmt='fancy_grid'))
+     if check_winner(tictactoe):
+         print(f"Player {x} wins!")
+         game_active = False
+         break
+     playerstupid = 5
+     botstupid = 0
+    else:
+     time.sleep(1)
+     print("position taken! Try again.")
+     playerstupid = 0
+
+   if not game_active:
+     break
+
+   time.sleep(1)
+   print("BOT will play as "+ b)
+   while botstupid == 0:
+    m = random.randint(1, 9)
+    r = (m - 1) // 3 
+    c = (m - 1) % 3 
+    if tictactoe[r][c] != 'X' and tictactoe[r][c] != 'O':
+     tictactoe[r][c] = b
+     time.sleep(1)
+     print(tabulate(tictactoe, tablefmt='fancy_grid'))
+     if check_winner(tictactoe):
+         print(f"Bot {b} wins!")
+         game_active = False
+         break
+     botstupid = 5
+     playerstupid = 0
+    else:
+     botstupid = 0
+     
+
+   if all(cell in ['X', 'O'] for row in tictactoe for cell in row):
+       print("It's a draw!")
+       game_active = False 
+
+
+
+
+
+
+
+
+
+
+
