@@ -1,4 +1,5 @@
-f print_board(board):
+import random 
+def print_board(board):
     print()
     print(f"{board[0]} | {board[1]} | {board[2]}")
     print("--+---+--")
@@ -63,4 +64,4 @@ def main():
             print("It's a draw!")
             break
 if __name__ == "__main__":
-    main()
+    main() 
