@@ -4,6 +4,9 @@ print("Welcome to Tic Tac Toe!\nChoose your symbol (X or O): X\nYou are X, the b
 positions = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
 
 turns = 0
+your_choice = input("Choose between X and O").upper()
+while your_choice not in ["X", "O"]:
+    your_choice = input("You have to choose between X and O").upper()
 your_turn = True
 winner_found = False
 
