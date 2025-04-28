@@ -8,4 +8,4 @@ a = a ^ b
 b = a ^ b
 a = a ^ b
 
-print(f"After a={a} b={b}")This is my amazing team and the name is "Code Orbit"
+print(f"After a={a} b={b}")
