@@ -65,14 +65,7 @@ while game_running:
             print("The Bot wins!")
         game_running = False
         continue
-
-    # Check for a draw
-    if all(cell == 'X' or cell == 'O' for cell in board):
-        print("It's a draw!")
-        game_running = False
-        continue
-
+    
     # Switch player
-
 
     current_player = 'O' if current_player == 'X' else 'X'
