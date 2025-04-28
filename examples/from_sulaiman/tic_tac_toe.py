@@ -7,7 +7,7 @@ turns = 0
 your_choice = input("Choose between X and O").upper()
 while your_choice not in ["X", "O"]:
     your_choice = input("You have to choose between X and O").upper()
-your_turn = True
+your_turn = your_choice == "X"
 winner_found = False
 
 
@@ -28,7 +28,7 @@ while turns < 9 and not winner_found:
         for row in range(len(positions)):
             for col in range(len(positions)):
                 if positions[row][col] == your_move:
-                    positions[row][col] = "X"
+                    positions[row][col] = your_choice
         your_turn = False
     else:
         print("Bot's move:")
@@ -40,7 +40,7 @@ while turns < 9 and not winner_found:
         for row in range(len(positions)):
             for col in range(len(positions)):
                 if positions[row][col] == str(bot_pos):
-                    positions[row][col] = "O"
+                    positions[row][col] = your_choice
         print(positions)
         your_turn = True
 
