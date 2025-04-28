@@ -2,84 +2,102 @@ import random
 
 def display_board(board):
     print()
-    print(f'  {board[0]} | {board[1]} | {board[2]}')
-    print(' -----------')
-    print(f'  {board[3]} | {board[4]} | {board[5]}')
-    print(' -----------')
-    print(f'  {board[6]} | {board[7]} | {board[8]}')
+    for row in board:
+        print("  " + " | ".join(row))
+        print(" -----------")
     print()
 
 def check_winner(board, symbol):
-    # Check rows, columns, and diagonals
-    win_conditions = [
-        (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Rows
-        (0, 3, 6), (1, 4, 7), (2, 5, 8),  # Columns
-        (0, 4, 8), (2, 4, 6)              # Diagonals
-    ]
-    return any(board[a] == board[b] == board[c] == symbol for a, b, c in win_conditions)
+    for row in board:
+        if row[0] == symbol and row[1] == symbol and row[2] == symbol:
+            return True
+    for col in range(3):
+        if board[0][col] == symbol and board[1][col] == symbol and board[2][col] == symbol:
+            return True
+    if board[0][0] == symbol and board[1][1] == symbol and board[2][2] == symbol:
+        return True
+    if board[0][2] == symbol and board[1][1] == symbol and board[2][0] == symbol:
+        return True
+    return False
 
 def check_draw(board):
-    return all(space in ['X', 'O'] for space in board)
+    for row in board:
+        for cell in row:
+            if cell != 'X' and cell != 'O':
+                return False
+    return True
 
 def player_move(board, player_symbol):
-    while True:
-        try:
-            move = int(input("Your move (choose a number 1-9): "))
-            if move < 1 or move > 9:
+    valid = False
+    while not valid:
+        move = input("Your move (choose a number 1-9): ")
+        if move.isdigit():
+            move = int(move)
+            if move >= 1 and move <= 9:
+                row = (move - 1) // 3
+                col = (move - 1) % 3
+                if board[row][col] != 'X' and board[row][col] != 'O':
+                    board[row][col] = player_symbol
+                    valid = True
+                else:
+                    print("That spot's already taken! Choose another one.")
+            else:
                 print("Invalid input! Choose a number between 1 and 9.")
-                continue
-            if board[move - 1] in ['X', 'O']:
-                print("That spot's already taken! Choose another one.")
-                continue
-            board[move - 1] = player_symbol
-            break
-        except ValueError:
-            print("Please enter a valid number.")
+        else:
+            print("Please enter a number.")
 
 def bot_move(board, bot_symbol):
-    available_moves = [i for i in range(9) if board[i] not in ['X', 'O']]
+    available_moves = []
+    for row in range(3):
+        for col in range(3):
+            if board[row][col] != 'X' and board[row][col] != 'O':
+                available_moves.append((row, col))
     move = random.choice(available_moves)
-    board[move] = bot_symbol
+    board[move[0]][move[1]] = bot_symbol
     print("Bot's move:")
-    
+
 def main():
     print("Welcome to Tic Tac Toe!")
-    while True:
-        player_symbol = input("Choose your symbol (X or O): ").upper()
-        if player_symbol in ['X', 'O']:
-            break
-        else:
-            print("Invalid choice! Please choose X or O.")
-
+    player_symbol = input("Choose your symbol (X or O): ").upper()
+    if player_symbol != 'X' and player_symbol != 'O':
+        player_symbol = 'X'
     bot_symbol = 'O' if player_symbol == 'X' else 'X'
-    print(f"\nYou are {player_symbol}, the bot is {bot_symbol}. Let’s start!")
 
-    board = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    board = [['1', '2', '3'],
+             ['4', '5', '6'],
+             ['7', '8', '9']]
     display_board(board)
 
-    current_turn = 'player' if player_symbol == 'X' else 'bot'
+    if player_symbol == 'X':
+        current_turn = 'player'
+    else:
+        current_turn = 'bot'
 
-    while True:
+    game_over = False
+
+    while game_over == False:
         if current_turn == 'player':
             player_move(board, player_symbol)
             display_board(board)
             if check_winner(board, player_symbol):
                 print("Congratulations! You win!")
-                break
+                game_over = True
             elif check_draw(board):
                 print("It's a draw!")
-                break
-            current_turn = 'bot'
-        else:
+                game_over = True
+            else:
+                current_turn = 'bot'
+        elif current_turn == 'bot':
             bot_move(board, bot_symbol)
             display_board(board)
             if check_winner(board, bot_symbol):
                 print("Bot wins! Better luck next time.")
-                break
+                game_over = True
             elif check_draw(board):
                 print("It's a draw!")
-                break
-            current_turn = 'player'
+                game_over = True
+            else:
+                current_turn = 'player'
 
 if __name__ == "__main__":
     main()
