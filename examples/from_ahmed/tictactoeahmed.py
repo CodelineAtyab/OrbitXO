@@ -46,17 +46,11 @@ def check_winner(board, symbol):
   
     if (board[0] == symbol and board[1] == symbol and board[2] == symbol) or \
        (board[3] == symbol and board[4] == symbol and board[5] == symbol) or \
-       (board[6] == symbol and board[7] == symbol and board[8] == symbol):
-        return True
-
-  
-    if (board[0] == symbol and board[3] == symbol and board[6] == symbol) or \
+       (board[6] == symbol and board[7] == symbol and board[8] == symbol) or \
+       (board[0] == symbol and board[3] == symbol and board[6] == symbol) or \
        (board[1] == symbol and board[4] == symbol and board[7] == symbol) or \
-       (board[2] == symbol and board[5] == symbol and board[8] == symbol):
-        return True
-
-  
-    if (board[0] == symbol and board[4] == symbol and board[8] == symbol) or \
+       (board[2] == symbol and board[5] == symbol and board[8] == symbol) or \
+       (board[0] == symbol and board[4] == symbol and board[8] == symbol) or \
        (board[2] == symbol and board[4] == symbol and board[6] == symbol):
         return True
 
@@ -76,7 +70,7 @@ while True:
         print("Congratulations! You win!")
         break
 
-    if is_draw(board):
+    elif is_draw(board):
         display_board(board)
         print("It's a draw!")
         break
@@ -88,7 +82,7 @@ while True:
         print("Bot wins! Better luck next time.")
         break
 
-    if is_draw(board):
+    elif is_draw(board):
         display_board(board)
         print("It's a draw!")
         break
