@@ -3,8 +3,13 @@ import random
 board = [['1', '2', '3'],
             ['4', '5', '6'],
             ['7', '8', '9']]
-player = 'X'
-bot = 'O'
+a = input("do you want to play as X or O,Type anything for default O: ")
+if a == 'X':
+    player = 'X'
+    bot = 'O'
+else:
+    player = 'O'
+    bot = 'X'
 def display_board():
     print()
     for row in board:
