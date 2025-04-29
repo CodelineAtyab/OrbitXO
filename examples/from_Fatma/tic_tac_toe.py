@@ -1,71 +1,85 @@
 
-import random
-board = ['1','2','3','4','5','6','7','8','9']
-game_running = True
+board = [str(i + 1) for i in range(9)]
 
-print("Welcome to Tic-Tac-Toe! (You vs Bot)")
+print("Welcome to Tic Tac Toe!")
+print(" 1 | 2 | 3 ")
+print("---+---+---")
+print(" 4 | 5 | 6 ")
+print("---+---+---")
+print(" 7 | 8 | 9 ")
+player = input("Choose X or O: ").upper()
+if player == "X":
+    bot = "O"
+else:
+    player = "O"
+    bot = "X"
+turn = "Player"
+game_over = False
 
-# Ask player to choose X or O
-player_symbol = input("Do you want to be X or O? ").upper()
-while player_symbol not in ['X', 'O']:
-    player_symbol = input("Invalid choice. Please choose X or O: ").upper()
-bot_symbol = 'O' if player_symbol == 'X' else 'X'
-current_player = 'X'  
+while not game_over:
+    print()
+    print(" " + board[0] + " | " + board[1] + " | " + board[2])
+    print("---+---+---")
+    print(" " + board[3] + " | " + board[4] + " | " + board[5])
+    print("---+---+---")
+    print(" " + board[6] + " | " + board[7] + " | " + board[8])
+    print()
 
-# Print the board initially
-print()
-for i in range(0, 9, 3):
-    print(f" {board[i]} | {board[i+1]} | {board[i+2]}")
-    if i < 6:
-        print("---+---+---")
-print()
+    if all(cell in ["X", "O"] for cell in board):
+        print("It's a draw!")
+        break
+    if turn == "Player":
+        try:
+            pos = int(input("Enter position (1-9): ")) - 1
+            if board[pos] not in ["X", "O"]:
+                board[pos] = player
 
-# Start the game loop
-while game_running:
-    if current_player == player_symbol:
-        move = input(f"Your turn ({player_symbol}), choose a cell number (1-9): ")
-        if not move.isdigit() or int(move) not in range(1, 10):
-            print("Invalid input. Please enter a number between 1 and 9.")
-            continue
-        move = int(move) - 1
-        if board[move] == 'X' or board[move] == 'O':
-            print("Cell already taken. Choose another one.")
-            continue
+                if (board[0] == board[1] == board[2] == player or
+                    board[3] == board[4] == board[5] == player or
+                    board[6] == board[7] == board[8] == player or
+                    board[0] == board[3] == board[6] == player or
+                    board[1] == board[4] == board[7] == player or
+                    board[2] == board[5] == board[8] == player or
+                    board[0] == board[4] == board[8] == player or
+                    board[2] == board[4] == board[6] == player):
+                    print()
+                    print(" " + board[0] + " | " + board[1] + " | " + board[2])
+                    print("---+---+---")
+                    print(" " + board[3] + " | " + board[4] + " | " + board[5])
+                    print("---+---+---")
+                    print(" " + board[6] + " | " + board[7] + " | " + board[8])
+                    print()
+                    print("You win!")
+                    game_over = True
+                else:
+                    turn = "Bot"
+            else:
+                print("That spot is taken. Try again.")
+        except:
+            print("Invalid input. Try a number from 1 to 9.")
     else:
+        print("Bot is playing...")
+        for i in range(9):
+            if board[i] not in ["X", "O"]:
+                board[i] = bot
+                break
 
-        # Bot's move: choose a random empty cell
-        empty_cells = [i for i in range(9) if board[i] != 'X' and board[i] != 'O']
-        move = random.choice(empty_cells)
-        print(f"Bot ({bot_symbol}) chooses cell {move+1}")
-    board[move] = current_player
-
-    # Print the board after the move
-    print()
-    for i in range(0, 9, 3):
-        print(f" {board[i]} | {board[i+1]} | {board[i+2]}")
-        if i < 6:
+        if (board[0] == board[1] == board[2] == bot or
+            board[3] == board[4] == board[5] == bot or
+            board[6] == board[7] == board[8] == bot or
+            board[0] == board[3] == board[6] == bot or
+            board[1] == board[4] == board[7] == bot or
+            board[2] == board[5] == board[8] == bot or
+            board[0] == board[4] == board[8] == bot or
+            board[2] == board[4] == board[6] == bot):
+            print()
+            print(" " + board[0] + " | " + board[1] + " | " + board[2])
             print("---+---+---")
-    print()
-
-    # Check for winner
-    winning_combinations = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],  
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],  
-        [0, 4, 8], [2, 4, 6]              
-    ]
-    winner = False
-    for combo in winning_combinations:
-        if board[combo[0]] == board[combo[1]] == board[combo[2]] == current_player:
-            winner = True
-            break
-    if winner:
-        if current_player == player_symbol:
-            print(f"Congratulations! You win!")
+            print(" " + board[3] + " | " + board[4] + " | " + board[5])
+            print("---+---+---")
+            print(" " + board[6] + " | " + board[7] + " | " + board[8])
+            print()
+            print("Bot wins!")
+            game_over = True
         else:
-            print("The Bot wins!")
-        game_running = False
-        continue
-    
-    # Switch player
-
-    current_player = 'O' if current_player == 'X' else 'X'
+            turn = "Player"
