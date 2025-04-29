@@ -47,13 +47,21 @@ player = ''
 while player not in ['X', 'O']:
     player = input("Choose your symbol (X or O): ").upper()
 
-bot = 'O' if player == 'X' else 'X'
+
+if player == 'X':
+    bot = 'O'
+else: 
+    bot = "X"
 print(f"You are {player}, bot is {bot}. Let's play!")
 
-board = [str(i+1) for i in range(9)]
+board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 print_board(board)
 
-turn = 'player' if player == 'X' else 'bot'
+
+if player == 'X': 
+   turn = 'player' 
+else:
+    turn = 'bot'
 
 for i in range(9):
     if turn == 'player':
@@ -75,5 +83,6 @@ for i in range(9):
         turn = 'player'
 else:
     print("It's a draw!")
+
 
 
