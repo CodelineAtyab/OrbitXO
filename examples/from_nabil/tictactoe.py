@@ -18,7 +18,8 @@ def check_winner(b, s):
        b[0] == s and b[3] == s and b[6] == s or \
        b[1] == s and b[4] == s and b[7] == s or \
        b[2] == s and b[5] == s and b[8] == s or \
-       b[2] == s and b[4] == s and b[6] == s: 
+       b[2] == s and b[4] == s and b[6] == s or \
+       b[0] == s and b[4] == s and b[8] == s:
        return True
     return False 
 
@@ -34,7 +35,10 @@ def player_move(board):
 
 # Get bot move
 def bot_move(board):
-    empty = [i for i in range(9) if board[i] not in ['X','O']]
+    empty = []
+    for i in range(9):
+      if board[i]!="X" and board[i]!="O":
+          empty.append(i)  
     return random.choice(empty)
 
 # --- Game Execution Starts Here ---
@@ -71,4 +75,5 @@ for _ in range(9):
         turn = 'player'
 else:
     print("It's a draw!")
+
 
