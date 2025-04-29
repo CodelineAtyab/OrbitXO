@@ -1,112 +1,125 @@
 import random
 
-def print_board(board):
+print("Welcome to Tic Tac Toe!")
+
+# Player chooses symbol
+player = input("Choose X or O: ").upper()
+if player == "X":
+    bot = "O"
+    turn = "player"
+else:
+    bot = "X"
+    turn = "bot"
+
+# Create board
+board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+winner = None
+
+while True:
+    # Show the board
     print()
-    print(board[0], '|', board[1], '|', board[2])
-    print('--|---|--')
-    print(board[3], '|', board[4], '|', board[5])
-    print('--|---|--')
-    print(board[6], '|', board[7], '|', board[8])
+    print(board[0], "|", board[1], "|", board[2])
+    print("--|---|--")
+    print(board[3], "|", board[4], "|", board[5])
+    print("--|---|--")
+    print(board[6], "|", board[7], "|", board[8])
     print()
 
-def check_winner(board, symbol):
-    # Check rows
-    if board[0] == symbol and board[1] == symbol and board[2] == symbol:
-        return True
-    elif board[3] == symbol and board[4] == symbol and board[5] == symbol:
-        return True
-    elif board[6] == symbol and board[7] == symbol and board[8] == symbol:
-        return True
-    # Check columns
-    elif board[0] == symbol and board[3] == symbol and board[6] == symbol:
-        return True
-    elif board[1] == symbol and board[4] == symbol and board[7] == symbol:
-        return True
-    elif board[2] == symbol and board[5] == symbol and board[8] == symbol:
-        return True
-    # Check diagonals
-    elif board[0] == symbol and board[4] == symbol and board[8] == symbol:
-        return True
-    elif board[2] == symbol and board[4] == symbol and board[6] == symbol:
-        return True
-    else:
-        return False
-
-def is_draw(board):
-    for spot in board:
-        if spot != 'X' and spot != 'O':
-            return False  # Still empty spots, so not a draw
-    return True  # No empty spots, so it's a draw
-
-def player_move(board, symbol):
-    while True:
-        move = input("Enter your move (1-9): ")
+    # Player move
+    if turn == "player":
+        move = input("Choose a spot (1-9): ")
         if move.isdigit():
             move = int(move) - 1
-            if move >= 0 and move <= 8:
-                if board[move] != 'X' and board[move] != 'O':
-                    board[move] = symbol
-                    break
+            if move >= 0:
+                if move <= 8:
+                    if board[move] != "X":
+                        if board[move] != "O":
+                            board[move] = player
+                            turn = "bot"
+                        else:
+                            print("Spot taken. Try again.")
+                            continue
+                    else:
+                        print("Spot taken. Try again.")
+                        continue
                 else:
-                    print("Spot already taken! Choose another one.")
+                    print("Number too big. Try 1 to 9.")
+                    continue
             else:
-                print("Invalid number! Pick between 1 and 9.")
+                print("Number too small. Try 1 to 9.")
+                continue
         else:
-            print("Please enter a valid number!")
+            print("Enter a number.")
+            continue
 
-def bot_move(board, symbol):
-    empty_spots = []
-    for i in range(9):
-        if board[i] != 'X' and board[i] != 'O':
-            empty_spots.append(i)
-    move = random.choice(empty_spots)
-    board[move] = symbol
-    print(f"Bot chose spot {move + 1}.")
-
-def main():
-    print("Welcome to Tic Tac Toe!")
-    
-    while True:
-        player_symbol = input("Choose X or O: ").upper()
-        if player_symbol == 'X' or player_symbol == 'O':
-            break
-        else:
-            print("Invalid choice. Please choose X or O.")
-
-    if player_symbol == 'X':
-        bot_symbol = 'O'
+    # Bot move
     else:
-        bot_symbol = 'X'
+        empty = []
+        i = 0
+        while i < 9:
+            if board[i] != "X":
+                if board[i] != "O":
+                    empty.append(i)
+            i = i + 1
+        bot_move = random.choice(empty)
+        board[bot_move] = bot
+        print("Bot chose:", bot_move + 1)
+        turn = "player"
 
-    board = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    turn = 'player'
+    # Check win (8 conditions)
+    if board[0] == board[1]:
+        if board[1] == board[2]:
+            winner = turn
+    if board[3] == board[4]:
+        if board[4] == board[5]:
+            winner = turn
+    if board[6] == board[7]:
+        if board[7] == board[8]:
+            winner = turn
+    if board[0] == board[3]:
+        if board[3] == board[6]:
+            winner = turn
+    if board[1] == board[4]:
+        if board[4] == board[7]:
+            winner = turn
+    if board[2] == board[5]:
+        if board[5] == board[8]:
+            winner = turn
+    if board[0] == board[4]:
+        if board[4] == board[8]:
+            winner = turn
+    if board[2] == board[4]:
+        if board[4] == board[6]:
+            winner = turn
 
-    print_board(board)
+    if winner != None:
+        break
 
-    while True:
-        if turn == 'player':
-            player_move(board, player_symbol)
-            print_board(board)
-            if check_winner(board, player_symbol):
-                print("You win! Congratulations!")
-                break
-            elif is_draw(board):
-                print("It's a draw!")
-                break
-            else:
-                turn = 'bot'
+    # Check draw
+    full = True
+    j = 0
+    while j < 9:
+        if board[j] != "X":
+            if board[j] != "O":
+                full = False
+        j = j + 1
+    if full:
+        break
 
-        elif turn == 'bot':
-            bot_move(board, bot_symbol)
-            print_board(board)
-            if check_winner(board, bot_symbol):
-                print("Bot wins! Better luck next time.")
-                break
-            elif is_draw(board):
-                print("It's a draw!")
-                break
-            else:
-                turn = 'player'
+# Show final board
+print()
+print(board[0], "|", board[1], "|", board[2])
+print("--|---|--")
+print(board[3], "|", board[4], "|", board[5])
+print("--|---|--")
+print(board[6], "|", board[7], "|", board[8])
+print()
 
-# Start the game
-main()
+# Result
+if winner == "player":
+    print("You win!")
+elif winner == "bot":
+    print("Hanan wins!")
+else:
+    print("It's a draw!")
