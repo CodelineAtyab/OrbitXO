@@ -31,7 +31,7 @@ def check_draw():
                 return False
     return True
 
-# اللاعب يختار الرمز
+
 while True:
     player = input("Choose your symbol (X or O): ").upper()
     if player in ['X', 'O']:
