@@ -55,7 +55,7 @@ print_board(board)
 
 turn = 'player' if player == 'X' else 'bot'
 
-for _ in range(9):
+for i in range(9):
     if turn == 'player':
         idx = player_move(board)
         board[idx] = player
