@@ -10,12 +10,17 @@ def print_board(b):
     print(f" {b[6]} | {b[7]} | {b[8]}")
     print()
 
-# Check for a win
+# Check for a win using if statements
 def check_winner(b, s):
-    wins = [(0,1,2),(3,4,5),(6,7,8),
-            (0,3,6),(1,4,7),(2,5,8),
-            (0,4,8),(2,4,6)]
-    return any(b[x]==b[y]==b[z]==s for x,y,z in wins)
+    if b[0] == s and b[1] == s and b[2] == s or \
+       b[3] == s and b[4] == s and b[5] == s or \
+       b[6] == s and b[7] == s and b[8] == s or \
+       b[0] == s and b[3] == s and b[6] == s or \
+       b[1] == s and b[4] == s and b[7] == s or \
+       b[2] == s and b[5] == s and b[8] == s or \
+       b[2] == s and b[4] == s and b[6] == s: 
+       return True
+    return False 
 
 # Get player move
 def player_move(board):
@@ -32,40 +37,38 @@ def bot_move(board):
     empty = [i for i in range(9) if board[i] not in ['X','O']]
     return random.choice(empty)
 
-# Main game
-def main():
-    print("Welcome to Tic Tac Toe!")
-    player = ''
-    while player not in ['X', 'O']:
-        player = input("Choose your symbol (X or O): ").upper()
+# --- Game Execution Starts Here ---
+print("Welcome to Tic Tac Toe!")
+player = ''
+while player not in ['X', 'O']:
+    player = input("Choose your symbol (X or O): ").upper()
 
-    bot = 'O' if player == 'X' else 'X'
-    print(f"You are {player}, bot is {bot}. Let's play!")
+bot = 'O' if player == 'X' else 'X'
+print(f"You are {player}, bot is {bot}. Let's play!")
 
-    board = [str(i+1) for i in range(9)]
-    print_board(board)
+board = [str(i+1) for i in range(9)]
+print_board(board)
 
-    turn = 'player' if player == 'X' else 'bot'
+turn = 'player' if player == 'X' else 'bot'
 
-    for _ in range(9):
-        if turn == 'player':
-            idx = player_move(board)
-            board[idx] = player
-            print_board(board)
-            if check_winner(board, player):
-                print("You win!")
-                return
-            turn = 'bot'
-        else:
-            print("Bot's move:")
-            idx = bot_move(board)
-            board[idx] = bot
-            print_board(board)
-            if check_winner(board, bot):
-                print("Bot wins!")
-                return
-            turn = 'player'
+for _ in range(9):
+    if turn == 'player':
+        idx = player_move(board)
+        board[idx] = player
+        print_board(board)
+        if check_winner(board, player):
+            print("You win!")
+            break
+        turn = 'bot'
+    else:
+        print("Bot's move:")
+        idx = bot_move(board)
+        board[idx] = bot
+        print_board(board)
+        if check_winner(board, bot):
+            print("Bot wins!")
+            break
+        turn = 'player'
+else:
     print("It's a draw!")
 
-if __name__ == "__main__":
-    main()
