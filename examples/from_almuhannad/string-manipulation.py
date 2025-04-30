@@ -80,9 +80,10 @@ while menu:
             print(samplestring.isdigit())
         
         elif select_op == "10":
-            print("F-string Formation: ")
-            print("format: ", "Hello []".format(samplestring))
-            print("f-string: ", f"Hello {samplestring}")
+            print("Formatting techniques")
+            name = input("Enter your name: ")
+            age = int(input("Enter your age: "))
+            print(f"Formatted string: My name is {name} and I am {age} years old." .format(name=name, age=age))
 
         elif select_op == "11":
             menu = True
