@@ -37,6 +37,7 @@ while menu:
             print("Case Manipulation:")
             print(samplestring.upper())
             print(samplestring.lower())
+            print(samplestring.title())
             print(samplestring.swapcase())
         
         elif select_op == "3":
