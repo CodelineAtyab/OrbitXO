@@ -28,10 +28,8 @@ while menu:
                 print(f"\nLength: {len(stringsample)} characters")
                 print("Concatenation:")
                 print(stringsample + " It's enjoyable and simplifies string handling.")
-                print("Hint: +")
                 print("Repetition:")
                 print("Python" * 5)
-                print("Hint: 'Python' * 4")
             elif option == "2":
                 print("\nUppercase:", stringsample.upper())
                 print("Lowercase:", stringsample.lower())
@@ -64,13 +62,13 @@ while menu:
                 print("Middle:", middle)
                 print("After:", after)
             elif option == "6":
-                messy = "   Hello Aiman!   "
-                print("\nOriginal string:", repr(messy))
-                print("strip():", messy.strip())
-                print("lstrip():", messy.lstrip())
-                print("rstrip():", messy.rstrip())
+                stringsample = "   Hello Aiman!   "
+                print("\nOriginal string:", repr(stringsample))
+                print("strip():", stringsample.strip())
+                print("lstrip():", stringsample.lstrip())
+                print("rstrip():", stringsample.rstrip())
             elif option == "7":
-                print("\nReplace 'easy' with 'simple':", stringsample.replace("easy", "simple"))
+                print("Replace 'easy' with 'simple':", stringsample.replace("easy", "simple"))
                 table = str.maketrans("aeiou", "12345")
                 print("Translate vowels to numbers:", stringsample.translate(table))
             elif option == "8":
