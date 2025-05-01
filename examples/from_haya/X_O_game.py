@@ -1,93 +1,103 @@
-import random
-
-board = [['1', '2', '3'],
-         ['4', '5', '6'],
-         ['7', '8', '9']]
-
-def display_board():
+def display_board(board):
     print()
-    for row in board:
-        print("  " + " | ".join(row))
-        if row != board[-1]:
-            print(" -----------")
+    print(" " + board[0] + " | " + board[1] + " | " + board[2])
+    print("---|---|---")
+    print(" " + board[3] + " | " + board[4] + " | " + board[5])
+    print("---|---|---")
+    print(" " + board[6] + " | " + board[7] + " | " + board[8])
     print()
 
-def check_winner(symbol):
-    for i in range(3):
-        if board[i][0] == symbol and board[i][1] == symbol and board[i][2] == symbol:
-            return True
-        if board[0][i] == symbol and board[1][i] == symbol and board[2][i] == symbol:
-            return True
-    if board[0][0] == symbol and board[1][1] == symbol and board[2][2] == symbol:
+# Function to check if someone won
+def check_winner(board, symbol):
+    if (board[0] == symbol and board[1] == symbol and board[2] == symbol) or \
+       (board[3] == symbol and board[4] == symbol and board[5] == symbol) or \
+       (board[6] == symbol and board[7] == symbol and board[8] == symbol) or \
+       (board[0] == symbol and board[3] == symbol and board[6] == symbol) or \
+       (board[1] == symbol and board[4] == symbol and board[7] == symbol) or \
+       (board[2] == symbol and board[5] == symbol and board[8] == symbol) or \
+       (board[0] == symbol and board[4] == symbol and board[8] == symbol) or \
+       (board[2] == symbol and board[4] == symbol and board[6] == symbol):
         return True
-    if board[0][2] == symbol and board[1][1] == symbol and board[2][0] == symbol:
-        return True
-    return False
+    else:
+        return False
 
-def check_draw():
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] not in ['X', 'O']:
-                return False
+# Function to check for a draw
+def check_draw(board):
+    i = 0
+    while i < 9:
+        if board[i] != "X" and board[i] != "O":
+            return False
+        i = i + 1
     return True
 
+# Function for the bot's move (first empty spot)
+def bot_move(board, bot_symbol):
+    i = 0
+    while i < 9:
+        if board[i] != "X" and board[i] != "O":
+            board[i] = bot_symbol
+            break
+        i = i + 1
+print("Welcome to Tic Tac Toe!")
 
+# Player chooses symbol
+player_symbol = ""
+while player_symbol != "X" and player_symbol != "O":
+    player_symbol = input("Choose your symbol (X or O): ").upper()
+
+if player_symbol == "X":
+    bot_symbol = "O"
+else:
+    bot_symbol = "X"
+
+print("You are", player_symbol, "Bot is", bot_symbol)
+print("Board positions:")
+print(" 1 | 2 | 3 ")
+print("---|---|---")
+print(" 4 | 5 | 6 ")
+print("---|---|---")
+print(" 7 | 8 | 9 ")
+
+# Initialize the board
+board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+# Main Game Loop
 while True:
-    player = input("Choose your symbol (X or O): ").upper()
-    if player in ['X', 'O']:
+    display_board(board)
+    
+    # Player's move
+    move = input("Your move (1-9): ")
+    if move not in board:
+        print("Invalid move. Try again.")
+        continue
+    else:
+        i = 0
+        while i < 9:
+            if board[i] == move:
+                board[i] = player_symbol
+                break
+            i = i + 1
+
+    if check_winner(board, player_symbol):
+        display_board(board)
+        print("You win!")
         break
-    else:
-        print("Invalid choice! Please choose X or O.")
 
-bot = 'O' if player == 'X' else 'X'
+    if check_draw(board):
+        display_board(board)
+        print("It's a draw!")
+        break
 
-display_board()
+    # Bot's move
+    print("Bot's move:")
+    bot_move(board, bot_symbol)
 
-turn = 'player' if player == 'X' else 'bot'
+    if check_winner(board, bot_symbol):
+        display_board(board)
+        print("Bot wins!")
+        break
 
-while True:
-    if turn == 'player':
-        move = input("Choose a number (1-9): ")
-        if not move.isdigit() or int(move) < 1 or int(move) > 9:
-            print("Invalid input! Enter a number from 1 to 9.")
-            continue
-
-        found = False
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == move:
-                    board[i][j] = player
-                    found = True
-        if not found:
-            print("Invalid move! Try again.")
-            continue
-
-        display_board()
-        if check_winner(player):
-            print("You win!")
-            break
-        elif check_draw():
-            print("It's a draw!")
-            break
-        else:
-            turn = 'bot'
-
-    else:
-        moves = []
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] not in ['X', 'O']:
-                    moves.append((i, j))
-        move = random.choice(moves)
-        board[move[0]][move[1]] = bot
-        print("Bot's move:")
-        display_board()
-
-        if check_winner(bot):
-            print("Bot wins!")
-            break
-        elif check_draw():
-            print("It's a draw!")
-            break
-        else:
-            turn = 'player'
+    if check_draw(board):
+        display_board(board)
+        print("It's a draw!")
+        break
