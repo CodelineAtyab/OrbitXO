@@ -33,10 +33,15 @@ contact_no = data_chunks[1].strip()
 email = data_chunks[2].strip()
 bank_account_no = data_chunks[3].strip()  # Leading and Trailing Spaces are stripped
 
-print(customer_info)
-print(name)
-print(contact_no)
-print(email)
-print(bank_account_no)
+print(f"Name: {name} | Contact: {contact_no} | email: {email}")
+# ""
+# f""
+# r""
+# b""
+# print(customer_info)
+# print(name)
+# print(contact_no)
+# print(email)
+# print(bank_account_no)
 
 print("END OF SCRIPT ....")
