@@ -1,5 +1,5 @@
 def main_menu():
-       while True:
+    while True:
         print("\nMain Menu:")
         print("1. Demonstration Mode")
         print("2. Exit")
@@ -28,6 +28,7 @@ def demonstration_mode():
         print("10. Formatting techniques")
         print("11. Return to main menu")
         option = input("Choose an operation: ")
+
         if option == "1":
             print(f"\nLength: {len(sample_string)} characters")
             print("Concatenation:")
@@ -36,20 +37,20 @@ def demonstration_mode():
             print("Repetition:")
             print("Python" * 3)
             print("Hint: 'Python' * 3")
+
         elif option == "2":
             print("\nUppercase:", sample_string.upper())
             print("Lowercase:", sample_string.lower())
             print("Title Case:", sample_string.title())
             print("Swapcase:", sample_string.swapcase())
+
         elif option == "3":
             print("\nFind 'easy':", sample_string.find("easy"))
-            try:
-                print("Index of 'powerful':", sample_string.index("powerful"))
-            except ValueError:
-                print("Index of 'powerful': Not found")
+            print("Find 'powerful':", sample_string.find("powerful"))
             print("Count of 'a':", sample_string.count("a"))
             print("Starts with 'Python':", sample_string.startswith("Python"))
             print("Ends with '!':", sample_string.endswith("!"))
+
         elif option == "4":
             print("\nFirst 6 characters:", sample_string[:6])
             print("Code: sample_string[:6]")
@@ -61,6 +62,7 @@ def demonstration_mode():
             print("Code: sample_string[::-1]")
             print("Extract 'powerful':", sample_string[10:18])
             print("Code: sample_string[10:18]")
+
         elif option == "5":
             split_words = sample_string.split()
             print("\nSplit into list:", split_words)
@@ -70,26 +72,31 @@ def demonstration_mode():
             print("Before:", before)
             print("Middle:", middle)
             print("After:", after)
+
         elif option == "6":
             messy = "   Hello Aya!   "
             print("\nOriginal string:", repr(messy))
             print("strip():", messy.strip())
             print("lstrip():", messy.lstrip())
             print("rstrip():", messy.rstrip())
+
         elif option == "7":
             print("\nReplace 'easy' with 'simple':", sample_string.replace("easy", "simple"))
             table = str.maketrans("aeiou", "12345")
             print("Translate vowels to numbers:", sample_string.translate(table))
+
         elif option == "8":
             print("\nCentered (width 40):", sample_string.center(40, "*"))
             print("Left Justified:", sample_string.ljust(40, "-"))
             print("Right Justified:", sample_string.rjust(40, "-"))
+
         elif option == "9":
             print("\nIs alphabetic:", sample_string.replace(" ", "").isalpha())
             print("Is digit:", sample_string.isdigit())
             print("Is alphanumeric:", sample_string.replace(" ", "").isalnum())
             print("Is lowercase:", sample_string.islower())
             print("Is uppercase:", sample_string.isupper())
+
         elif option == "10":
             word = "Python"
             date = "2025-04-27"
@@ -97,9 +104,11 @@ def demonstration_mode():
             print(f"\nUsing f-string: {word} has {len(word)} letters and is used by many developers")
             print("Using .format():", "Hello, {}! Today is {}".format("Team Code Orbit", date))
             print("Using % operator:", "%d%% of Python developers love string manipulation" % percent)
+
         elif option == "11":
             break
         else:
             print("Please choose a valid number (1 to 11)")
+
 
 main_menu()
