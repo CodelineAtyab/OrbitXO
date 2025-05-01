@@ -47,43 +47,38 @@ def bot_move(board, bot_symbol):
     board[move] = bot_symbol
     print(f"Bot chose position {move+1}.")
 
-# Main game function
-def main():
-    # Initialize the board
-    board = [str(i+1) for i in range(9)]
-    
-    print("Welcome to Tic Tac Toe!")
-    player_symbol = ''
-    while player_symbol not in ['X', 'O']:
-        player_symbol = input("Choose your symbol (X or O): ").upper()
+# Game setup and loop (formerly inside main)
+board = [str(i+1) for i in range(9)]
 
-    bot_symbol = 'O' if player_symbol == 'X' else 'X'
-    print(f"You are {player_symbol}, the bot is {bot_symbol}. Let's start!")
+print("Welcome to Tic Tac Toe!")
+player_symbol = ''
+while player_symbol not in ['X', 'O']:
+    player_symbol = input("Choose your symbol (X or O): ").upper()
+
+bot_symbol = 'O' if player_symbol == 'X' else 'X'
+print(f"You are {player_symbol}, the bot is {bot_symbol}. Let's start!")
+
+print_board(board)
+
+# X always goes first
+player_turn = True if player_symbol == 'X' else False
+
+while True:
+    if player_turn:
+        player_move(board, player_symbol)
+    else:
+        bot_move(board, bot_symbol)
     
     print_board(board)
 
-    # X always goes first
-    player_turn = True if player_symbol == 'X' else False
+    if check_winner(board, player_symbol):
+        print("Congratulations! You win!")
+        break
+    elif check_winner(board, bot_symbol):
+        print("The bot wins! Better luck next time.")
+        break
+    elif is_draw(board):
+        print("It's a draw!")
+        break
 
-    while True:
-        if player_turn:
-            player_move(board, player_symbol)
-        else:
-            bot_move(board, bot_symbol)
-        
-        print_board(board)
-
-        if check_winner(board, player_symbol):
-            print("Congratulations! You win!")
-            break
-        elif check_winner(board, bot_symbol):
-            print("The bot wins! Better luck next time.")
-            break
-        elif is_draw(board):
-            print("It's a draw!")
-            break
-
-        player_turn = not player_turn
-
-if __name__ == "__main__":
-    main()
+    player_turn = not player_turn
