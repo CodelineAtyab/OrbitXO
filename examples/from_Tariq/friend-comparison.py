@@ -20,16 +20,15 @@ while mainmenu:
             friend = input("Enter friend (comma-separated): ")
             friend_list = []
             friend_list = friend.split(",")
-            friend_set = friend_list
             if user in all_friends:
                 print("User already exists. Adding friend to existing user.")
-                all_friends[user].extend(friend_set)
+                all_friends[user].extend(friend_list)
             else:
                 print("Adding new user and friend.")
                 all_friends[user] = []
-            all_friends[user].append(friend_set)
+            all_friends[user].append(friend_list)
             print("User and friend added successfully.")
-            print("Friend set: ", friend_set)
+            print("Friend set: ", friend_list)
             print("All users: ", all_friends[user])
             break
         elif x == '2':
@@ -38,10 +37,10 @@ while mainmenu:
             user2 = input("Enter second user: ")
             user1_sets = set()
             user2_sets = set()
-            for friend_set in all_friends[user1]:
-                user1_sets = user1_sets | set(friend_set)
-            for friend_set in all_friends[user2]:
-                user2_sets = user2_sets | set(friend_set)
+            for friend_list in all_friends[user1]:
+                user1_sets = user1_sets | set(friend_list)
+            for friend_list in all_friends[user2]:
+                user2_sets = user2_sets | set(friend_list)
             mutual_friends = user1_sets & user2_sets
             if not mutual_friends :
              print("No mutual friends found.")
@@ -54,10 +53,10 @@ while mainmenu:
             user2 = input("Enter second user: ")
             user1_sets = set()
             user2_sets = set()
-            for friend_set in all_friends[user1]:
-                user1_sets = user1_sets | set(friend_set)
-            for friend_set in all_friends[user2]:
-                user2_sets = user2_sets | set(friend_set)
+            for friend_list in all_friends[user1]:
+                user1_sets = user1_sets | set(friend_list)
+            for friend_list in all_friends[user2]:
+                user2_sets = user2_sets | set(friend_list)
             unique_friends = user1_sets - user2_sets
             if not unique_friends:
              print("No unique friends found.")
@@ -70,10 +69,10 @@ while mainmenu:
             user2 = input("Enter second user: ")
             user1_sets = set()
             user2_sets = set()
-            for friend_set in all_friends[user1]:
-                user1_sets = user1_sets | set(friend_set)
-            for friend_set in all_friends[user2]:
-                user2_sets = user2_sets | set(friend_set)
+            for friend_list in all_friends[user1]:
+                user1_sets = user1_sets | set(friend_list)
+            for friend_list in all_friends[user2]:
+                user2_sets = user2_sets | set(friend_list)
             combined_friends = user1_sets | user2_sets
             if not combined_friends:
              print("No combined friends found.")
@@ -85,13 +84,13 @@ while mainmenu:
             user = input("Enter user: ")
             user_sets = set()
             suggestions = set()
-            for friend_set in all_friends[user]:
-             user_sets = user_sets | set(friend_set)
-            for other_user, friend_sets in all_friends.items():
+            for friend_list in all_friends[user]:
+             user_sets = user_sets | set(friend_list)
+            for other_user, friend_lists in all_friends.items():
              if other_user != user:
               other_user_sets = set()
-              for friend_set in friend_sets:
-               other_user_sets = other_user_sets | set(friend_set)
+              for friend_list in friend_lists:
+               other_user_sets = other_user_sets | set(friend_list)
                mutual_friends = user_sets & other_user_sets
                if mutual_friends:
                 suggestions.add(other_user)
