@@ -30,14 +30,14 @@ def demonstration_mode():
         option = input("Choose an operation: ")
 
         if option == "1":
-            print(f"\nLength: {len(sample_string)} characters")
+            print("\nLength: {len(sample_string)} characters")
             print("Concatenation:")
             print(sample_string + " And fun too! Good for easy string manipulation")
-            print("Hint: +")
+          
             print("Repetition:")
             print("Python" * 3)
             print("Hint: 'Python' * 3")
-
+        
         elif option == "2":
             print("\nUppercase:", sample_string.upper())
             print("Lowercase:", sample_string.lower())
@@ -109,6 +109,5 @@ def demonstration_mode():
             break
         else:
             print("Please choose a valid number (1 to 11)")
-
 
 main_menu()
