@@ -60,7 +60,7 @@ while running:
                 print("\nYou selected concententaion, let's add your sentance to mine!")
                 sentance = input("Enter your sentance: ")
                 concententaion = sentance + ",I made it!"
-                print(f"Concententation result : {concententaion} \nIt's nice, isn't heheheh ?")
+                print(f"Concententation result : {concententaion} \nIt's nice, isn't hehehehe ?")
              
              #Repeition coding starts from here:
              elif choose == "3":
