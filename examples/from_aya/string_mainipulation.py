@@ -36,7 +36,8 @@ def demonstration_mode():
           
             print("Repetition:")
             print("Python" * 3)
-            print("Hint: 'Python' * 3")
+     
+        
         
         elif option == "2":
             print("\nUppercase:", sample_string.upper())
