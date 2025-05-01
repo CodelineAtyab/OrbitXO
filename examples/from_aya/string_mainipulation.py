@@ -45,15 +45,15 @@ while True:
 
                 elif option == "4":
                     print("\nFirst 6 characters:", sample_string[:6])
-                    print("Code: sample_string[:6]")
+                    
                     print("Last 6 characters:", sample_string[-6:])
-                    print("Code: sample_string[-6:]")
+                    
                     print("Every other character:", sample_string[::2])
-                    print("Code: sample_string[::2]")
+                    
                     print("Reverse string:", sample_string[::-1])
-                    print("Code: sample_string[::-1]")
+                    
                     print("Extract 'powerful':", sample_string[10:18])
-                    print("Code: sample_string[10:18]")
+                    
 
                 elif option == "5":
                     split_words = sample_string.split()
