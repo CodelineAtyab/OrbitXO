@@ -15,7 +15,7 @@ def display_board(board):
     print()
 def player_move(board, user_choice):
     while True:
-        try:
+        
             move = int(input("Enter your move (1-9): ")) -1
             if move < 0 or move > 8:
                 print("Invalid position! choose a number between 1 and 9.")
@@ -24,7 +24,7 @@ def player_move(board, user_choice):
             else:
                 board[move] = user_choice
                 break
-        except ValueError:
+        
             print("Invalid input! please enter a number between 1 and 9.")
 def bot_move(board, bot_choice):
     available_move = [i for i, spot in enumerate(board) if spot == ' ']
@@ -32,13 +32,16 @@ def bot_move(board, bot_choice):
     board[move] = bot_choice
     print(f"Bot placed {bot_choice} in position {move + 1}")
 def check_winner(board, symbol):
+    # Define winning combinations using nested lists
     win_conditions = [
-        (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Rows
-        (0, 3, 6), (1, 4, 7), (2, 5, 8),  # Columns
-        (0, 4, 8), (2, 4, 6)              # Diagonals
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+        [0, 4, 8], [2, 4, 6]              # Diagonals
     ]
-    for a, b, c in win_conditions:
-        if board[a] == board[b] == board[c] == symbol:
+    for combination in win_conditions:
+        if (board[combination[0]] == symbol and 
+            board[combination[1]] == symbol and 
+            board[combination[2]] == symbol):
             return True
     return False
 def is_draw(board):
