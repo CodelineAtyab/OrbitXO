@@ -58,7 +58,7 @@ while True:
                 print("\nSplit and Join:")
                 words = sample_string.split()
                 print("Split into list:", words)
-                print("Join with dashes:", "-".join(words))
+                print("Join with dashes:", "-".join(words)) 
 
             elif demo_choice == "6":
                 print("\nWhitespace Handling:")
@@ -103,35 +103,24 @@ while True:
         print("\nCHALLENGE MODE")
 
         print("\nChallenge 1:")
-        print("Reverse this string: 'Python is fun'")
-        answer1 = input("Your code or 'hint': ")
+        user_input = input("Enter a sentence: ")
 
-        if answer1 == "hint":
-            print("Hint: Use [::-1]") 
-
-        elif answer1 == 'nuf si nohtyP':
-            print("Correct! ") 
-        else:
-            print("Incorrect. A correct answer is: 'nuf si nohtyP'")
-            print(' Use the code "Python is fun"[::-1]')  
+        words = user_input.split()
+        count = 0
+        for word in words:
+         if len(word) > 3:
+           count += 1 
+        print("Number of words with more than 3 letters:", count)
 
 
         print("\nChallenge 2:")
-        print("Replace every 'e' in 'Elephants eat everything' with '*'")
-        answer2 = input("Your code or 'hint': ") 
+        answer2 = input("Enter a sentence: ")
 
+        title = (answer2.title())
+        print(title.replace(" ", "-")) 
 
-        if answer2 == "hint":
-            print("Hint: .replace("", "*").replace("", "*")") 
-
-        elif answer2 == '*l*phants *at *v*rything':
-           print("Correct!")
-
-        else:
-            print("Incorrect. A correct answer is: *l*phants *at *v*rything")
-            print('Using the code "Elephants eat everything".replace("e", "*").replace("E", "*")')
-
-
+        
+      
 
     elif choice == "3":
         print("Thanks for using String Manipulation Tool Goodbye")
