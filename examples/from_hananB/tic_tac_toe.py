@@ -1,6 +1,6 @@
 
 import random
-
+ 
 def checkWinner(board_list, symbol):
     # Check rows
     if board_list[0] == board_list[1] == board_list[2] == symbol: return True
