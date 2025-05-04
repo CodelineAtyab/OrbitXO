@@ -70,7 +70,7 @@ while running:
                 print("How many words have more than 3 letters?")
                 print("Type your answer or type 'hint'.")
 
-                correct = 5  # Words: Mariya, joined, codeline, operation, (maybe "code" if counted wrongly before)
+                correct = 5  # Words: Hoor, joined, codeline, operation, (maybe "code" if counted wrongly before)
 
                 while True:
                     answer = input("Your answer: ").strip()
