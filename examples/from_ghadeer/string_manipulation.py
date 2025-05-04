@@ -1,5 +1,5 @@
 # Define two example strings
-text = "  Hello, team  "
+text = " Hello, team  "
 text2 = "start python programming"
 
 # 1. Length of the string
