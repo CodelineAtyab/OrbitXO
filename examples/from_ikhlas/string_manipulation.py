@@ -92,7 +92,7 @@ def demonstration_mode():
             name= "Ikhlas"
             print("Formatting techniques: \nUsing f-string:")
             print(f"Result: Ikhlas name has" ,{len(name)} , "letters.")
-            
+            print("%d%% of Python developers love string manipulation" % 90)
 
         elif option == "11":
             break
