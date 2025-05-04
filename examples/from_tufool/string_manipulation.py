@@ -1,89 +1,157 @@
 running_menu = True
+
 while running_menu:
-    print("Main Menu:\n1. Demonstration Mode\n2. Exit")
+    print("\nMain Menu:\n1. Demonstration Mode\n2. Challenge Mode\n3. Exit")
     option = input("Choose an option: ")
+
     if option == "1":
-        print("DEMONSTRATION MODE")
-        demonstration_string = input("Enter a sample string: Python is powerful and easy to learn! ")
-        print("Select operation:\n" \
-        "1. Basic string properties\n" \
-        "2. Case manipulation\n" \
-        "3. Searching operations\n" \
-        "4. Slicing operations\n" \
-        "5. Split and join operations\n" \
-        "6. Whitespace handling\n" \
-        "7. Character replacement\n" \
-        "8. String alignment\n" \
-        "9. String validation\n" \
-        "10. Formatting techniques\n" \
-        "11. Return to main menu")
-        operation = input("Choose an operation between 1 to 11: ")
-        if operation == "1":
-            print("Basic string operations")
-            print(f"Length of the string: {len(demonstration_string)}")
-            print(f"Concatenation: {demonstration_string + ' is great!'}")
-            print(f"Repitition: {demonstration_string * 3}")
-        elif operation == "2":
-            print("Case manipulation")
-            print(f"String in uppercase: {demonstration_string.upper()}")
-            print(f"String in lowercase: {demonstration_string.lower()}")
-            print(f"String with all words capitalized: {demonstration_string.title()}")
-            print(f"String with swaped case: {demonstration_string.swapcase()}")
-            
-        elif operation == "3":
-            print("String searching operations")
-            searching_string = input("Enter a sub-string to search: ")
-            if searching_string in demonstration_string:
-                print(f"'{searching_string}' found in the string.")
-                print(f"First string (find): {demonstration_string.find(searching_string)}")
-                print(f"First string (index): {demonstration_string.index(searching_string)}")
-                print(f"Count of strings: {demonstration_string.count(searching_string)}")
-                print(f"Starts with '{searching_string}': {demonstration_string.startswith(searching_string)}")
-                print(f"Ends with '{searching_string}': {demonstration_string.endswith(searching_string)}")
+        print("\nDEMONSTRATION MODE")
+        demonstration_string = input("Enter a sample string: ")
+        whitespace_string = "   " + demonstration_string + "   "
+
+        while True:
+            print("\nSelect operation:\n" \
+                  "1. Basic string properties\n" \
+                  "2. Case manipulation\n" \
+                  "3. Searching operations\n" \
+                  "4. Slicing operations\n" \
+                  "5. Split and join operations\n" \
+                  "6. Whitespace handling\n" \
+                  "7. Character replacement\n" \
+                  "8. String alignment\n" \
+                  "9. String validation\n" \
+                  "10. Formatting techniques\n" \
+                  "11. Return to main menu")
+            operation = input("Choose an operation between 1 to 11: ")
+
+            if operation == "1":
+                print("\nBasic String Properties:")
+                print(f"Length: {len(demonstration_string)} characters")
+                print("Concatenation:\nResult:", demonstration_string + " And fun too! Good for easy string manipulation")
+                print("Hint: +")
+                print("Repetition:\nResult:", demonstration_string[:6] * 3)
+                print('Hint: "Python" * 3')
+
+            elif operation == "2":
+                print("\nCase Manipulation:")
+                print("Uppercase:", demonstration_string.upper())
+                print("Lowercase:", demonstration_string.lower())
+                print("Title Case:", demonstration_string.title())
+                print("Swap Case:", demonstration_string.swapcase())
+
+            elif operation == "3":
+                print("\nSearching Operations:")
+                searching_string = input("Enter a sub-string to search: ")
+                if searching_string in demonstration_string:
+                    print(f"'{searching_string}' found in the string.")
+                    print(f"First index (find): {demonstration_string.find(searching_string)}")
+                    print(f"First index (index): {demonstration_string.index(searching_string)}")
+                    print(f"Count of occurrences: {demonstration_string.count(searching_string)}")
+                    print(f"Starts with '{searching_string}': {demonstration_string.startswith(searching_string)}")
+                    print(f"Ends with '{searching_string}': {demonstration_string.endswith(searching_string)}")
+                else:
+                    print(f"'{searching_string}' not found in the string.")
+
+            elif operation == "4":
+                print("\nSlicing Operations:")
+                print(f"First 6 characters: {demonstration_string[:6]}")
+                print(f"Last 6 characters: {demonstration_string[-6:]}")
+                print(f"Every other character: {demonstration_string[::2]}")
+                print(f"Reverse string: {demonstration_string[::-1]}")
+                print(f"Extract 'powerful': {demonstration_string[10:18]}")
+
+            elif operation == "5":
+                print("\nSplit and Join Operations:")
+                split_string = demonstration_string.split()
+                print("Split string:", split_string)
+                joined_string = " ".join(split_string)
+                print("Joined string:", joined_string)
+
+            elif operation == "6":
+                print("\nWhitespace Handling:")
+                print(f"Original with whitespaces: '{whitespace_string}'")
+                print(f"Using strip(): '{whitespace_string.strip()}'")
+                print(f"Using lstrip(): '{whitespace_string.lstrip()}'")
+                print(f"Using rstrip(): '{whitespace_string.rstrip()}'")
+
+            elif operation == "7":
+                print("\nCharacter Replacement & Translation:")
+                old_char = input("Enter character to replace: ")
+                new_char = input("Enter new character: ")
+                if old_char in demonstration_string:
+                    print("String after replacement:", demonstration_string.replace(old_char, new_char))
+                else:
+                    print(f"Character '{old_char}' not found in the string. No replacement done.")
+
+                english_char = input("Enter character to translate: ")
+                translated_char = input("Enter character to replace it with in translation: ")
+                translation_table = str.maketrans(english_char, translated_char)
+                print("String after translation:", demonstration_string.translate(translation_table))
+
+            elif operation == "8":
+                print("\nString Alignment:")
+                print("Left aligned:", demonstration_string.ljust(50))
+                print("Right aligned:", demonstration_string.rjust(50))
+                print("Center aligned:", demonstration_string.center(50))
+
+            elif operation == "9":
+                print("\nString Validation:")
+                print("Is alphanumeric:", demonstration_string.isalnum())
+                print("Is alphabetic:", demonstration_string.isalpha())
+                print("Is numeric:", demonstration_string.isnumeric())
+
+            elif operation == "10":
+                print("\nFormatting Techniques:")
+                print("Using f-string:")
+                print(f"{'Python'} has {len('Python')} letters and is used by many developers")
+
+                print("Using .format():")
+                print("Hello, {name}! Today is {date}".format(name="Team Code Orbit", date="2025-04-27"))
+
+                print("Using % operator:")
+                print("%d%% of Python developers love string manipulation" % 90)
+
+            elif operation == "11":
+                print("Returning to main menu...")
+                # The `continue` statement skips to the next iteration of the while loop (back to main menu)
+                break
             else:
-                print(f"'{searching_string}' not found in the string.")
-        elif operation == "4":
-            print("Slicing operations")
-            print(f"Sliced string: {demonstration_string[:6]}")
-        elif operation == "5":
-            print("Split and join operations")
-            split_string = demonstration_string.split()
-            print(f"Split string: {split_string}")
-            join_string = " ".join(split_string)
-            print(f"Joined string: {join_string}")
-        elif operation == "6":
-            print("Whitespace handling")
-            print(f"String with leading/trailing whitespace removed: '{demonstration_string.strip()}'")
-            print(f"String with leading whitespace removed: '{demonstration_string.lstrip()}'")
-            print(f"String with trailing whitespace removed: '{demonstration_string.rstrip()}'")
-        elif operation == "7":
-            print("Character replacement & translation")
-            old_char = input("Enter character to replace: ")
-            new_char = input("Enter new character: ")
-            print(f"String after replacement: {demonstration_string.replace(old_char, new_char)}")
-            english_char = input("Enter character to translate: ")
-            translated_char = input("Enter character to replace it with in translation: ")
-            print(f"String after translation: {demonstration_string.translate(english_char)}")
-        elif operation == "8":
-            print("String alignment")
-            print(f"Left aligned: '{demonstration_string.ljust(50)}'")
-            print(f"Right aligned: '{demonstration_string.rjust(50)}'")
-            print(f"Center aligned: '{demonstration_string.center(50)}'")
-        elif operation == "9":
-            print("String validation")
-            print(f"Is alphanumeric: {demonstration_string.isalnum()}")
-            print(f"Is alphabetic: {demonstration_string.isalpha()}")
-            print(f"Is numeric: {demonstration_string.isnumeric()}")
-        elif operation == "10":
-            print("Formatting techniques")
-            name = input("Enter your name: ")
-            age = int(input("Enter your age: "))
-            print(f"Formatted string: My name is {name} and I am {age} years old." .format(name=name, age=age))
-        elif operation == "11":
-            print("Returning to main menu...")
-            continue
+                print("Invalid operation. Please try again.")
+
     elif option == "2":
+        print("\nCHALLENGE MODE")
+
+        # Challenge 1
+        print("Challenge 1: Count how many words have more than 3 letters in:\n'The quick brown fox jumps over the lazy dog'")
+        user_code = input("Your solution (type 'hint' for a hint): ")
+        if user_code.lower() == "hint":
+            print("Hint: Use split() and list comprehension.")
+        else:
+            try:
+                result = eval(user_code)
+                if result == 5:
+                    print("Correct! The answer is 5 words.")
+                    print("Explanation: 'quick', 'brown', 'jumps', 'over', 'lazy' all have more than 3 letters.")
+                else:
+                    print(f"Incorrect. Your result was {result}. Expected: 5.")
+            except Exception as e:
+                print("There was an error in your code:", e)
+
+        # Challenge 2
+        print("\nChallenge 2: Convert 'hello world' to 'Hello-World'")
+        user_code_2 = input("Your solution: ")
+        try:
+            result = eval(user_code_2)
+            if result == "Hello-World":
+                print("Correct!")
+            else:
+                print(f"Incorrect. Your result was '{result}'. Expected: 'Hello-World'")
+        except Exception as e:
+            print("There was an error in your code:", e)
+
+    elif option == "3":
         print("Exiting...")
         running_menu = False
+
     else:
         print("Invalid option. Please try again.")
