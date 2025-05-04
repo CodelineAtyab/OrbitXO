@@ -12,11 +12,11 @@ print("2. Concatenation:", text.strip() + "...")
 print("3. Repetition:", "Hi Team " * 3)
 
 # 4. Change case of text
-print("4. Uppercase:", text.upper())         # All letters become capital
+print("4. Uppercase:", text.upper())        # All letters become capital
 
 
 # 5. Search in text
-print("5. Count 'l':", text.count("l"))         # Count how many times 'l' appears
+print("5. Count 'l':", text.count("l"))        # Count how many times 'l' appears
 
 # 6. Slice (cut) parts of the string
 print("6. First 5 characters:", text[:5])
