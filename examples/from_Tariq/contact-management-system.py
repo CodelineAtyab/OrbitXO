@@ -187,6 +187,7 @@ while True:
         print("Group not found.")
     else:
       print("Invalid group management option. Please try again.")
+
   elif input_choice == '7':
     print("Import/Export Contacts")
     print("1. Import Contacts")
@@ -199,22 +200,22 @@ while True:
       print("2. JSON")
       input_import_format = input("Choose import format: ")
       if input_import_format == '1':
-            with open(file_name, 'r') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                 name = row['Name']
-                 phone = row['Phone']
-                 email = row['Email']
-                 address = row['Address']
-                 group = row['Group']
-                 all_contacts[name] = {'phone': phone, 'email': email, 'address': address, 'group': group}
-                csvfile.close()
-                print(f"Contacts imported from {file_name} in CSV format...")   
+        with open(file_name, 'r') as csvfile:
+          reader = csv.DictReader(csvfile)
+          for row in reader:
+            name = row['Name']
+            phone = row['Phone']
+            email = row['Email']
+            address = row['Address']
+            group = row['Group']
+            all_contacts[name] = {'phone': phone, 'email': email, 'address': address, 'group': group}
+          csvfile.close()
+        print(f"Contacts imported from {file_name} in CSV format...")   
       if input_import_format == '2':
-            with open(file_name, 'r') as jsonfile:
-                all_contacts = json.load(jsonfile)
-                jsonfile.close()
-                print(f"Contacts imported from {file_name} in JSON format...")
+        with open(file_name, 'r') as jsonfile:
+          all_contacts = json.load(jsonfile)
+          jsonfile.close()
+          print(f"Contacts imported from {file_name} in JSON format...")
       else:
         print("Invalid import format. Please try again.")
       print(f"Importing contacts from {file_name}...")
@@ -224,7 +225,7 @@ while True:
       print("2. JSON")
       input_export_format = input("Choose export format: ")
       if input_export_format == '1':
-        file_name = input("Enter file name to export to: ")
+        file_name = input("Enter file name to export to (must end with .csv): ")
         with open(file_name, 'w', newline='') as csvfile:
           fieldnames = ['Name', 'Phone', 'Email', 'Address', 'Group']
           writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -234,7 +235,7 @@ while True:
         csvfile.close()
         print(f"Exporting contacts to {file_name} in CSV format...")
       elif input_export_format == '2':
-        file_name = input("Enter file name to export to: ")
+        file_name = input("Enter file name to export to (must end with .json): ")
         print(f"Exporting contacts to {file_name} in JSON format...")
         with open(file_name, 'w') as jsonfile:
           json.dump(all_contacts, jsonfile, indent=4)
