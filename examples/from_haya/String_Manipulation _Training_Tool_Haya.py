@@ -106,7 +106,6 @@ def demonstration_mode():
         else:
             print("Invalid choice. Please try again.")
 
-
 def challenge_mode():
     while True:
         print("\nChoose challenge:")
