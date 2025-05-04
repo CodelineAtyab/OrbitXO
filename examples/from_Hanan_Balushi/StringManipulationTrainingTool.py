@@ -5,7 +5,7 @@ def demonestrationModeOps(selection,string):
         print("Concatenation: ")
         next_string = input("Add a string: ")
         print("Result: "+string+" "+next_string)
-        print("\nRepetition: ")
+        print("\nRepetition: ") 
         print("Result: ",string*3)
     elif selection == "4":
         print("\nSlicing Operations:")
