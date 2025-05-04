@@ -5,18 +5,19 @@ while menu:
     if option == "1":
         print("Demonstration Mode")
         demo_string = input("Enter a sample string: Python is powerful and easy to learn! ")
-        print("Select operation:\n" \
-        "1. Basic string properties\n" \
-        "2. Case manipulation\n" \
-        "3. Searching operations\n" \
-        "4. Slicing operations\n" \
-        "5. Split and join operations\n" \
-        "6. Whitespace handling\n" \
-        "7. Character replacement\n" \
-        "8. String alignment\n" \
-        "9. String validation\n" \
-        "10. Formatting techniques\n" \
-        "11. Return to main menu")
+        print("Select operation:")
+        print("1. Basic string properties")
+        print("2. Case manipulation")
+        print("3. Searching operations")
+        print("4. Slicing operations")
+        print("5. Split and join operations")
+        print("6. Whitespace handling")
+        print("7. Character replacement")
+        print("8. String alignment")
+        print("9. String validation")
+        print("10. Formatting techniques")
+        print("11. Return to main menu")
+
         operation = input("Choose an operation: ")
         if operation == "1":
             print("Basic string properties")
