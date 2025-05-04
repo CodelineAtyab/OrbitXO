@@ -20,8 +20,12 @@ while True:
     elif a == "2":
         print("Remove Grade")
         print(list_of_grades)
-        list_of_grades.remove(input("enter a grade to remove: "))
-        print("Grade is removed")
+        grade_to_remove = int(input("enter a grade to remove: "))
+        if grade_to_remove in list_of_grades:
+            list_of_grades.remove(grade_to_remove)
+            print("Grade is removed ",grade_to_remove)
+        else:
+             print("Grade not found!")
         print(list_of_grades)
 
     elif a == "3":
@@ -33,8 +37,14 @@ while True:
 
     elif a == "4":
         print("Sorting Grades")
-        print(list_of_grades.sort())
-        
+        print(sorted(list_of_grades))
+
+    elif a == "5":
+        print(list_of_grades)
+
+    elif a == "6":
+        break
+
 
 
 
