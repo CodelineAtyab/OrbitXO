@@ -61,7 +61,6 @@ def demonstration_mode():
         elif oo == "4":
             print("Every 2nd character:", write_string[::2])
             print("Last 5 characters:", write_string[-5:])
-            print("Every 2nd character:", write_string[::2])
             print("Reversed:", write_string[::-1])
 
         elif oo == "5":
