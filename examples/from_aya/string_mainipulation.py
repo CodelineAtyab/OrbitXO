@@ -24,12 +24,8 @@ while True:
                     print("\nLength: {len(sample_string)} characters")
                     print("Concatenation:")
                     print(sample_string + " And fun too! Good for easy string manipulation")
-
                     print("Repetition:")
                     print("Python" * 3)
-
-
-
                 elif option == "2":
                     print("\nUppercase:", sample_string.upper())
                     print("Lowercase:", sample_string.lower())
@@ -45,13 +41,9 @@ while True:
 
                 elif option == "4":
                     print("\nFirst 6 characters:", sample_string[:6])
-                    
                     print("Last 6 characters:", sample_string[-6:])
-                    
-                    print("Every other character:", sample_string[::2])
-                    
+                    print("Every other character:", sample_string[::2])  
                     print("Reverse string:", sample_string[::-1])
-                    
                     print("Extract 'powerful':", sample_string[10:18])
                     
 
