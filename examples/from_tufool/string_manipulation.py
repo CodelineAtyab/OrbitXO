@@ -1,7 +1,7 @@
 running_menu = True
 
 while running_menu:
-    print("\nMain Menu:\n1. Demonstration Mode\n2. Challenge Mode\n3. Exit")
+    print("\nMain Menu:\n1. Demonstration Mode\n2. Exit")
     option = input("Choose an option: ")
 
     if option == "1":
@@ -28,9 +28,7 @@ while running_menu:
                 print("\nBasic String Properties:")
                 print(f"Length: {len(demonstration_string)} characters")
                 print("Concatenation:\nResult:", demonstration_string + " And fun too! Good for easy string manipulation")
-                print("Hint: +")
-                print("Repetition:\nResult:", demonstration_string[:6] * 3)
-                print('Hint: "Python" * 3')
+                print("Repetition:\nResult:", demonstration_string * 3)
 
             elif operation == "2":
                 print("\nCase Manipulation:")
@@ -44,7 +42,7 @@ while running_menu:
                 searching_string = input("Enter a sub-string to search: ")
                 if searching_string in demonstration_string:
                     print(f"'{searching_string}' found in the string.")
-                    print(f"First index (find): {demonstration_string.find(searching_string)}")
+                    print(f"Find string (find): {demonstration_string.find(searching_string)}")
                     print(f"First index (index): {demonstration_string.index(searching_string)}")
                     print(f"Count of occurrences: {demonstration_string.count(searching_string)}")
                     print(f"Starts with '{searching_string}': {demonstration_string.startswith(searching_string)}")
@@ -117,41 +115,12 @@ while running_menu:
                 break
             else:
                 print("Invalid operation. Please try again.")
-
     elif option == "2":
-        print("\nCHALLENGE MODE")
-
-        # Challenge 1
-        print("Challenge 1: Count how many words have more than 3 letters in:\n'The quick brown fox jumps over the lazy dog'")
-        user_code = input("Your solution (type 'hint' for a hint): ")
-        if user_code.lower() == "hint":
-            print("Hint: Use split() and list comprehension.")
-        else:
-            try:
-                result = eval(user_code)
-                if result == 5:
-                    print("Correct! The answer is 5 words.")
-                    print("Explanation: 'quick', 'brown', 'jumps', 'over', 'lazy' all have more than 3 letters.")
-                else:
-                    print(f"Incorrect. Your result was {result}. Expected: 5.")
-            except Exception as e:
-                print("There was an error in your code:", e)
-
-        # Challenge 2
-        print("\nChallenge 2: Convert 'hello world' to 'Hello-World'")
-        user_code_2 = input("Your solution: ")
-        try:
-            result = eval(user_code_2)
-            if result == "Hello-World":
-                print("Correct!")
-            else:
-                print(f"Incorrect. Your result was '{result}'. Expected: 'Hello-World'")
-        except Exception as e:
-            print("There was an error in your code:", e)
-
-    elif option == "3":
         print("Exiting...")
         running_menu = False
 
     else:
         print("Invalid option. Please try again.")
+
+
+    
