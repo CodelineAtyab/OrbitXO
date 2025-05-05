@@ -1,26 +1,3 @@
-# Function Definitions
-def challenge_one():
-    print("\nChallenge 1: Count how many words have more than 3 letters")
-    sentence = "haya is my name"
-    words = sentence.split()
-    count = sum(1 for word in words if len(word) > 4)
-    print(f"Sentence: '{sentence}'")
-    answer = input("Enter your answer here: ")
-    if answer == str(count):
-        print("Right answer!")
-    else:
-        print(f"Try again. The correct answer is: {count}")
-
-
-def challenge_two():
-    print("\nChallenge 2: Write code to convert 'haya' to upper case")
-    answer_2 = input("Enter your answer here: ")
-    if answer_2.strip() == ".upper()" or answer_2.strip() == "haya.upper()":
-        print("Right answer!")
-    else:
-        print("Wrong answer. Example: 'haya'.upper()")
-
-
 def demonstration_mode():
     write_string = input("\nEnter a sample string: ")
 
@@ -94,10 +71,9 @@ def demonstration_mode():
             print("Is all uppercase?", write_string.isupper())
 
         elif oo == "10":
-            number = 90
             print(f"Using f-string: {write_string} has {len(write_string)} letters.")
             print("Using format(): {}".format("Hello, world!"))
-            print("Using % operator: %d%% of your name." % number)
+         
 
         elif oo == "11":
             break
