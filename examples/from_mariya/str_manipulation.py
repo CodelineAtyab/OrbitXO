@@ -296,21 +296,23 @@ while running:
 
           name = input("Enter your name: ")
           age = input("Enter your age: ")
+          
+          number = 10
+          print(f"\nusing f-string: {name} is {age} years old!")
+          print("using format(): {}".format("Hello,world!"))
+          print("Using %% operator: %d%% of your name." % number)
+
 
           # f string
-          print(f"\nUsing f string: Hi my name is {name}, and I am {age} years old!")
+          #print(f"\nUsing f string: Hi my name is {name}, and I am {age} years old!")
 
           # .format()
-          print("\nUsing .format():")
-          print("Hello, {}! You are {} years old.".format(name, age))
+          #print("\nUsing .format():")
+          #print("Hello, {}! You are {} years old.".format(name, age))
 
           # % operator
-          print("\nUsing % operator:")
-          try:
-           print("Hello, %s! You are %d years old." % (name, int(age)))
-           print("Hint: %s for text, %d for numbers")
-          except ValueError:
-           print("Error: Age must be a number for %d formatting")
+          #print("Using % operator: %d%% of your name." %age)
+        
 
        elif choose_Demonstration == "11":
           print("\nReturing to main menu .. :) ")
