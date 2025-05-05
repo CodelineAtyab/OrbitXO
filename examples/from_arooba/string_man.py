@@ -365,9 +365,10 @@ while running:
           Demonstration_running = False
        else:
           print("Invalid value, please choose between 1 and 11")
+
  elif choose == "2":
     print("\nYou selected Challenge mode")
-    # Challenge mode submenu starts from here:
+# Challenge mode submenu starts from here:*****************************
     Challenge_running = True
     while Challenge_running:
      print("\nChallenge mode:")
@@ -375,36 +376,30 @@ while running:
      print("2. Challenge 2: Convert 'hello world' to 'Hello-World'")
      print("3. Return to main menu")
      choose_challenge = input("Select one form the above 1,2, or 3 :")
+   
      if choose_challenge == "1":
         print("\nYou selected challenge 1.")
-        print("Given sentance: Arooba joined codeline as an AI operation")
-        print("\ncount how many words have more than 3 letters ?")
-        print("Write your answer, or type 'hint' to get some help :) ")
-        
-        answering = True
-        while answering:
-           user_answer = input("\nYour answer is: ")
-           if user_answer == "4":
-              print("\nWell done! correct answer.")
-              answering = False
-           elif user_answer.lower() == "hint":
-              print("\nHint: please break the sentance into words and count how many words > 3 letters ?")
-           else:
-              print("Invalid number, please type hint or try again !")
+        sentence = input("Enter a sentence: ")
+        words = sentence.split()
+        count = sum(1 for word in words if len(word) > 3)
+        print(f"Number of words with more than 3 letters: {count}")
 
      elif choose_challenge == "2":
         print("You selected challenge 2.")
-        print("Convert 'hello world' to 'Hello-World' ")
-        choose_challenge= input("Your answer is:")
-        if choose_challenge == "Hello_World":
-          print("Well done!!!! correct answer =)")
-          
+        print("Convert 'hello world' to 'Hello-World'")
+        answer = input("Your answer is: ")
+        if answer == "Hello-World":
+            print("Well done!!!! Correct answer =)")
+        else:
+            print("Oops! That's not correct. Try again!")
+
      elif choose_challenge == "3":
-        Challenge_running = False
-        print("Returing to main menu ..")
-        
-     else:
-        print("Invalid value, please choose between 1 and 3")
+         Challenge_running = False
+         print("Returning to main menu...")
+
+    else:
+        print("Invalid value, please choose between 1 and 3.")
+
  elif choose == "3":
     print("\nYou're exiting .. bye bye :)\n")
     running = False
