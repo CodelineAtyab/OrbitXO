@@ -35,11 +35,10 @@ def demonstration_mode():
         if option == "1":
             print(f"\nLength: {len(sample_string)} characters")
             print("Concatenation:")
-            print(sample_string + " And fun too! Good for easy string manipulation")
-            print("Hint: +")
+            print(sample_string + " And fun too! Good for easy string manipulation")     
             print("Repetition:")
             print("Python" * 3)
-            print("Hint: 'Python' * 3")
+            print(" 'Python' * 3")
 
         elif option == "2":
             print("\nUppercase:", sample_string.upper())
