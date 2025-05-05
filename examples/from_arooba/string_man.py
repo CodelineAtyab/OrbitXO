@@ -368,37 +368,6 @@ while running:
 
  elif choose == "2":
     print("\nYou selected Challenge mode")
-# Challenge mode submenu starts from here:*****************************
-    Challenge_running = True
-    while Challenge_running:
-     print("\nChallenge mode:")
-     print("1. Challenge 1: Count the words with more than 3 letters ")
-     print("2. Challenge 2: Convert 'hello world' to 'Hello-World'")
-     print("3. Return to main menu")
-     choose_challenge = input("Select one form the above 1,2, or 3 :")
-   
-     if choose_challenge == "1":
-        print("\nYou selected challenge 1.")
-        sentence = input("Enter a sentence: ")
-        words = sentence.split()
-        count = sum(1 for word in words if len(word) > 3)
-        print(f"Number of words with more than 3 letters: {count}")
-
-     elif choose_challenge == "2":
-        print("You selected challenge 2.")
-        print("Convert 'hello world' to 'Hello-World'")
-        answer = input("Your answer is: ")
-        if answer == "Hello-World":
-            print("Well done!!!! Correct answer =)")
-        else:
-            print("Oops! That's not correct. Try again!")
-
-     elif choose_challenge == "3":
-         Challenge_running = False
-         print("Returning to main menu...")
-
-    else:
-        print("Invalid value, please choose between 1 and 3.")
 
  elif choose == "3":
     print("\nYou're exiting .. bye bye :)\n")
