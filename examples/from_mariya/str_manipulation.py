@@ -301,17 +301,6 @@ while running:
           print(f"\nusing f-string: {name} is {age} years old!")
           print("using format(): {}".format("Hello,world!"))
           print("Using %% operator: %d%% of your name." % number)
-
-
-          # f string
-          #print(f"\nUsing f string: Hi my name is {name}, and I am {age} years old!")
-
-          # .format()
-          #print("\nUsing .format():")
-          #print("Hello, {}! You are {} years old.".format(name, age))
-
-          # % operator
-          #print("Using % operator: %d%% of your name." %age)
         
 
        elif choose_Demonstration == "11":
@@ -320,6 +309,10 @@ while running:
        else:
           print("Invalid value, please choose between 1 and 11")
 
+
+"""
+Comment:
+This is will be done later // optional task for now
  elif choose == "2":
     print("\nYou selected Challenge mode")
 
@@ -382,10 +375,8 @@ while running:
  elif choose == "3":
     print("\nYou're exiting .. bye bye :)\n")
     running = False 
-    """
-    COMMENT:
-    once number 3 is chosen to exit, then the loop stops, 
-    as mentioned running = false
-    """
+    
  else:
     print("\nInvalid number, try again and please choose 1,2, or 3")
+
+"""
