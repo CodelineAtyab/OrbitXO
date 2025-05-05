@@ -307,10 +307,10 @@ while running:
           # % operator
           print("\nUsing % operator:")
           try:
-          print("Hello, %s! You are %d years old." % (name, int(age)))
-          print("Hint: %s for text, %d for numbers")
+           print("Hello, %s! You are %d years old." % (name, int(age)))
+           print("Hint: %s for text, %d for numbers")
           except ValueError:
-        print("Error: Age must be a number for %d formatting")
+           print("Error: Age must be a number for %d formatting")
 
        elif choose_Demonstration == "11":
           print("\nReturing to main menu .. :) ")
