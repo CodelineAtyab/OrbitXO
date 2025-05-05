@@ -23,18 +23,20 @@ while grade_tracker_function:
             print("list is empty")
         else:
             method = input("Remove by value or index?: ")
-            while method not in ["index", "value"]:
-                method = input("\nType value of index: ")
+            while method not in ["index", "value", "exit"]:
+                method = input("\nType value of index(type exit to quit): ")
             if method == "index":
-                grade_index = int(input("\nEnter the grade index: "))
-                while grade_index > len(grades_list) or grade_index < 0:
+                grade_index = int(input("\nEnter the grade index(type exit to quit): "))
+                while grade_index > len(grades_list) or grade_index < 0 or grade_index != "exit":
                     grade_index = int(input("\nInvalid index, do it again: "))
-                grades_list.pop(grade_index - 1)
-            if method == "value":
-                grade_value = int(input("Enter the grade value: "))
-                while grade_value not in grades_list:
+                if grade_index != "exit":
+                    grades_list.pop(grade_index - 1)
+            elif method == "value":
+                grade_value = int(input("Enter the grade value(type exit to quit): "))
+                while grade_value not in (grades_list + ["exit"]):
                     grade_value = int(input("grade value not in the list, do it again: "))
-                grades_list.remove(grade_value)
+                if grade_value != "exit":
+                    grades_list.remove(grade_value)
         print()
     elif option == "3":
         if grades_list == []:
@@ -50,9 +52,9 @@ while grade_tracker_function:
             print("list is empty")
         else:
             print("\nSort Gardes:")
-            grade_sort = input("Accending or Descending?: ").lower()
-            while grade_sort not in ["accending", "descending"]:
-                grade_sort = input("Type Accending or Descending: ").lower()
+            grade_sort = input("Accending or Descending?(type exit to quit): ").lower().strip()
+            while grade_sort not in ["accending", "descending", "exit"]:
+                grade_sort = input("Type Accending or Descending(type exit to quit): ").lower().strip()
             if grade_sort == "accending":
                 grades_list.sort()
             elif grade_sort == "descending":
