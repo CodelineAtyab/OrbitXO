@@ -1,0 +1,156 @@
+def choose():
+    while True:
+        print("Main Menu")
+        print("1. Demonstration Mode")
+        print("2. Challenge Mode")
+        print("3. Exit")
+
+        choice = input("choose an option: ")
+        if choice == '1':
+            demonstration_Mode()
+        elif choice == '2':
+            challenge_Mode()
+        elif choice == '3':
+            print("EXIT!")
+            break
+        else:
+            print("please choose one of the options")
+
+def demonstration_Mode():
+    userinput = input("Enter a String!")
+    while True:
+        print("Select operation:")
+        print("1. Basic string properties")
+        print("2. Case manipulation")
+        print("3. Searching operations")
+        print("4. Slicing operations")
+        print("5. Split and join operations")
+        print("6. Whitespace handling")
+        print("7. Character replacement")
+        print("8. String alignment")
+        print("9. String validation")
+        print("10. Formatting techniques")
+        print("11. Return to main menu")
+        
+        A = input("Choose an Operation:")
+        if A == '1':
+            basic_properties(userinput)
+
+        elif A == '2':
+            case_manipulation(userinput)
+
+        elif A == '3':
+            searching_operations(userinput)
+
+        elif A == '4':
+            slicing_operations(userinput)
+
+        elif A == '5':
+            split_join_operations(userinput)
+        
+        elif A == '6':
+            whitespace_handling(userinput)
+
+        elif A == '7':
+            character_replacement(userinput)
+
+        elif A == '8':
+            string_alignment(userinput)
+
+        elif A == '9':
+            string_validation(userinput)
+
+        elif A == '10':
+            formatting_techniques()
+
+        elif A == '11':
+            return
+        else: 
+            print("Invalid. TRY AGAIN !!")
+
+def challenge_Mode():
+    print("\nChallenge Mode coming soon!")
+
+# Your utility functions
+
+def basic_properties(s):
+    print("\nBasic String Properties:")
+    print(f"Length: {len(s)} characters")
+    print(f"Concatenation Example: {s + ' And fun too! Good for easy string manipulation'}")
+    print("Hint: Use + operator")
+    print(f"Repetition Example: {('Python') * 3}")
+    print("Hint: Use * operator")
+
+def case_manipulation(s):
+    print("\nCase Manipulation:")
+    print(f"Uppercase: {s.upper()}")
+    print(f"Lowercase: {s.lower()}")
+    print(f"Titlecase: {s.title()}")
+    print(f"Swapcase: {s.swapcase()}")
+
+def searching_operations(s):
+    print("\nSearching Operations:")
+    print(f"Find 'easy': {s.find('easy')}")
+    try:
+        print(f"Index of 'powerful': {s.index('powerful')}")
+    except ValueError:
+        print("Word 'powerful' not found.")
+    print(f"Count 'a': {s.count('a')}")
+    print(f"Starts with 'Python': {s.startswith('Python')}")
+    print(f"Ends with 'learn!': {s.endswith('learn!')}")
+
+def slicing_operations(s):
+    print("\nSlicing Operations:")
+    print(f"First 6 characters: {s[:6]}")
+    print(f"Last 6 characters: {s[-6:]}")
+    print(f"Every other character: {s[::2]}")
+    print(f"Reversed string: {s[::-1]}")
+    if len(s) >= 18:
+        print(f"Extract 'powerful': {s[10:18]}")
+    else:
+        print("String too short to extract 'powerful'.")
+
+def split_join_operations(s):
+    print("\nSplit and Join Operations:")
+    words = s.split()
+    print(f"Splitted words: {words}")
+    joined = '-'.join(words)
+    print(f"Joined with hyphens: {joined}")
+    partitioned = s.partition('easy')
+    print(f"Partition around 'easy': {partitioned}")
+
+def whitespace_handling(s):
+    spaced = "   " + s + "   "
+    print("\nWhitespace Handling:")
+    print(f"Original with spaces: '{spaced}'")
+    print(f"strip(): '{spaced.strip()}'")
+    print(f"lstrip(): '{spaced.lstrip()}'")
+    print(f"rstrip(): '{spaced.rstrip()}'")
+
+def character_replacement(s):
+    print("\nCharacter Replacement and Translation:")
+    replaced = s.replace('easy', 'simple')
+    print(f"Replace 'easy' with 'simple': {replaced}")
+    trans_table = str.maketrans('aeiou', '12345')
+    translated = s.translate(trans_table)
+    print(f"Translated vowels to numbers: {translated}")
+
+def string_alignment(s):
+    print("\nString Alignment and Padding:")
+    print(f"Centered: '{s.center(50, '-')}'")
+    print(f"Left-justified: '{s.ljust(50, '.')}'")
+    print(f"Right-justified: '{s.rjust(50, '.')}'")
+
+def string_validation(s):
+    print("\nString Validation Methods:")
+    print(f"Is alphabetic? {s.isalpha()}")
+    print(f"Is digit? {s.isdigit()}")
+    print(f"Is alphanumeric? {s.isalnum()}")
+    print(f"Is all whitespace? {s.isspace()}")
+
+def formatting_techniques():
+    print("\nFormatting Techniques:")
+    word = 'Python'
+    print(f"Using f-strings: Python has {len(word)} letters and is popular!")
+    print("Using .format(): {}".format("Hello, {}!".format("World")))
+    print("Using % operator: %s" % ("90% of developers love Python"))
