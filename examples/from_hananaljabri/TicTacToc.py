@@ -88,7 +88,7 @@ def play_game():
     while True:
         if turn == "Player":
             move = input("Enter the number where you want to put your symbol: ")
-
+ 
             if not move.isdigit():
                 print("Please enter a number from 1 to 9.")
                 continue
