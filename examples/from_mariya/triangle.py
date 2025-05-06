@@ -12,4 +12,4 @@ if __name__ == "__main__":
         else:
             print_triangle_pattern(num_of_rows)
     except ValueError:
-        print("Invalid input. Please enter an integer.")
+        print("Invalid input. Please enter an integer.") 
