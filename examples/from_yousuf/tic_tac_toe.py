@@ -13,6 +13,7 @@ def display_board(board):
     print("----+---+---")
     print(f" {board[6]} | {board[7]} | {board[8]}")
     print()
+    
 def player_move(board, user_choice):
     while True:
         
