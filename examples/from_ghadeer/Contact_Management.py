@@ -113,33 +113,31 @@ def manage_groups():
 def import_export_contacts():
     print("Import/Export not implemented yet.")
 
-# Menu loop
-def main():
-    print("Contact Book System")
-    print("Last updated:", time.strftime("%Y-%m-%d %H:%M:%S"))
-    while True:
-        print("\n1. Add Contact\n2. Search Contact\n3. Update Contact\n4. Delete Contact\n"
-              "5. List All Contacts\n6. Manage Groups\n7. Import/Export Contacts\n8. Exit")
-        choice = input("Choose an option: ")
+# ----- PROGRAM STARTS HERE -----
+print("Contact Book System")
+print("Last updated:", time.strftime("%Y-%m-%d %H:%M:%S"))
 
-        if choice == "1":
-            add_contact()
-        elif choice == "2":
-            search_contact()
-        elif choice == "3":
-            update_contact()
-        elif choice == "4":
-            delete_contact()
-        elif choice == "5":
-            list_contacts()
-        elif choice == "6":
-            manage_groups()
-        elif choice == "7":
-            import_export_contacts()
-        elif choice == "8":
-            print("Goodbye!")
-            break
-        else:
-            print("Invalid option. Try again.")
+while True:
+    print("\n1. Add Contact\n2. Search Contact\n3. Update Contact\n4. Delete Contact\n"
+          "5. List All Contacts\n6. Manage Groups\n7. Import/Export Contacts\n8. Exit")
+    choice = input("Choose an option: ")
 
-main()
+    if choice == "1":
+        add_contact()
+    elif choice == "2":
+        search_contact()
+    elif choice == "3":
+        update_contact()
+    elif choice == "4":
+        delete_contact()
+    elif choice == "5":
+        list_contacts()
+    elif choice == "6":
+        manage_groups()
+    elif choice == "7":
+        import_export_contacts()
+    elif choice == "8":
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid option. Try again.")
