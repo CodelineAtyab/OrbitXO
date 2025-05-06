@@ -189,8 +189,6 @@ while contact_management_functional:
             if not found:
                 print("Name not found")
     elif option == "5":
-        if contacts_list == []:
-            print("you have 0 contacts")
         for contact in contacts_list:
             print(contact)
     elif option == "6":
