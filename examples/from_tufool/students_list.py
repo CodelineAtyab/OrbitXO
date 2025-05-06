@@ -29,7 +29,7 @@ def show_statistics():
     if grades:
         average = sum(grades) / len(grades)
         print("Statistics:")
-        print(f"Average: {average:.2f}")
+        print("Average:", average)
         print(f"Minimum: {min(grades)}")
         print(f"Maximum: {max(grades)}")
     else:
