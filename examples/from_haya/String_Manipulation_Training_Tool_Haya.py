@@ -4,7 +4,7 @@ def demonstration_mode():
     while True:
         print("\nSelect operation:")
         print("1. Basic string properties")
-        print("2. Case manipulation ")
+        print("2. Case manipulation")
         print("3. Searching operations (find position)")
         print("4. Slicing operations")
         print("5. Split operation")
@@ -46,14 +46,12 @@ def demonstration_mode():
             print("Join with space:", joined)
             print("Partition 'powerful':", write_string.partition("powerful"))
 
-
         elif oo == "6":
             extra_space = "  " + write_string + "   "
             print("Original with spaces:", extra_space)
             print("Strip both sides:", extra_space.strip())
             print("Left strip:", extra_space.lstrip())
             print("Right strip:", extra_space.rstrip())
-      
 
         elif oo == "7":
             print("Replace 'haya' with 'name':", write_string.replace("haya", "name"))
@@ -72,27 +70,28 @@ def demonstration_mode():
 
         elif oo == "10":
             print(f"Using f-string: {write_string} has {len(write_string)} letters.")
-            print("Using format(): {}".format("Hello world!"))
-         
-
         elif oo == "11":
             break
 
         else:
             print("Invalid choice. Please try again.")
-def main_menue()
-# Main Program Execution
+
+
+def main_menu():
     while True:
         print("\nMain Menu:")
         print("1. Demonstration Mode")
         print("2. Exit")
 
-        select = int(input("choose an option:"))
+        select = input("Choose an option: ")
 
-        if select == 1:
-          demonstration_mode()
-        elif select == 2:
-          print("Goodbye!")
-        break
-    else:
-         print("Invalid choice, try again.")
+        if select == '1':
+            demonstration_mode()
+        elif select == '2':
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice, try again.")
+
+# Start the program
+main_menu()
