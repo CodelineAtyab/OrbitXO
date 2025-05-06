@@ -1,5 +1,4 @@
-def main_menu():
-    while True:
+while True:
         print("\nMain Menu:")
         print("1. Demonstration Mode")
         print("2. Exit")
@@ -114,4 +113,3 @@ def demonstration_mode():
 
 
 
-main_menu()
