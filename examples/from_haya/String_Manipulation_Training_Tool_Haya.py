@@ -77,21 +77,21 @@ def demonstration_mode():
             print("Invalid choice. Please try again.")
 
 
-def main_menu():
-    while True:
-        print("\nMain Menu:")
-        print("1. Demonstration Mode")
-        print("2. Exit")
 
-        select = input("Choose an option: ")
+while True:
+    print("\nMain Menu:")
+    print("1. Demonstration Mode")
+    print("2. Exit")
 
-        if select == '1':
-            demonstration_mode()
-        elif select == '2':
-            print("Goodbye!")
-            break
-        else:
-            print("Invalid choice, try again.")
+    select = input("Choose an option: ")
+
+    if select == '1':
+        demonstration_mode()
+    elif select == '2':
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid choice, try again.")
 
 # Start the program
-main_menu()
+
