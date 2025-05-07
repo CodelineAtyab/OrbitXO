@@ -1,117 +1,65 @@
-# A simple program to manage friends lists
-
-# Dictionary to store people and their friends
-friend_network = {}
-
-# Main loop for the menu
+friend_net = {}
 while True:
-    print("\nWelcome to the Friends List Manager!")
-    print("What would you like to do?")
-    print("1. Add a person and their friends")
-    print("2. Show mutual friends between two people")
-    print("3. Show unique friends for each person")
-    print("4. Show all combined friends")
-    print("5. Suggest friends")
+    print("\nFriends List Comparison Tool")
+    print("1. Add user and friends")
+    print("2. Find mutual friends")
+    print("3. Find unique friends")
+    print("4. Combine all friends")
+    print("5. Get friend suggestions")
     print("6. Exit")
 
-    choice = input("\nEnter a number (1-6): ")
+    menu_choice = input("Choose an option: ").strip()
 
-    if choice == "1":
-        name = input("Enter the person's name: ")
+    if menu_choice == '1':
+        username = input("Enter user name: ").strip()
+        friends_input = input("Enter friends : ")
+        friends_set = set(friend.strip() for friend in friends_input.split(",") if friend.strip()) 
+        friend_net[username] = friends_set
+        print(f"{username} friends added: {friends_set}")
 
-        friends = []
-        print("Now enter their friends one at a time.")
-        print("Type 'done' when you're finished.")
-
-        while True:
-            friend_name = input("Friend's name: ")
-            if friend_name.lower() == 'done':
-                break
-            if friend_name.strip() != "":
-                friends.append(friend_name.strip())
-
-        friend_network[name] = friends
-        print(f"{name} has been added with {len(friends)} friend(s): {friends}")
-
-    elif choice == "2":
-        name1 = input("First person's name: ")
-        name2 = input("Second person's name: ")
-
-        if name1 not in friend_network or name2 not in friend_network:
-            print("One or both people are not in the system.")
+    elif menu_choice == '2':
+        user_a = input("Enter first user: ").strip() 
+        user_b = input("Enter second user: ").strip()
+        if user_a in friend_net and user_b in friend_net:
+            mutual_friends = friend_net[user_a] & friend_net[user_b]
+            print(f"Mutual friends: {mutual_friends if mutual_friends else 'None'}")
         else:
-            mutual = []
-            for friend in friend_network[name1]:
-                if friend in friend_network[name2]:
-                    mutual.append(friend)
+            print("One or both users not found.")
 
-            if mutual:
-                print(f"Mutual friends of {name1} and {name2}: {mutual}")
-            else:
-                print(f"No mutual friends between {name1} and {name2}.")
-
-    elif choice == "3":
-        name1 = input("First person's name: ")
-        name2 = input("Second person's name: ")
-
-        if name1 not in friend_network or name2 not in friend_network:
-            print("One or both people are not in the system.")
+    elif menu_choice == '3':
+        user_a = input("Enter first user: ").strip()
+        user_b = input("Enter second user: ").strip()
+        if user_a in friend_net and user_b in friend_net:
+            unique_to_a = friend_net[user_a] - friend_net[user_b]
+            unique_to_b = friend_net[user_b] - friend_net[user_a]
+            print(f"Friends only {user_a} has: {unique_to_a if unique_to_a else 'None'}")
+            print(f"Friends only {user_b} has: {unique_to_b if unique_to_b else 'None'}")
         else:
-            unique1 = []
-            unique2 = []
+            print("One or both users not found.")
 
-            for friend in friend_network[name1]:
-                if friend not in friend_network[name2]:
-                    unique1.append(friend)
-
-            for friend in friend_network[name2]:
-                if friend not in friend_network[name1]:
-                    unique2.append(friend)
-
-            print(f"Friends only {name1} has: {unique1}")
-            print(f"Friends only {name2} has: {unique2}")
-
-    elif choice == "4":
-        name1 = input("First person's name: ")
-        name2 = input("Second person's name: ")
-
-        if name1 not in friend_network or name2 not in friend_network:
-            print("One or both people are not in the system.")
+    elif menu_choice == '4':
+        user_a = input("Enter first user: ").strip()
+        user_b = input("Enter second user: ").strip()
+        if user_a in friend_net and user_b in friend_net:
+            all_friends = friend_net[user_a] | friend_net[user_b]
+            print(f"All friends of {user_a} and {user_b}: {all_friends}")
         else:
-            combined = []
+            print("One or both users not found.")
 
-            for friend in friend_network[name1]:
-                if friend not in combined:
-                    combined.append(friend)
-
-            for friend in friend_network[name2]:
-                if friend not in combined:
-                    combined.append(friend)
-
-            print(f"All friends combined for {name1} and {name2}: {combined}")
-
-    elif choice == "5":
-        name = input("Whose friend suggestions do you want? ")
-
-        if name not in friend_network:
-            print("This person is not in our system.")
+    elif menu_choice == '5':
+        target_user = input("Get friend suggestions for: ").strip()
+        if target_user not in friend_net:
+            print("User not found.")
         else:
-            suggestions = []
+            suggestion_pool = set()
+            for do in friend_net[target_user]:
+                if do in friend_net:
+                    suggestion_pool |= (friend_net[do] - friend_net[target_user] - {target_user})
+            print(f"Suggested friends: {suggestion_pool if suggestion_pool else 'None'}")
 
-            for friend in friend_network[name]:
-                if friend in friend_network:
-                    for fof in friend_network[friend]:
-                        if fof != name and fof not in friend_network[name] and fof not in suggestions:
-                            suggestions.append(fof)
-
-            if suggestions:
-                print(f"Suggestions for {name}: {suggestions}")
-            else:
-                print(f"No new suggestions for {name} right now.")
-
-    elif choice == "6":
-        print("Thanks for using the Friends List Manager. Goodbye!")
+    elif menu_choice == '6':
+        print("Exit")
         break
 
     else:
-        print("Invalid option. Please enter a number from 1 to 6.")
+        print("Invalid option.")
