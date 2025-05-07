@@ -52,33 +52,32 @@ def sort_grades(grades):
     else:
         print("Invalid sort option.")
 
-def main():
-    grades = []
-    while True:
-        # Menu displayed here inside the loop
-        print("\nStudent Grade Tracker")
-        print("1. Add grade")
-        print("2. Remove grade")
-        print("3. Show statistics")
-        print("4. Show all grades")
-        print("5. Sort grades")
-        print("6. Exit")
-        
-        choice = input("Choose an option: ")
-        if choice == "1":
-            add_grades(grades)
-        elif choice == "2":
-            remove_grades(grades)
-        elif choice == "3":
-            show_statistics(grades)
-        elif choice == "4":
-            show_all_grades(grades)
-        elif choice == "5":
-            sort_grades(grades)
-        elif choice == "6":
-            print("Exiting program. Goodbye!")
-            break
-        else:
-            print("Invalid option. Please try again.")
 
-main()
+grades = []
+while True:
+    # Menu displayed here inside the loop
+    print("\nStudent Grade Tracker")
+    print("1. Add grade")
+    print("2. Remove grade")
+    print("3. Show statistics")
+    print("4. Show all grades")
+    print("5. Sort grades")
+    print("6. Exit")
+    
+    choice = input("Choose an option: ")
+    if choice == "1":
+        add_grades(grades)
+    elif choice == "2":
+        remove_grades(grades)
+    elif choice == "3":
+        show_statistics(grades)
+    elif choice == "4":
+        show_all_grades(grades)
+    elif choice == "5":
+        sort_grades(grades)
+    elif choice == "6":
+        print("Exiting program. Goodbye!")
+        break
+    else:
+        print("Invalid option. Please try again.")
+
