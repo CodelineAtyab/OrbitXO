@@ -7,9 +7,16 @@ def add_grade():
         else:
             print("Invalid grade.")
 def remove_grade():
-    value = int(input("Enter the grade value to remove: "))
-    grades.remove(value)
-    print(f"Grade {value} removed.")
+    value_or_index = input("remove grade (1 for value, 2 for index): ")
+    if value_or_index == '1':
+        value = int(input("Enter the grade value to remove: "))
+        grades.remove(value)
+        print(f"Grade {value} removed.")
+    if value_or_index == '2':
+        index = int(input("Enter the grade value to remove: "))
+        grades.pop(index)# pop is similar to remove
+        print(f"Grade {grades[index]} removed.")
+       
 def show_statstic():
     if not grades:
         print("No grades available.") #it return if not grades
