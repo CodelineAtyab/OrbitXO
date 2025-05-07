@@ -27,7 +27,8 @@ while is_main_menu_active:
             print("Friend list added successfully.")
             print("Friend set:", input_friends)
             print("All users:", user_data[username])
-            break
+            
+            keep_in_submenu = False
 
         elif option == '2':
             print("Find mutual friends.")
@@ -38,7 +39,8 @@ while is_main_menu_active:
             shared_friends = friends_one & friends_two
             if shared_friends:
                 print("Mutual friends:", shared_friends)
-            break
+            
+            keep_in_submenu = False
 
         elif option == '3':
             print("Find unique friends.")
@@ -49,7 +51,8 @@ while is_main_menu_active:
             unique_to_first = first_set - second_set
             if unique_to_first:
                 print("Unique friends:", unique_to_first)
-            break
+            
+            keep_in_submenu = False
 
         elif option == '4':
             print("Combine all friends.")
@@ -60,7 +63,8 @@ while is_main_menu_active:
             all_friends = set1 | set2
             if all_friends:
                 print("Combined friends:", all_friends)
-            break
+            
+            keep_in_submenu = False
 
         elif option == '5':
             print("Get friend suggestions.")
@@ -77,12 +81,15 @@ while is_main_menu_active:
 
             if recommendations:
                 print("Friend suggestions:", recommendations)
-            break
+            
+            keep_in_submenu = False
 
         elif option == '6':
             print("Exiting the program.")
+            keep_in_submenu = False
             is_main_menu_active = False
-            break
+            
+            
 
         else:
             print("Invalid option. Please try again.")
