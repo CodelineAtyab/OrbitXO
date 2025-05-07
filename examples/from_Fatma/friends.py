@@ -66,7 +66,6 @@ while True:
         if f1 not in friends_data:
             print (" friend not found")
           
-            continue
         f1_friend = friends_data[f1]
         sugg = set()
         for friend in f1_friend:
