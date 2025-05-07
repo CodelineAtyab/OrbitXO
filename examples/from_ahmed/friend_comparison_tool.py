@@ -39,6 +39,8 @@ while True:
         if u1 in user_friends and u2 in user_friends:
             f1 = set(user_friends[u1])
             f2 = set(user_friends[u2])
+            f1.discard(u2)
+            f2.discard(u1)
             print("Friends only", u1, "has:", f1 - f2)
             print("Friends only", u2, "has:", f2 - f1)
 
@@ -60,6 +62,7 @@ while True:
                     other_set = set(other_friends)
                     if own_friends & other_set:
                         suggestions |= other_set - own_friends
+                        suggestions.discard(name)
             print("Friend suggestions for", name, ":", suggestions)
 
     elif option == "6":
