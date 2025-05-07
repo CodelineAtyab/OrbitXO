@@ -2,7 +2,7 @@ import json
 
 cbook = {}
 
-while True:        #change print style from multible print to one print only 
+while True:
     print("""               
 Contact Book System
 1. Add Contact
@@ -41,23 +41,21 @@ Contact Book System
             print("Contact added successfully!")
 
     elif choice == "2":
-        print("Search by:")
-        print("1. Name")
-        print("2. Phone")
-        print("3. Email")
-        print("4. Group")
+        print("""Search by:
+1. Name
+2. Phone
+3. Email
+4. Group""")
         s_type = input("Choose search type: ")
 
         s_val = input("Enter search value: ").lower()
         found = False
 
         for info in cbook.values():
-            if (s_type == "1" and (s_val in info['first_name'].lower() or s_val in info['last_name'].lower())) or \
+            if (s_type == "1" and (s_val in info['first_name'].lower() and s_val in info['last_name'].lower())) or \
                (s_type == "2" and s_val in info['phone'].lower()) or \
                (s_type == "3" and s_val in info['email'].lower()) or \
                (s_type == "4" and s_val == info['group'].lower()):
-                
- #use also one print insted of many
                 print(f"""
 Name: {info['first_name']} {info['last_name']}
 Phone: {info['phone']}
@@ -77,11 +75,11 @@ Group: {info['group'].capitalize()}
             print("Contact not found.")
         else:
             info = cbook[name_key]
-            print("Select field to update:")
-            print("1. Phone")
-            print("2. Email")
-            print("3. Address")
-            print("4. Group")
+            print("""Select field to update:
+1. Phone
+2. Email
+3. Address
+4. Group""")
             field = input("Choose field: ")
 
             if field == "1":
@@ -114,23 +112,31 @@ Group: {info['group'].capitalize()}
         if not cbook:
             print("No contacts available.")
         else:
-            print("Sort by:")
-            print("1. First name")
-            print("2. Last name")
-            print("3. Group")
+            print("""Sort by:
+1. First name
+2. Last name
+3. Group""")
             sort = input("Choose sorting: ")
 
+            contact_list = list(cbook.values())
+            sorted_list = []
+
             if sort == "1":
-                sorted_list = sorted(cbook.values(), key=lambda c: c['first_name'].lower())
+                for contact in contact_list:
+                    sorted_list.append((contact['first_name'].lower(), contact))
             elif sort == "2":
-                sorted_list = sorted(cbook.values(), key=lambda c: c['last_name'].lower())
+                for contact in contact_list:
+                    sorted_list.append((contact['last_name'].lower(), contact))
             elif sort == "3":
-                sorted_list = sorted(cbook.values(), key=lambda c: c['group'].lower())
+                for contact in contact_list:
+                    sorted_list.append((contact['group'].lower(), contact))
             else:
-                sorted_list = cbook.values()
+                sorted_list = [(0, contact) for contact in contact_list]
+
+            sorted_list.sort()
 
             cur_grp = ""
-            for info in sorted_list:
+            for key, info in sorted_list:
                 if sort == "3" and info['group'] != cur_grp:
                     cur_grp = info['group']
                     print(f"\n{cur_grp.upper()}:")
