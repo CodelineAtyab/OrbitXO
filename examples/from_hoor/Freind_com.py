@@ -14,7 +14,7 @@ while True:
     if choice == '1':
         user = input("Enter user name: ").strip()
         friends_input = input("Enter friends (comma-separated): ").strip()
-        friends = set(map(str.strip, friends_input.split(',')))
+        friends = set(( split(","), friends_input.split(',')))
         users[user] = friends
         print(f"Added {user} with friends: {users[user]}")
 
