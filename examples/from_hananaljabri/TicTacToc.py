@@ -6,7 +6,7 @@ def print_board(board):
         print(" | ".join(row))
         print("-" * 5)
     print("\n")
-
+#Winner
 def check_winner(board, symbol):
     # Check rows
     for row in board:
