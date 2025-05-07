@@ -9,7 +9,7 @@ def add_user():
         friends.add(friend.strip())
     users[username] = friends
     print("User and friends added!\n")
-#Enter
+#Enter1
 def find_mutual_friends():
     user1 = input("Enter first user: ")
     user2 = input("Enter second user: ")
