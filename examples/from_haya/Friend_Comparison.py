@@ -1,6 +1,12 @@
+# A simple program to manage friends lists
+
+# Dictionary to store people and their friends
 friend_network = {}
+
+# Main loop for the menu
 while True:
-    print("show the menue of program:")
+    print("\nWelcome to the Friends List Manager!")
+    print("What would you like to do?")
     print("1. Add a person and their friends")
     print("2. Show mutual friends between two people")
     print("3. Show unique friends for each person")
@@ -8,22 +14,28 @@ while True:
     print("5. Suggest friends")
     print("6. Exit")
 
-    choice = input("choice a number between 1 to 6: ")
+    choice = input("\nEnter a number (1-6): ")
 
     if choice == "1":
-        name = input("Enter the person name: ")
+        name = input("Enter the person's name: ")
 
         friends = []
-        print("Now enter their friends.")
+        print("Now enter their friends one at a time.")
+        print("Type 'done' when you're finished.")
+
         while True:
-            friend_name = input("Friend name: ")
-            friends.append(friend_name)
-            friend_network[name] = friends
-            print(f"{name} has been added with {len(friends)} friend: {friends}")
+            friend_name = input("Friend's name: ")
+            if friend_name.lower() == 'done':
+                break
+            if friend_name.strip() != "":
+                friends.append(friend_name.strip())
+
+        friend_network[name] = friends
+        print(f"{name} has been added with {len(friends)} friend(s): {friends}")
 
     elif choice == "2":
-        name1 = input("First person name: ")
-        name2 = input("Second person name: ")
+        name1 = input("First person's name: ")
+        name2 = input("Second person's name: ")
 
         if name1 not in friend_network or name2 not in friend_network:
             print("One or both people are not in the system.")
@@ -32,7 +44,7 @@ while True:
             for friend in friend_network[name1]:
                 if friend in friend_network[name2]:
                     mutual.append(friend)
-            
+
             if mutual:
                 print(f"Mutual friends of {name1} and {name2}: {mutual}")
             else:
@@ -46,15 +58,16 @@ while True:
             print("One or both people are not in the system.")
         else:
             unique1 = []
+            unique2 = []
+
             for friend in friend_network[name1]:
                 if friend not in friend_network[name2]:
                     unique1.append(friend)
-                    
-            unique2 = []
+
             for friend in friend_network[name2]:
                 if friend not in friend_network[name1]:
                     unique2.append(friend)
-            
+
             print(f"Friends only {name1} has: {unique1}")
             print(f"Friends only {name2} has: {unique2}")
 
@@ -66,14 +79,15 @@ while True:
             print("One or both people are not in the system.")
         else:
             combined = []
+
             for friend in friend_network[name1]:
                 if friend not in combined:
                     combined.append(friend)
-            
+
             for friend in friend_network[name2]:
                 if friend not in combined:
                     combined.append(friend)
-                    
+
             print(f"All friends combined for {name1} and {name2}: {combined}")
 
     elif choice == "5":
@@ -83,11 +97,13 @@ while True:
             print("This person is not in our system.")
         else:
             suggestions = []
+
             for friend in friend_network[name]:
                 if friend in friend_network:
                     for fof in friend_network[friend]:
                         if fof != name and fof not in friend_network[name] and fof not in suggestions:
                             suggestions.append(fof)
+
             if suggestions:
                 print(f"Suggestions for {name}: {suggestions}")
             else:
