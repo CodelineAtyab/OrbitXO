@@ -1,23 +1,19 @@
 def add_grades(grades):
-            grade = int(input("Enter grade (0-100): "))
-            if 0 <= grade <= 100:
-                grades.append(grade)
-                print("Grade added.")
-            else:
-                print("Invalid grade. Must be between 0 and 100." )   
+    grade = int(input("Enter grade (0-100): "))
+    if 0 <= grade <= 100:
+        grades.append(grade)
+        print("Grade added.")
+    else:
+        print("Invalid grade. Must be between 0 and 100.")
 
 def remove_grades(grades):
     while True:
-        try:
-            grade = int(input("Enter grade to remove: "))
-            if grade in grades:
-                grades.remove(grade)
-                print("Grade removed.")
-            else:
-                print("Grade not found.")
-                break
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        grade = int(input("Enter grade to remove: "))
+        if grade in grades:
+            grades.remove(grade)
+            print("Grade removed.")
+        else:
+            print("Grade not found.")
             break
     return grades
 
@@ -84,7 +80,5 @@ def main():
             break
         else:
             print("Invalid option. Please try again.")
-    main()
 
-
-
+main()
