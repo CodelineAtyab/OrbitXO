@@ -1,4 +1,4 @@
-# Dictionary to hold user: set(friends)
+
 friend_data = {}
 
 print("Friends List Comparison Tool")
@@ -53,7 +53,6 @@ while True:
         user = input("Get friend suggestions for: ").strip()
         if user not in friend_data:
             print("User not found.")
-            continue
 
         suggestions = set()
         user_friends = friend_data[user]
@@ -61,7 +60,7 @@ while True:
             if friend in friend_data:
                 suggestions.update(friend_data[friend])
         suggestions -= user_friends
-        suggestions.discard(user)  # avoid suggesting the user themselves
+        suggestions.discard(user)  
 
         print("Suggested friends:", suggestions if suggestions else "No suggestions found.")
 
