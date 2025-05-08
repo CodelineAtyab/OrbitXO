@@ -1,5 +1,9 @@
 palette = ()
 
+def rgb_to_hex(color):
+    r, g, b = color
+    return "#{:02X}{:02X}{:02X}".format(r, g, b)
+
 
 print("RGB Color Palette Manager")
 while True:
@@ -23,10 +27,25 @@ while True:
                 print("Invalid RGB color ! Must be between 0 and 255")
 
 
-        if a == "2":
+        elif a == "2":
             if palette:
                 print("Color palette:")
-                for i , color in enumerate(color,start="a"):
+                for i , color in enumerate(palette, start=1):
                     print(f"{i} .{color}")
             else:   
                 print("Palette is empty.")
+
+        elif a == "3":
+            if palette:
+                index_input = input("Enter color index: ")  # 🔵 define index_input first
+
+                if index_input.isdigit():  # ✅ safe to check now
+                    index = int(index_input)
+
+                if 1 <= index <= len(palette):
+                    color = palette[index - 1]
+                    hex_code = rgb_to_hex(color)
+                    print(f"Hex code for {color}: {hex_code}")
+                else:
+                    print(f"❌ Invalid index. Enter a number between 1 and {len(palette)}.")
+
