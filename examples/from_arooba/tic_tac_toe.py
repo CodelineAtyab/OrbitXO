@@ -22,7 +22,7 @@ def is_draw(board):
 
 def player_move(board, symbol):
     while True:
-        try:
+        
             move = int(input("Your move (choose a number): ")) - 1
             if move < 0 or move > 8:
                 print("Invalid number! Choose 1-9.")
@@ -31,8 +31,6 @@ def player_move(board, symbol):
             else:
                 board[move] = symbol
                 break
-        except ValueError:
-            print("Invalid input! Enter a number from 1 to 9.")
 
 def bot_move(board, symbol):
     available_moves = [i for i, spot in enumerate(board) if spot not in ['X', 'O']]
