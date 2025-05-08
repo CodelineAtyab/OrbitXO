@@ -37,10 +37,7 @@ while True:
 
         elif a == "3":
             if palette:
-                index_input = input("Enter color index: ")  # 🔵 define index_input first
-
-                if index_input.isdigit():  # ✅ safe to check now
-                    index = int(index_input)
+                index = int(input("Enter color index: ")) 
 
                 if 1 <= index <= len(palette):
                     color = palette[index - 1]
@@ -48,4 +45,9 @@ while True:
                     print(f"Hex code for {color}: {hex_code}")
                 else:
                     print(f"❌ Invalid index. Enter a number between 1 and {len(palette)}.")
+
+        elif a == "4":
+            print("Exiting")
+            False
+            break
 
