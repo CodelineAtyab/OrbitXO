@@ -1,7 +1,3 @@
-def rgb_Using_set():
-    palette = []
-
-    HEX_MAP = "0123456789ABCDEF"
 def to_hex(n):
     # Convert 0–255 to two-digit hex using division & remainder
     high = n // 16
@@ -38,7 +34,7 @@ def rgb_Using_set():
             for  color in palette:
                 print(f"{count}. {color}")
                 count +=1
-                
+
         elif choice == '3':
             indx = input("Enter color index: ")
 
