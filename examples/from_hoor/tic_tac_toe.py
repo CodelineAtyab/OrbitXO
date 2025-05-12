@@ -68,14 +68,14 @@ def main():
             bot_move(board, bot_symbol)
             if check_winner(board, bot_symbol):
                 print_board(board)
-                print("😔 Bot wins!")
+                print("Bot wins!")
                 game_over = True
             else:
                 current_turn = 'player'
         
         if not game_over and is_draw(board):
             print_board(board)
-            print("🤝 It's a draw!")
+            print("It's a draw!")
             game_over = True
 
 if __name__ == "__main__":
