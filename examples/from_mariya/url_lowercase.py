@@ -1,5 +1,0 @@
-print("\nWelcome to converting the URLs to a lowercase!")
-asking_user_for_url = input("Enter you URL: ")
-z = asking_user_for_url.lower()
-print("\nConverting the URLs to lowercase ... ")
-print(f"\nResult in lowercase: ({z})")
