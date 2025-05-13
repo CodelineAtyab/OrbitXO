@@ -30,12 +30,14 @@ while True:
 
 
     elif choice == '2':
+        counter = 1
         if not palette:
             print("Palette is empty.")
         else:
             print("Color Palette:")
-            for i, color in enumerate(palette, 1):
-                print(f"{i}. {color}")
+            for color in palette:
+                print(f"{counter}. {color}")
+                counter += 1
 
     elif choice == '3':
         if not palette:
