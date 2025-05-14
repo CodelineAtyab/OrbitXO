@@ -27,7 +27,8 @@ while True:
     "2. Display palette\n"
     "3. Convert to hex\n"
     "4. Manual hex function\n"
-    "5. Exit\n")
+    "5. Match Color Pallete\n"
+    "6. Exit\n")
 
     rgb_menu = int(input("Choose an option: "))
     if rgb_menu == 1:
@@ -42,7 +43,8 @@ while True:
         while blue < 0 or blue > 255:
             blue = int(input("put a value between 0 and 255"))
         rgb_list.append((red, green, blue))
-
+        print("Added color pallet to list")
+        print()
     elif rgb_menu == 2:
         for i in range(len(rgb_list)):
             print(f"{str(i + 1)}. {rgb_list[i]}")
@@ -57,12 +59,37 @@ while True:
                 hexcolor += "0"
             hexcolor += hexpart
         print(hexcolor)
+        print()
     elif rgb_menu == 4:
         index = int(input("Enter index: "))
         color = rgb_list[index]
         hexcolor = manual_hex(color)
         print(hexcolor)
+        print()
     elif rgb_menu == 5:
+        redt = int(input("Enter Red Value: "))
+        while redt < 0 or redt > 255:
+            redt = input("put a value between 0 and 255: ")
+        greent = int(input("Enter Green Value: "))
+        while greent < 0 or greent > 255:
+            greent = input("put a value between 0 and 255: ")
+        bluet = int(input("Enter Blue Value: "))
+        while bluet < 0 or bluet > 255:
+            bluet = int(input("put a value between 0 and 255: "))
+        target = (redt, greent, bluet)
+        closest_value = 255 * 3
+        closest_rgb = ()
+        for rgb in rgb_list:
+            red_value = abs(target[0] - rgb[0])
+            green_value = abs(target[1] - rgb[1])
+            blue_value = abs(target[2] - rgb[2])
+            comb_value = red_value + blue_value + green_value
+            if comb_value < closest_value:
+                closest_value = comb_value
+                closest_rgb = rgb
+        print(f"The closest pallet to {target} is {closest_rgb}")
+        print()
+    elif rgb_menu == 6:
         break
     else:
-        print("You have to choose a number between 1 and 4")
+        print("You have to choose a number between 1 and 6")
