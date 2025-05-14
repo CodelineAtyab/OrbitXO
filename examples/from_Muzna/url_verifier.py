@@ -1,7 +1,7 @@
 import sys
 
 
-url=input("Enter URL :  ")
+#url=input("Enter URL :  ")
 
 def url_verifiecation(url):
 
@@ -23,6 +23,7 @@ def url_verifiecation(url):
     else:
         return False
     
+url= sys.argv[1]
 
 print(url_verifiecation(url))
 
