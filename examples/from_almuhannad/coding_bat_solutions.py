@@ -1,5 +1,5 @@
 # sleepin task 
-
+#warmup1 Tasks !!!
 def sleep_in(weekday, vacation):
   if not weekday or vacation:
     return True
@@ -71,4 +71,64 @@ def front3(str):
       return str[:3] * 3
     else:
       return (str[:3] * 3)
+    
+#string Tasks!!!
+#string-1 
+def hello_name(name):
+  return "Hello " + name + "!"
+
+#make-out-word
+def make_out_word(out, word):
+    middle = out[:2] + word + out[2:]
+    return middle
+
+#first-half
+def first_half(str):
+  return str[:len(str)//2]
+
+#non-start
+def non_start(a, b):
+  return a[1::] + b[1::]
+
+#make_abba
+def make_abba(a, b):
+  return a[::] + b[::] + b[::] + a[::]
+
+#extra-end
+def extra_end(str):
+  if len(str) <= 2:
+    return str[-2::] * 3
+  else:
+    return str[-2::] * 3
+  
+#without-end
+def without_end(str):
+    return str[1:len(str)-1]
+
+#left2
+def left2(str):
+  if len(str) <= 2:
+    return str
+    
+  else:
+      
+      return str[2:] + str[:2]
+#make tags
+def make_tags(tag, word):
+  return "<" + tag[0::] +">" + word[0:] + "</" + tag[0::] + ">"
+
+#first two
+def first_two(str):
+  if len(str) < 2:
+    return str
+  else:
+    return str[0:2]
+
+#combo-string
+def combo_string(a, b):
+  if len(a) < len(b):
+    return a + b + a
+  else:
+      return b + a + b
+
   
