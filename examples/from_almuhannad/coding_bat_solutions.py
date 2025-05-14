@@ -131,4 +131,87 @@ def combo_string(a, b):
   else:
       return b + a + b
 
+  #Logic - 1 tasks
+  #squarls party
+def cigar_party(cigars, is_weekend):
+ if is_weekend:
+    return cigars >= 40
+ else:
+    return 40 <= cigars <= 60
+
+#caugt-speeding
+def caught_speeding(speed, is_birthday):
   
+  if is_birthday and speed <= 65:
+      return 0
+  elif 66 <= speed <= 85 and is_birthday:
+      return 1
+  elif speed >= 85 and is_birthday:
+      return 2
+      
+  if not is_birthday and speed <= 60:
+        return 0
+      
+  elif 61 <= speed <= 80 and not is_birthday:
+        return 1
+        
+  elif speed >= 81 and not is_birthday:
+    
+        return 2
+  
+#love6
+def love6(a, b):
+  return a == 6 or b == 6 or (a + b == 6 ) or (b - a == 6) or (a - b == 6)
+
+#data_fashion 
+def date_fashion(you, date):
+  if you <= 2 or date <= 2:
+    return 0
+  elif you >= 8 or date >= 8:
+    return 2
+  else:
+    return 1
+#sorta sum
+def sorta_sum(a, b):
+  h = a + b
+  if 10 <= h <= 19:
+    return 20
+  else:
+    return h
+  
+#in1to10
+def in1to10(n, outside_mode):
+  if outside_mode:
+        return n <= 1 or n >= 10
+  else:
+        return 1 <= n <= 10
+  
+#squirrel_play 
+def squirrel_play(temp, is_summer):
+  if 60 <= temp <= 100 and is_summer:
+    return True
+  elif 60 <= temp <= 90 and not is_summer:
+    return True
+  else:
+    return False
+
+#alarm clock
+def alarm_clock(day, vacation):
+    if vacation:
+        if day == 0 or day == 6:
+            return "off"
+        else:
+            return "10:00"
+    else:
+        if day == 0 or day == 6:
+            return "10:00"
+        else:
+            return "7:00"
+
+#near10
+
+def near_ten(num):
+    if num % 10 in (0, 1, 2, 8, 9):
+        return True
+    else:
+        return False
