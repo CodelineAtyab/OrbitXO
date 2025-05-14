@@ -1,5 +1,4 @@
 def to_hex(n):
-    # Convert 0–255 to two-digit hex using division & remainder
     high = n // 16
     low = n % 16
     HEX_MAP = "0123456789ABCDEF"
@@ -18,7 +17,8 @@ def rgb_Using_set():
         print("1. Add color")
         print("2. Display palette")
         print("3. Convert to hex")
-        print("4. Exit")
+        print("4. Color Matching")
+        print("5. Exit")
         
         choice:int = input("Choose an option: ")
 
@@ -47,6 +47,23 @@ def rgb_Using_set():
                 print("Please enter a valid number.")
 
         elif choice == '4':
+            r1 = int(input("Enter Red palette: "))
+            g1 = int(input("Enter Green palette: "))
+            b1 = int(input("Enter Blue palette: "))
+
+            min_dist = float('inf') ## Initially 
+            closest_color = None
+
+            for color in palette:
+                r2, g2, b2 = color
+                dist = ((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) ** 0.5
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_color = color
+            print(f"The closest color to ({r1}, {g1}, {b1}) is {closest_color}\n")
+
+            pass
+        elif choice == '5':
             print("Goodbye!")
             break
         else:
