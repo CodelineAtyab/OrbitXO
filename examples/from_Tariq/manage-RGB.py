@@ -1,3 +1,4 @@
+import sys
 list_color = []
 while True:
     print("RGB color palette Manager")
@@ -38,15 +39,13 @@ while True:
         target_b = int(input("Enter target blue value (0-255): "))
         target_rgb = (target_r, target_g, target_b)
         closest_color = list_color[0]
-        min_distance = 1000000
+        min_distance = sys.maxsize
         for color in list_color:
             distance = (color[0] - target_r) ** 2 + (color[1] - target_g) ** 2 + (color[2] - target_b) ** 2
             if distance < min_distance:
                 min_distance = distance
                 closest_color = color
         print(f"Closest color in palette: {closest_color}")
-
-
 
     elif x == "5":
         print("Exiting...")
