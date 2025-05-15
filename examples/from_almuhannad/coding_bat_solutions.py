@@ -215,3 +215,56 @@ def near_ten(num):
         return True
     else:
         return False
+#double char
+def double_char(str):
+    list_of_char = list(str)
+    comb_char=[]
+    for char in list_of_char:
+      comb_char.append(char * 2)
+    result_char = ''.join(comb_char)
+    return result_char
+
+
+#count_code
+def count_code(str):
+    count = 0
+    for i in range(len(str) - 3):
+        if str[i] == 'c' and str[i+1] == 'o' and str[i+3] == 'e':
+            count += 1
+    return count
+
+#count_hi
+def count_hi(str):
+  return str.count("hi")
+
+#end_other
+def end_other(a, b):
+  a = a.lower()
+  b = b.lower()
+  
+  if a.endswith(b):
+    return True
+  elif b.endswith(a):
+    return True
+  else:
+    return False
+
+#cat_dog
+def cat_dog(str):
+  if str.count("cat") == str.count("dog"):
+    return True
+  else:
+    return False
+
+#xyz_here
+def xyz_there(str):
+  this= False
+  if 'xyz' in str :
+    if len(str) == 3:
+      this = True
+    for i in range(len(str)- 3):
+       if str[i] == "." and (str[i+1] == "x" and str[i+2] == "y" and str [i+3] == "z"):
+         this= False
+       else:
+         this= True
+  return this
