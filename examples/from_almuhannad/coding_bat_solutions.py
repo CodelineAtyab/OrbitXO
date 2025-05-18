@@ -268,3 +268,83 @@ def xyz_there(str):
        else:
          this= True
   return this
+
+#warmup 2 
+#string times
+
+def string_times(str, n):
+  
+  return str[::] * n
+
+#front time
+def front_times(str, n):
+  front = str[0:3]
+  if len(str) <= 3:
+    return front * n
+  else:
+    return front * n
+
+#string bits
+def string_bits(str):
+  if len(str) >= 10:
+    return str[0::2]
+  else:
+    return str[0::2]
+  
+#string splosion
+def string_splosion(str):
+  result = ""
+  for i in range(0,len(str)+1):
+    result += str[:i]
+  return result
+
+#last 2
+def last2(str):
+  if len(str) < 2:
+    return 0
+  last2 = str[len(str)-2:]
+  count = 0
+  for i in range(len(str)-2):
+    sub = str[i:i+2]
+    if sub == last2:
+      count = count + 1
+
+  return count
+
+#array_count9
+def array_count9(nums):
+  return nums.count(9)
+
+#array front 9
+def array_front9(nums):
+  x = False
+  if len(nums) >= 4:
+   if nums[0] == 9 or (nums[1] == 9 or nums[2] == 9 or nums[3] == 9):
+      x = True
+   else:
+      x = False 
+  elif 9 in nums:
+    x = True
+  else:
+    x = False
+  return x
+    
+#array123
+def array123(nums):
+  for i in range (len(nums)-2):
+    if (nums[i] == 1 and nums[i+1] == 2 and nums[i+2] == 3):
+      return True
+  return False
+
+#string match
+def string_match(a, b):
+  shorter = min(len(a), len(b))
+  count = 0
+  
+  for i in range(shorter-1):
+    a_sub = a[i:i+2]
+    b_sub = b[i:i+2]
+    if a_sub == b_sub:
+      count = count + 1
+
+  return count
