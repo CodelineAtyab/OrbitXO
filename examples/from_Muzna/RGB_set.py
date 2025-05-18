@@ -10,9 +10,9 @@ def rgb_to_hex(rgb):
 
 
 
-def rgb_Using_set():
-    palette = [ ]
-    while True:
+
+palette = [ ]
+while True:
         print("RGB Color Palette Manager\n")
         print("1. Add color")
         print("2. Display palette")
@@ -67,7 +67,5 @@ def rgb_Using_set():
             print("Goodbye!")
             break
         else:
-           print("Invalid option. Choose between 1-4")
-
-rgb_Using_set()
+           print("Invalid option. Choose between 1-5")
 
