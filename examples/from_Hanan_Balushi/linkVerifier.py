@@ -1,4 +1,4 @@
-import re
+
 
 file = open("examples/from_Hanan_Balushi/urls.txt", "r")
 for line in file.readlines():
