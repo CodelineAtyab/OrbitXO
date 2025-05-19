@@ -348,3 +348,103 @@ def string_match(a, b):
       count = count + 1
 
   return count
+
+#list1 tasks
+#first_last6
+def first_last6(nums):
+  if len(nums) >= 1:
+    if nums[0] == 6 or nums[len(nums)-1] == 6:
+      return True
+    else:
+      return False
+  else:
+    return False
+  
+#same_first_last
+def same_first_last(nums):
+  if len(nums) >= 1:
+    if nums[0] == nums[len(nums)-1]:
+      return True
+    else:
+       return False
+  else:
+    return False
+
+#make_pi
+def make_pi():
+  make_pi = [3,1,4]
+  return make_pi
+
+#common_end
+def common_end(a, b):
+  if len(a) >= 1:
+    if a[0] == b[0] or a[len(a)-1] == b[len(b)-1]:
+      return True
+    else:
+      return False
+    
+#sum3
+def sum3(nums):
+  return sum(nums)
+
+#rotate_left3
+def rotate_left3(nums):
+  
+    new_list = [nums[1],nums[2],nums[0]]
+     
+    return new_list
+
+#reverse 3
+def reverse3(nums):
+  
+  new_list = [nums[2],nums[1],nums[0]]
+  
+  return new_list
+
+#max_end3
+def max_end3(nums):
+  
+  first_element = nums[0]
+  last_element = nums[len(nums)-1]
+  
+  if first_element  > last_element or last_element > first_element or first_element == last_element:
+    
+    if first_element >= last_element:
+      new_list = [first_element] * 3
+      return new_list
+      
+    elif last_element >= first_element:
+      return [last_element] * 3
+
+#sum2
+def sum2(nums):
+  
+  if len(nums) >= 2:
+    
+    return nums[0] + nums[1]
+    
+  elif len(nums) == 1:
+    
+    c = nums[0]
+    return c
+  
+  elif len(nums) == 0:
+    return 0
+  
+  #middle_way
+def middle_way(a, b):
+  
+  return [a[1],b[1]]
+
+#make_end
+def make_ends(nums):
+  
+  return [nums[0],nums[len(nums)-1]]
+
+#has23
+
+def has23(nums):
+  if nums[0] == 2 or nums[0] == 3 or  nums[1] == 2 or nums[1] == 3:
+    return True
+  else:
+    return False
