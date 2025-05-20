@@ -448,3 +448,81 @@ def has23(nums):
     return True
   else:
     return False
+
+#logic-2 tasks
+#make_bricks
+def make_bricks(small, big, goal):
+  
+  min_break = min(goal // 5,big)
+  remaining = goal - (min_break * 5)
+  
+  return remaining <= small
+
+#long sum
+def lone_sum(a, b, c):
+  if a == b or a == c or b == a or b == c or c == a or c == b :
+    if a != b and a!=c:
+      return a
+    elif b != a and b !=c:
+      return b
+    elif c != a and c!=b:
+      return c
+    elif c == b == a:
+      return 0
+  else:
+    return a+b+c
+  
+  #lucky sum
+def lucky_sum(a, b, c):
+  
+  if a == 13:
+    return 0
+  elif b == 13:
+      return a
+  elif c == 13:
+      return a+b
+  else:
+      return a + b + c
+  
+  #fix teen
+def fix_teen(n):
+    if 13 <= n <= 19 and n not in (15, 16):
+        return 0
+    return n
+
+def no_teen_sum(a, b, c):
+    return fix_teen(a) + fix_teen(b) + fix_teen(c)
+
+#round sum
+def round_sum(a, b, c):
+    return round10(a) + round10(b) + round10(c)
+
+def round10(num):
+    if num % 10 >= 5:
+        return num + (10 - num % 10)
+    else:
+        return num - (num % 10) 
+
+#closefar
+def close_far(a, b, c):
+    close_b = abs(a - b) <= 1
+    close_c = abs(a - c) <= 1
+    far_b = abs(a - b) >= 2 and abs(b - c) >= 2
+    far_c = abs(a - c) >= 2 and abs(b - c) >= 2
+
+    return (close_b and far_c) or (close_c and far_b)
+
+#make_chocolate
+def make_chocolate(small, big, goal):
+    
+    max_big_bars = goal // 5
+    use_big = min(big, max_big_bars)
+
+    
+    remaining = goal - (use_big * 5)
+
+    
+    if small >= remaining:
+        return remaining  
+    else:
+        return -1  
