@@ -10,7 +10,7 @@ def email_check(email):
         return False
     if "." not in domain:
         return False
-    if domain[0] == "" or domain[-1] == "":
+    if domain[0] == "." or domain[-1] == ".":
         return False
     last_dot_domain = domain.rfind(".")
     tld = domain[last_dot_domain + 1 : ]
