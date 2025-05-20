@@ -3,7 +3,7 @@ file = open("examples/from_Hanan_Balushi/emails.txt", "r")
 
 for line in file.readlines():
     email = line.strip()
-    if email.count("@") == 1 and len(email[:email.index("@")]) > 1 and len(email[email.index("@"):email.rfind(".")]) > 2 and "." in email and len(email[email.rfind("."):]) > 2:
+    if email.count("@") == 1 and len(email[:email.index("@")]) > 1 and "." in email and len(email[email.index("@"):email.rfind(".")]) > 2 and  len(email[email.rfind("."):]) > 2:
         print(f"Email: {email} = Valid Email!")
     else:
         print(f"Email: {email} = Invalid Email!!!")
