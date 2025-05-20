@@ -1,9 +1,21 @@
 import math
-pass
-# Store colors as (R, G, B) tuples
+
 palette = []
 
-# Add a new color
+
+def to_hex(n):
+    hex_digits = "0123456789ABCDEF"
+    return hex_digits[n // 16] + hex_digits[n % 16]
+
+
+def rgb_to_hex(rgb):
+    r, g, b = rgb
+    return "#" + to_hex(r) + to_hex(g) + to_hex(b)
+
+
+def color_distance(c1, c2):
+    return math.sqrt((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2 + (c1[2] - c2[2])**2)
+
 def add_color():
     r = int(input("Red (0-255): "))
     g = int(input("Green (0-255): "))
@@ -12,7 +24,6 @@ def add_color():
     palette.append(color)
     print(f"Color {color} added to palette")
 
-# Display all colors
 def display_palette():
     if not palette:
         print("Palette is empty.")
@@ -21,17 +32,7 @@ def display_palette():
         for i, color in enumerate(palette, 1):
             print(f"{i}. {color}")
 
-# Convert RGB to Hex without using hex()
-def rgb_to_hex(rgb):
-    hex_digits = "0123456789ABCDEF"
-    r, g, b = rgb
 
-    def to_hex(n):
-        return hex_digits[n // 16] + hex_digits[n % 16]
-
-    return "#" + to_hex(r) + to_hex(g) + to_hex(b)
-
-# Convert a color to hex
 def convert_to_hex():
     index = int(input("Enter color index: "))
     if 1 <= index <= len(palette):
@@ -41,7 +42,7 @@ def convert_to_hex():
     else:
         print("Invalid index.")
 
-# Find closest color in the palette
+
 def find_closest_color():
     r = int(input("Enter Red pallete: "))
     g = int(input("Enter Green pallete: "))
@@ -52,13 +53,10 @@ def find_closest_color():
         print("Palette is empty.")
         return
 
-    def distance(c1, c2):
-        return math.sqrt((c1[0]-c2[0])**2 + (c1[1]-c2[1])**2 + (c1[2]-c2[2])**2)
-
-    closest = min(palette, key=lambda color: distance(color, target))
+    closest = min(palette, key=lambda color: color_distance(color, target))
     print(f"The closest color to {target} is {closest}")
 
-# Main menu
+
 def menu():
     while True:
         print("\nRGB Color Palette Manager")
@@ -84,5 +82,5 @@ def menu():
         else:
             print("Invalid option. Please choose 1–5.")
 
-# Run the program
+
 menu()
