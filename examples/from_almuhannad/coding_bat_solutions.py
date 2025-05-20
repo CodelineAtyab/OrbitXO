@@ -526,3 +526,65 @@ def make_chocolate(small, big, goal):
         return remaining  
     else:
         return -1  
+    
+#Lists2 tasks
+#count_evens
+def count_evens(nums):
+    count = 0
+    for num in nums:
+        if num % 2 == 0:
+            count += 1
+    return count
+
+#big_difference
+
+def big_diff(nums):
+  big = max(nums)
+  small = min(nums)
+  return (big - small)
+
+
+#centered_average
+def centered_average(nums):
+    nums.remove(min(nums))   
+    nums.remove(max(nums))   
+    return sum(nums) // len(nums)
+
+#sum13
+def sum13(nums):
+    total = 0
+    skip_next = False
+
+    for num in nums:
+        if skip_next:
+            skip_next = False
+            continue
+        elif num == 13:
+            skip_next = True
+            continue
+        total += num
+
+    return total
+
+#sum67
+def sum67(nums):
+    total = 0
+    ignore = False
+
+    for num in nums:
+        if num == 6:
+            ignore = True
+        elif num == 7 and ignore:
+            ignore = False
+        elif not ignore:
+            total += num
+
+    return total
+
+#has22
+def has22(nums):
+    for i in range(len(nums) - 1):
+        if nums[i] == 2 and nums[i + 1] == 2:
+            return True
+    return False
+
