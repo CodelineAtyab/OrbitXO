@@ -1,5 +1,4 @@
 palette = ()
-
 def rgb_to_hex(color):
     r, g, b = color
     return "#{:02X}{:02X}{:02X}".format(r, g, b)
@@ -10,7 +9,8 @@ while True:
         print("1. Add color")
         print("2. Display Palette")
         print("3. Convert to hex")
-        print("4. Exit")
+        print("4. find the closest palette color")
+        print("5. Exit")
 
         a = input("Choose an option: ")
 
@@ -47,7 +47,23 @@ while True:
                     print(f"❌ Invalid index. Enter a number between 1 and {len(palette)}.")
 
         elif a == "4":
-            print("Exiting")
-            False
+            red_value = int(input("Enter red value: "))
+            green_value = int(input("Enter Green value: "))
+            blue_value = int(input("Enter blue value: "))
+
+            input_color = (red_value,green_value,blue_value)
+            closest_color = ()
+            mid_distance = 1000000
+            for color in palette:
+                distance = (color[0] - red_value) ** 2  + (color[1] - green_value) ** 2 +(color[2] - blue_value) **2 
+                if distance < mid_distance:
+                    mid_distance = distance
+                    closest_color = color
+                    print(closest_color)
+
+            print(f"Closest color to {input_color} is {closest_color}")
+
+        elif a == "5":
+            print("Exiting..")
             break
 
