@@ -1,4 +1,4 @@
-palette = ()
+
 
 def rgb_to_hex(color):
     r, g, b = color
