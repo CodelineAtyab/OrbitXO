@@ -1,12 +1,10 @@
 def find_target_sum(nums, target):
-
     seen = set()
     trgt_set=set()
     for i in nums:
         div = target - i
         if div in seen:
             trgt_set.add(tuple((i,div)))
-
         seen.add(i)
 
     return list(trgt_set)
