@@ -59,3 +59,6 @@ Pull the latest chages by doing
 ```
 git pull
 ```
+
+### Step 15
+Repeat the same steps from Step 1 for a new task
