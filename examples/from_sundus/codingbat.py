@@ -144,7 +144,7 @@ def double_char(str):
     
   return result   
 
-#########################
+##############################
 
 
 #count_hi
