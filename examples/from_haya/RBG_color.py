@@ -83,12 +83,12 @@ def closest_color():
 
         print("searching the list")
 
-        min_distance = float("inf")
+        min_distance = 1000000000000
         closest = None
 
         for color in color_palette:
             r, g, b = color
-            x = abs(RED - r) + abs(GREEN - g) + abs(BLUE - b)  
+            x = abs(RED - r) + abs(GREEN - g) + abs(BLUE-  b)  
             if x < min_distance:
                 min_distance = x
                 closest = color
