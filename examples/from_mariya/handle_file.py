@@ -1,30 +1,30 @@
-def read_file(file_name, backup_file=None):
+def read_file(Mariya_file):
     try:
-        file = open(file_name, "r")  
+        file = open(Mariya_file, "r")
         content = file.read()
         file.close()
-        print("File read successfully:")
-        print(content)
+        print(f"File read successfully: {content}")
         return content
 
     except FileNotFoundError:
-        print("File not found:", file_name)
-        if backup_file:
-            try:
-                file = open(backup_file, "r")
-                content = file.read()
-                file.close()
-                print("Backup file read successfully:")
-                print(content)
-                return content
-            except FileNotFoundError:
-                print("Backup file also not found:", backup_file)
+        print("File not found:", Mariya_file)
+        try:
+            file = open(Mariya_file, "w")
+            default_text = "This is a new file created because the original was missing.\n"
+            file.write(default_text)
+            file.close()
+            print("A new file was created.")
+            return default_text
+        except Exception as e:
+            print("Could not create a new file:", e)
 
     except PermissionError:
-        print("You don't have permission to read the file.")
+        print("You don't have permission to read or create the file.")
 
+    except UnicodeDecodeError:
+        print("Could not read the file due to encoding issues.")
+        
     except Exception as e:
-        print("Something went wrong:", e)
+        print("Something else went wrong:", e)
 
     return None
-read_file(r"C:\Users\admin\OneDrive\Desktop\notes_for_mariya.txt") #r means: raw string
