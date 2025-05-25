@@ -8,7 +8,7 @@ try:
 except FileNotFoundError:
     print(f"Error : the file '{file_path}' was not found.")
 except PermissionError:
-    print(f"Error: Permission denied when trying to read the file '{File_Path}'")
+    print(f"Error: Permission denied when trying to read the file '{file_path}'")
 except UnicodeError:
     print(f"Error: There was a problem decoding the file '{file_path}' ")
 except Exception as ex_do:
