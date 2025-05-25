@@ -87,7 +87,7 @@ while True:
      elif choice == 3:
          name = input("Enter contact name to update: ")
          found = False
-         if c in contacts:
+         for c in contacts:
              full_name = (c["first"] + " " + c["last"]).lower()
              if name == full_name:
                  found = True
