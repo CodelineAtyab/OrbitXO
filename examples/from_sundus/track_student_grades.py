@@ -7,7 +7,7 @@ while True:
     print("3. Show statistics")
     print("4. Sort grades")
     print("5. Display all grades")
-    print("6. Exit")
+    print("6. Exit") 
 
     choice = input("Choose an option (1-6): ")
 

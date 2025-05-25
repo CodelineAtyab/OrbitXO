@@ -84,3 +84,4 @@ while game_over == False:
     if empty_spaces == 0 and game_over == False:
         print("It's a draw!")
         game_over = True
+
