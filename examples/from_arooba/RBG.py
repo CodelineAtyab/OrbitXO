@@ -1,3 +1,13 @@
+def to_hex(n):
+    high = n // 16
+    low = n % 16
+    HEX_MAP = "0123456789ABCDEF"
+    return HEX_MAP[high] + HEX_MAP[low]
+
+def rgb_to_hex(rgb):
+    r, g, b = rgb
+    return f"#{to_hex(r)}{to_hex(g)}{to_hex(b)}"
+
 palette=[]
 while True:
     print("\nRGB Color Palette Manager:")
@@ -26,15 +36,15 @@ while True:
             print(f"{i+1}. {palette[i]}")
 
     elif choose=="3":
-        print("3. Convert to hex")
-        for i in range(len(palette)):
-            r,g,b=palette[i]             # get the i-th item (starting from 0) from that list.
-            hex_color = '#{:02x}{:02x}{:02x}'.format(r,g,b)
-            # 0 → pad with zeros if needed
-            # 2 → make sure it’s 2 characters wide
-            # x → convert the number to hexadecimal (using lowercase letters)
-            # .format(r, g, b) to insert r,g,b values into the string().
-            print(f"{i+1}. {palette[i]}: {hex_color}")
+         indx = input("Enter color index: ")
+
+         if indx.isdigit():
+                idx = int(indx) - 1
+                rgb = palette[idx]
+                hex_code = rgb_to_hex(rgb)
+                print(f"Hex code for {rgb}: {hex_code}")   
+         else:
+                print("Please enter a valid number.")
 
 
     elif choose =="4":
