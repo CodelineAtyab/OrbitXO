@@ -2,48 +2,67 @@ import os
 import sys
 from datetime import date
 
+filepath = r".\data.txt"
+
+if not os.path.exists(filepath):
+    try:
+        with open(filepath, "w") as f:
+            f.write("yyyy-mm-dd : this a data\n")
+        print(f"Created new file: {filepath}")
+    except Exception as ex:
+        print(f"Error creating file: {ex}")
+          
+
+def create_entry(data_dict,entry_txt):
+    date_now = date.today().isoformat()
+    entry_txt = " ".join(sys.argv[2:])
+
+    if date_now not in data_dict:
+        data_dict[date_now] = []
+    data_dict[date_now].append(entry_txt)
+    with open(filepath,"a") as f:
+        f.write(f"{date_now}:{entry_txt}")
+    return data_dict
 
 
-def create_entry(store,entry_txt):
-    date = date.today().isformat()
-    if date not in store:
-        store[date] = []
-    store[date].append(entry_txt)
-    return store
+def read_entry(filepath):
+    with open(filepath, "r") as file:
+        content = file.read()
+        print(content)
+        
+
+def search_entry(data_dict, keyword):
+    results = []
+    for date, entries in data_dict.items():
+        for entry in entries:
+            if keyword.lower() in entry.lower():
+                results.append((date, entry))
+    return results
 
 
-def read_entry(read_date):
-     with open(f"enteries/{read_date}.txt","r") as file:
-        print(file.read())
-
-def search_entry():
-    found = False
-    for filename in os.listdir("entries"):
-        with open(f"entries/{filename}", "r") as file:
-            content = file.read()
-            print(f"Found in {filename}")
-            found = True
-    if not found:
-        print("no entries matched your keyword")
-
+data_dict = {}
 command = sys.argv[1]
 
+
 if command == "write":
-    if len(sys.argv) < 3:
-        print("Usage: python journal.py write 'your journal here")
-    else:
         entry_txt = sys.argv[2]
-        create_entry(entry_txt)
+        data_dict = create_entry(data_dict,entry_txt)
+        print(data_dict)
 
 elif command == "read":
-    if len(sys.argv) < 3:
-        print("Usage: python journal.py read YYYY-MM-DD")
-    else:
-        read_entry(sys.argv[2])
+        read_entry(filepath)
     
 elif command == "search":
-    if len(sys.argv) < 3:
-        print("Usage: python journal.py search keywords")
+    keyword = " ".join(sys.argv[2:])
+    if keyword:
+        results = search_entry(data_dict, keyword)
+        if results:
+            print(f"Search results for '{keyword}':")
+            for date, entry in results:
+                print(f"{date}: {entry}")
+        else:
+            print("No entries matched your keyword.")
     else:
-        print("unkown command. use write,read or search")
+        print("Please enter a keyword to search.")
+
     
