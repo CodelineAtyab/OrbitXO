@@ -23,8 +23,9 @@ def read_file(Mariya_file):
 
     except UnicodeDecodeError:
         print("Could not read the file due to encoding issues.")
-        
+
     except Exception as e:
         print("Something else went wrong:", e)
 
     return None
+read_file(r"C:\Users\admin\OneDrive\Desktop\notes_for_mariya.txt")
