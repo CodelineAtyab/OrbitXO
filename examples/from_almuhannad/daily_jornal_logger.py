@@ -53,17 +53,8 @@ def create_entry(data_dict,entry_txt):
     except Exception as e:
      print(f"there was an error: {e}")
 
-def read_entry(filepath):
-    try:
-        with open(filepath, "r") as file:
-            content = file.read()
-            print(content)
-    except FileNotFoundError:
-     print("file not found")
-    except PermissionError:
-     print("permission denaied")
-    except Exception as e:
-     print(f"there was an error: {e}")
+def read_entry(date_now):
+    return data_dict.get(date_now, [])
 
         
 
@@ -108,7 +99,15 @@ if command == "write":
         print(data_dict)
 
 elif command == "read":
-        read_entry(filepath)
+    entry_txt = sys.argv[2]
+    entries = read_entry(entry_txt)
+    if entries:
+        print(f"Entries for {entry_txt}:")
+        for entry in entries:
+            print(f"- {entry}")
+    else:
+        print(f"No entries found for date: {entry_txt}")
+
     
 elif command == "search":
     keyword = " ".join(sys.argv[2:])
