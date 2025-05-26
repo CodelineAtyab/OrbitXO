@@ -26,34 +26,61 @@ def load_entries_from_file(filepath):
                     data_dict[date_now].append(entry_txt)
     except ValueError:
         print("Error parsing date in file.")
+    except FileNotFoundError:
+     print("file not found")
+    except PermissionError:
+     print("permission denaied")
+    except Exception as e:
+     print(f"there was an error: {e}")    
     return data_dict
           
 
 def create_entry(data_dict,entry_txt):
-    date_now = datetime.date.today().isoformat()
-    entry_txt = " ".join(sys.argv[2:])
+    try:
+        date_now = datetime.date.today().isoformat()
+        entry_txt = " ".join(sys.argv[2:])
 
-    if date_now not in data_dict:
-        data_dict[date_now] = []
-    data_dict[date_now].append(entry_txt)
-    with open(filepath,"a") as f:
-        f.write(f"{date_now} : {entry_txt}\n")
-    return data_dict
-
+        if date_now not in data_dict:
+            data_dict[date_now] = []
+        data_dict[date_now].append(entry_txt)
+        with open(filepath,"a") as f:
+            f.write(f"{date_now} : {entry_txt}\n")
+        return data_dict
+    except FileNotFoundError:
+     print("file not found")
+    except PermissionError:
+     print("permission denaied")
+    except Exception as e:
+     print(f"there was an error: {e}")
 
 def read_entry(filepath):
-    with open(filepath, "r") as file:
-        content = file.read()
-        print(content)
+    try:
+        with open(filepath, "r") as file:
+            content = file.read()
+            print(content)
+    except FileNotFoundError:
+     print("file not found")
+    except PermissionError:
+     print("permission denaied")
+    except Exception as e:
+     print(f"there was an error: {e}")
+
         
 
 def search_entry(data_dict, keyword):
-    results = []
-    for date, entries in data_dict.items():
-        for entry in entries:
-            if keyword.lower() in entry.lower():
-                results.append((date, entry))
-    return results
+    try:
+        results = []
+        for date, entries in data_dict.items():
+            for entry in entries:
+                if keyword.lower() in entry.lower():
+                    results.append((date, entry))
+        return results
+    except FileNotFoundError:
+     print("file not found")
+    except PermissionError:
+     print("permission denaied")
+    except Exception as e:
+     print(f"there was an error: {e}")
 
 def backup_file():
     try:
@@ -97,5 +124,7 @@ elif command == "search":
         print("Please enter a keyword to search.")
 elif command == "backup":
     backup_file()
+else:
+   print("no argument found")
 
     
