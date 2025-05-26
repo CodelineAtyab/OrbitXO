@@ -1,27 +1,43 @@
 import os
 import sys
-from datetime import date
+import datetime 
 
 filepath = r".\data.txt"
+backups_file = r".\backup.txt"
+data_dict = {}
 
 if not os.path.exists(filepath):
     try:
         with open(filepath, "w") as f:
-            f.write("yyyy-mm-dd : this a data\n")
+            f.write("2000-11-11 : this a temp date\n")
         print(f"Created new file: {filepath}")
     except Exception as ex:
         print(f"Error creating file: {ex}")
+
+def load_entries_from_file(filepath):
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                if ':' in line:
+                    date_str, entry_txt = line.strip().split(' : ', 1)
+                    date_now = datetime.datetime.strptime(date_str, "%Y-%m-%d").date().isoformat()
+                    if date_now not in data_dict:
+                        data_dict[date_now] = []
+                    data_dict[date_now].append(entry_txt)
+    except ValueError:
+        print("Error parsing date in file.")
+    return data_dict
           
 
 def create_entry(data_dict,entry_txt):
-    date_now = date.today().isoformat()
+    date_now = datetime.date.today().isoformat()
     entry_txt = " ".join(sys.argv[2:])
 
     if date_now not in data_dict:
         data_dict[date_now] = []
     data_dict[date_now].append(entry_txt)
     with open(filepath,"a") as f:
-        f.write(f"{date_now}:{entry_txt}")
+        f.write(f"{date_now} : {entry_txt}\n")
     return data_dict
 
 
@@ -39,8 +55,23 @@ def search_entry(data_dict, keyword):
                 results.append((date, entry))
     return results
 
+def backup_file():
+    try:
+        with open(filepath,"r") as file:
+            new_file = file.read()
+        with open(backups_file,"w") as file:
+            file.write(new_file)
+        return file
+    except FileNotFoundError:
+     print("file not found")
+    except PermissionError:
+     print("permission denaied")
+    except Exception as e:
+     print(f"there was an error: {e}")
 
-data_dict = {}
+
+
+data_dict = load_entries_from_file(filepath)
 command = sys.argv[1]
 
 
@@ -58,11 +89,13 @@ elif command == "search":
         results = search_entry(data_dict, keyword)
         if results:
             print(f"Search results for '{keyword}':")
-            for date, entry in results:
-                print(f"{date}: {entry}")
+            for date, entry_txt in results:
+                print(f"{date}: {entry_txt}")
         else:
-            print("No entries matched your keyword.")
+            print(f"No entries found for keyword: {keyword}")
     else:
         print("Please enter a keyword to search.")
+elif command == "backup":
+    backup_file()
 
     
