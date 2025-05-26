@@ -1,0 +1,87 @@
+#Warmup-1 > sleep_in:
+def sleep_in(weekday, vacation):
+  if weekday == True and vacation == False:
+    return False
+  elif weekday == True and vacation == True:
+    return True
+  elif weekday == False and vacation == False:
+    return True
+  elif weekday == False and vacation == True:
+    return True
+  
+#Warmup-1 > monkey_trouble:
+def monkey_trouble(a_smile, b_smile):
+  if a_smile == True and b_smile == True:
+    return True
+  elif a_smile == False and b_smile == False:
+    return True
+  elif a_smile == True and b_smile == False:
+    return False
+  elif a_smile == False and b_smile == True:
+    return False
+  
+  #Warmup-1 > sum_double:
+  def sum_double(a, b):
+  if a == b:
+   return 2* (a + b)
+  else:
+   return (a + b)
+  
+  #Warmup-1 > diff21:
+  def diff21(n):
+  if n <= 21:
+    return 21 - n
+  else:
+    return (n - 21) * 2
+  
+  #Warmup-1 > parrot_trouble:
+  def parrot_trouble(talking, hour):
+   return (talking and (hour < 7 or hour > 20))
+  
+#Warmup-1 > makes10:
+def makes10(a, b):
+  if (a == 10 or b == 10) or (a + b) == 10:
+   return True
+  else:
+   return False
+  
+#Warmup-1 > near_hundred:
+def near_hundred(n):
+  if abs(n - 100) <=10 or abs(n - 200) <=10:
+   return True
+  else:
+    return False 
+  
+#Warmup-1 > pos_neg:
+def pos_neg(a, b, negative):
+  if negative:
+    return (a < 0 and b < 0)
+  else:
+    return ((a < 0 and b > 0) or (a > 0 and b < 0))
+  
+#Warmup-1 > not_string:
+ef not_string(str):
+  if str.startswith("not"):
+    return str
+  else:
+    return ("not " + str)
+
+#Warmup-1 > missing_char:
+def missing_char(str, n):
+  return str[:n] + str [n+1:]
+
+#Warmup-1 > front_back:
+def front_back(str):
+  if len(str) <=1:
+   return str
+  mid = str[1: len(str) -1]
+  return str [len(str) -1] + mid + str[0]
+
+#Warmup-1 > front3:
+def front3(str):
+  if len(str) < 3:
+    return str[0:3] * 3
+  else:
+    return str[0:3] * 3
+
+  
