@@ -7,7 +7,10 @@ try:
     try:
         reader = open(path, "r")
         print(reader.read())
+        reader.close()
     except FileNotFoundError:
         print("file does not exsist")
+    except PermissionError:
+        print("You don't have a permission to open the file")
 except IndexError:
     print("Missing arguments, make sure you have one for the name of the txt file")
