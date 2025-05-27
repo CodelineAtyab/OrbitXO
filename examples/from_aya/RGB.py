@@ -6,7 +6,7 @@ def calculate_distance(color1, color2):
 
 def find_closest_color(palette, target_color):
     closest_color = None
-    min_distance = float('inf')  # start with a very large number
+    min_distance = float('inf')   
     for color in palette:
         distance = calculate_distance(color, target_color)
         if distance < min_distance:
@@ -37,19 +37,17 @@ def main():
         choice = input("\nChoose an option: ")
 
         if choice == "1":
-        
-            try:
-                r = int(input("Red (0-255): "))
-                g = int(input("Green (0-255): "))
-                b = int(input("Blue (0-255): "))
-                if 0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255:
-                    color = (r, g, b)
-                    palette.append(color)
-                    print(f"Color {color} added to palette")
-                else:
-                    print("Values must be between 0 and 255.")
-            except ValueError:
-                print("Please enter valid numbers.")
+
+            r = int(input("Red (0-255): "))
+            g = int(input("Green (0-255): "))
+            b = int(input("Blue (0-255): "))
+            if 0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255:
+                color = (r, g, b)
+                palette.append(color)
+                print(f"Color {color} added to palette")
+            else:
+                print("Values must be between 0 and 255.")
+            print("Please enter valid numbers.")
 
         elif choice == "2":
         
@@ -81,18 +79,18 @@ def main():
         elif choice == "4":
            
             if palette:
-                try:
-                    r = int(input("Enter Red value (0-255): "))
-                    g = int(input("Enter Green value (0-255): "))
-                    b = int(input("Enter Blue value (0-255): "))
-                    if 0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255:
-                        target_color = (r, g, b)
-                        closest_color = find_closest_color(palette, target_color)
-                        print(f"The closest color to {target_color} is {closest_color}")
-                    else:
-                        print("Values must be between 0 and 255.")
-                except ValueError:
-                    print("Please enter valid numbers.")
+              
+                r = int(input("Enter Red value (0-255): "))
+                g = int(input("Enter Green value (0-255): "))
+                b = int(input("Enter Blue value (0-255): "))
+                if 0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255:
+                    target_color = (r, g, b)
+                    closest_color = find_closest_color(palette, target_color)
+                    print(f"The closest color to {target_color} is {closest_color}")
+                else:
+                    print("Values must be between 0 and 255.")
+
+                print("Please enter valid numbers.")
             else:
                 print("The palette is empty.")
 
