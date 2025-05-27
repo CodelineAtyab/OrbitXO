@@ -2,8 +2,8 @@ import os
 import sys
 import datetime 
 
-filepath = r".\data.txt"
-backups_file = r".\backup.txt"
+filepath = r".\examples\from_almuhannad\data.txt"
+backups_file = r".\examples\from_almuhannad\backup.txt"
 data_dict = {}
 
 if not os.path.exists(filepath):
