@@ -1,68 +1,38 @@
-import csv
+employees = [
+    {"name": "Mariya", "age": 24, "salary": 4000, "company": "PDO"},
+    {"name": "Hoor", "age": 32, "salary": 3000, "company": "Omantel"},
+    {"name": "Arooba", "age": 20, "salary": 2800, "company": "Codeline "},
+    {"name": "Haya", "age": 30, "salary": 3200, "company": "OBB"},
+    {"name": "Aya", "age": 21, "salary": 2600, "company": "Infoline"},
+    {"name": "Ghadeer", "age": 22, "salary": 2200, "company": "Asyad"}
+]
 
-def read_csv_file(filename):
-    data = []
-    try:
-        with open(filename, "r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                data.append(row)
-        return data
-    except FileNotFoundError:
-        print("File not found:", filename)
-        return []
-    except Exception as e:
-        print("Error reading file:", e)
-        return []
+print("\nAll Employees:\n")
+for emp in employees:
+    print(f"{emp['name']} | Age: {emp['age']} | Salary: {emp['salary']} | Company: {emp['company']}")
+print("\n")
 
-def calculate_statistics(data, column_name):
-    try:
-        numbers = [float(row[column_name]) for row in data if row[column_name].strip()]
-        if numbers:
-            return {
-                "min": min(numbers),
-                "max": max(numbers),
-                "avg": sum(numbers) / len(numbers)
-            }
-        else:
-            return {}
-    except Exception as e:
-        print(f"Error calculating stats for {column_name}:", e)
-        return {}
+def calculate_statistics(data, key):
+    values = [emp[key] for emp in data]
+    return {
+        "min": min(values),
+        "max": max(values),
+        "avg": sum(values) / len(values)
+    }
 
-def filter_rows(data, column_name, condition_func):
-    try:
-        return [row for row in data if condition_func(float(row[column_name]))]
-    except Exception as e:
-        print("Error filtering rows:", e)
-        return []
+age_stats = calculate_statistics(employees, "age")
+salary_stats = calculate_statistics(employees, "salary")
 
-def write_to_csv(filename, data):
-    try:
-        if data:
-            with open(filename, "w", newline='', encoding="utf-8") as file:
-                writer = csv.DictWriter(file, fieldnames=data[0].keys())
-                writer.writeheader()
-                writer.writerows(data)
-            print("Filtered data written to", filename)
-        else:
-            print("No data to write.")
-    except Exception as e:
-        print("Error writing file:", e)
+print("Statistics:")
+print(f"Age -> Min: {age_stats['min']}, Max: {age_stats['max']}, Average: {age_stats['avg']}") 
+print(f"Salary -> Min: {salary_stats['min']}, Max: {salary_stats['max']}, Average: {salary_stats['avg']}")
+print("\n")
 
-def main():
-    input_file = "examples/from_mariya/employees.csv"
-    output_file = "filtered_employees.csv"
+filtered_employees = []
+for emp in employees:
+    if emp["age"] > 23:
+        filtered_employees.append(emp)
 
-    data = read_csv_file(input_file)
-
-    if data:
-        print("Statistics for 'age':", calculate_statistics(data, "age"))
-        print("Statistics for 'salary':", calculate_statistics(data, "salary"))
-
-        filtered_data = filter_rows(data, "age", lambda age: age > 27)
-
-        write_to_csv(output_file, filtered_data)
-
-if __name__ == "__main__":
-    main()
+print("Employees with Age > 23:\n")
+for emp in filtered_employees:
+    print(f"{emp['name']} | Age: {emp['age']} | Salary: {emp['salary']} | Company: {emp['company']}")
