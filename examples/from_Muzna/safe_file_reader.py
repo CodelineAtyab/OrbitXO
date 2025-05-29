@@ -3,7 +3,7 @@ def safe_read_file(filename):#examples/from_Muzna/data.txt
     try:
         with open(filename, "r") as file:
             content = file.read()
-            print(f"✅ Successfully read: {filename}")
+            print(f"Successfully read: {filename}")
     except FileNotFoundError:
         print("File not found. Please check the filename.")
         with open("filename", "w") as f:
