@@ -1,0 +1,118 @@
+while True:
+    print("\nMain Menu")
+    print("1. Demonstration Mode")
+    print("2. Challenge Mode")
+    print("3. Exit")
+    
+    choice = input("Choose an option: ")
+
+    if choice == '1':
+        userinput = input("\nEnter a String: ")
+
+        while True:
+            print("\nSelect Operation:")
+            print("1. Basic string properties")
+            print("2. Case manipulation")
+            print("3. Searching operations")
+            print("4. Slicing operations")
+            print("5. Split and join operations")
+            print("6. Whitespace handling")
+            print("7. Character replacement")
+            print("8. String alignment")
+            print("9. String validation")
+            print("10. Formatting techniques")
+            print("11. Return to Main Menu")
+
+            op = input("Choose an Operation: ")
+
+            if op == '1':
+                print("\nBasic String Properties:")
+                print("Length:", len(userinput))
+                print("Concatenation Example:", userinput + " And fun too!")
+                print("Repetition Example:", "Python" * 3)
+
+            elif op == '2':
+                print("\nCase Manipulation:")
+                print("Uppercase:", userinput.upper())
+                print("Lowercase:", userinput.lower())
+                print("Titlecase:", userinput.title())
+                print("Swapcase:", userinput.swapcase())
+
+            elif op == '3':
+                print("\nSearching Operations:")
+                print("Find 'easy':", userinput.find('easy'))
+                if 'powerful' in userinput:
+                    print("Index of 'powerful':", userinput.index('powerful'))
+                else:
+                    print("Word 'powerful' not found.")
+                print("Count 'a':", userinput.count('a'))
+                print("Starts with 'Python':", userinput.startswith('Python'))
+                print("Ends with 'learn!':", userinput.endswith('learn!'))
+
+            elif op == '4':
+                print("\nSlicing Operations:")
+                print("First 6 characters:", userinput[:6])
+                print("Last 6 characters:", userinput[-6:])
+                print("Every other character:", userinput[::2])
+                print("Reversed string:", userinput[::-1])
+                if len(userinput) >= 18:
+                    print("Extract 'powerful':", userinput[10:18])
+                else:
+                    print("String too short to extract 'powerful'.")
+
+            elif op == '5':
+                print("\nSplit and Join Operations:")
+                words = userinput.split()
+                print("Splitted words:", words)
+                print("Joined with hyphens:", "-".join(words))
+                print("Partition around 'easy':", userinput.partition('easy'))
+
+            elif op == '6':
+                print("\nWhitespace Handling:")
+                spaced = "   " + userinput + "   "
+                print("Original with spaces:", repr(spaced))
+                print("strip():", repr(spaced.strip()))
+                print("lstrip():", repr(spaced.lstrip()))
+                print("rstrip():", repr(spaced.rstrip()))
+
+            elif op == '7':
+                print("\nCharacter Replacement:")
+                print("Replace 'easy' with 'simple':", userinput.replace('easy', 'simple'))
+                table = str.maketrans('aeiou', '12345')
+                print("Translated vowels to numbers:", userinput.translate(table))
+
+            elif op == '8':
+                print("\nString Alignment:")
+                print("Centered:", userinput.center(50, '-'))
+                print("Left-justified:", userinput.ljust(50, '.'))
+                print("Right-justified:", userinput.rjust(50, '.'))
+
+            elif op == '9':
+                print("\nString Validation:")
+                print("Is alphabetic?", userinput.isalpha())
+                print("Is digit?", userinput.isdigit())
+                print("Is alphanumeric?", userinput.isalnum())
+                print("Is all whitespace?", userinput.isspace())
+
+            elif op == '10':
+                print("\nFormatting Techniques:")
+                word = 'Python'
+                print(f"Using f-strings: Python has {len(word)} letters and is popular!")
+                print("Using .format(): {}".format("Hello, {}!".format("World")))
+                print("Using % operator: %s" % ("90% of developers love Python"))
+
+            elif op == '11':
+                break
+
+            else:
+                print("Invalid choice. Try again!")
+
+    elif choice == '2':
+        print("\nChallenge Mode coming soon!")
+
+    elif choice == '3':
+        print("\nEXIT!")
+        break
+
+    else:
+        print("Invalid choice, please try again.")
