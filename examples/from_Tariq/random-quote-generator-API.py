@@ -2,6 +2,7 @@ import random
 import fastapi
 import uvicorn
 import os
+import hashlib
 
 FILE_PATH = ".\quotes.txt"
 
@@ -9,7 +10,8 @@ FILE_PATH = ".\quotes.txt"
 def add_new_quote(quote, author, category):
 
     with open(FILE_PATH, "a") as file:
-        file.write(f"{quote} - {author} - {category}\n")
+        id = hashlib.md5(quote.encode()).hexdigest()
+        file.write(f"{id} - {quote} - {author} - {category}\n")
     print("New quote added successfully!")
 
 def get_random_quote():
