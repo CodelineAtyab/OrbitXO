@@ -3,7 +3,11 @@ import csv
 import sys
 
 
-def read_csv(filepath):
+if len(sys.argv) < 3:
+    print("Usage: python script.py <column_index> <criteria: min | max | avg>")
+    sys.exit(1)
+
+def read_csv_file(filepath):
     try:
         with open(filepath, 'r') as file:
             file_reader = csv.reader(file)
@@ -25,7 +29,7 @@ def calc_min_max_avg(data, column):
     try:
         values = [int(row[column]) for row in data[1:] if row[column].isdigit()]
         if not values:
-            return None
+            return None,None,None
         else:
             min_numbers = min(values)
             max_numbers  = max(values)
@@ -40,7 +44,6 @@ def calc_min_max_avg(data, column):
 
 def filter_row_by_crateria(data, column, crateria):
     try:
-        # Convert crateria to int in case it was passed as a string
         crateria = int(crateria)
         filtered_values = [row for row in data[1:] if int(row[column]) == crateria]
 
@@ -83,7 +86,7 @@ if not os.path.exists(pathfile):
     except Exception as ex:
         print(f"Error creating file: {ex}")
 
-data = read_csv(pathfile)
+data = read_csv_file(pathfile)
 print("Data read from csv file:")
 for row in data:
     print(row)
@@ -99,13 +102,13 @@ criteria = sys.argv[2]
 if criteria == "max":
     filter_rows = filter_row_by_crateria(data,column_index,max_value)
 elif criteria == "min":
-    filtered_rows = filter_row_by_crateria(data, column_index, min_value)
+    filter_rows = filter_row_by_crateria(data, column_index, min_value)
 elif criteria == "avg":
-    filtered_rows = filter_row_by_crateria(data, column_index, avg_value)
+    filter_rows = filter_row_by_crateria(data, column_index, avg_value)
 else:
     print("Invalid criteria. Please use 'max', 'min', or 'avg'.")
     sys.exit(1)
 
 save_file = r".\examples\from_almuhannad\filtered_results.csv"
-write_results(save_file, filtered_rows)
+write_results(save_file, filter_rows)
 print(f"Filtered results written to {save_file}.")
