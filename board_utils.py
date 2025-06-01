@@ -22,3 +22,18 @@ def make_move(board, sel_row, sel_col, symbol):
 
 def is_board_filled(board, empty_box_symbol):
   return empty_box_symbol not in str(board)
+
+def try_to_make_a_move(board, input_seq, input_seq_index, symbol, is_player_move):
+  is_move_successfully_made = False
+  while not is_move_successfully_made:
+    is_move_successfully_made = make_move(board=board, 
+                                          sel_row=int(input_seq[input_seq_index][0]), 
+                                          sel_col=int(input_seq[input_seq_index][1]), 
+                                          symbol=symbol)
+    
+    if is_move_successfully_made:
+      input_seq_index = input_seq_index + 1
+      return (not is_player_move, input_seq_index)
+    
+    # Failure Case
+    input_seq_index = input_seq_index + 1

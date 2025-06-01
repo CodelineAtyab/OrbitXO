@@ -28,32 +28,21 @@ while not board_utils.is_board_filled(board, EMPTY_SYMBOL):
       """
       Step 1 - User Makes a Move
       """
-      is_move_successfully_made = False
-      while not is_move_successfully_made:
-        is_move_successfully_made = board_utils.make_move(board=board, 
-                                                          sel_row=int(user_1_inp_sequence[user_move_index][0]), 
-                                                          sel_col=int(user_1_inp_sequence[user_move_index][1]), 
-                                                          symbol=user_1_symbol)
-        
-        if is_move_successfully_made:
-          is_players_move = False
-
-        user_move_index = user_move_index + 1
+      is_players_move, user_move_index = board_utils.try_to_make_a_move(board=board,
+                                                                        input_seq=user_1_inp_sequence,
+                                                                        input_seq_index=user_move_index,
+                                                                        symbol=user_1_symbol,
+                                                                        is_player_move=is_players_move)
     
     if not is_players_move:
       """
       Step 2 - Bot Makes a Move
       """
-      is_move_successfully_made = False
-      while not is_move_successfully_made:
-        is_move_successfully_made = board_utils.make_move(board=board, 
-                                                          sel_row=int(bot_inp_sequence[bot_move_index][0]), 
-                                                          sel_col=int(bot_inp_sequence[bot_move_index][1]), 
-                                                          symbol=bot_symbol)
-        if is_move_successfully_made:
-          is_players_move = True
-
-        bot_move_index = bot_move_index + 1 
+      is_players_move, bot_move_index = board_utils.try_to_make_a_move(board=board,
+                                                                       input_seq=bot_inp_sequence,
+                                                                       input_seq_index=bot_move_index, 
+                                                                       symbol=bot_symbol,
+                                                                       is_player_move=is_players_move)
     
     print(board_utils.is_board_filled(board, EMPTY_SYMBOL))
 
