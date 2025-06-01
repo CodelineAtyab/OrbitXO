@@ -45,7 +45,7 @@ for index in range(0, len(user_1_inp_sequence)):
                                                           sel_col=int(bot_inp_sequence[index][1]), 
                                                           symbol=bot_symbol)
         if not is_move_successfully_made:
-          pass
+          pass 
         else:
           is_players_move = True
     
