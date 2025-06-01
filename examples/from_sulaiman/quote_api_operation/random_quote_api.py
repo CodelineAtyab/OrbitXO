@@ -43,5 +43,23 @@ def post_quote(quote, author, category):
     file.close()
     return id, quote, author, category
 
+@app.get("/quotes/category")
+def random_quote(category: str):
+    try:
+        file = open("examples/from_sulaiman/quote_api_operation/data.json", "r")
+        lines = file.readlines()
+        jlines = []
+        for line in lines:
+            jlines.append(json.loads(line))
+        category_quotes = [quote for quote in jlines if category.lower() in quote['category'].lower()]
+        if not category_quotes:
+            return "No quotes found for this category"
+        for rand in category_quotes:
+            return f"ID:{rand['id']}\n Quote:{rand['quote']}\n Author:{rand['author']}\n Category:{rand['category']}\n"
+    except json.JSONDecodeError:
+        return "no quotes were entered"
+    except FileNotFoundError:
+        return "no quotes were entered"
+
 if __name__ == "__main__":
   uvicorn.run(app, host="0.0.0.0", port=8567)
