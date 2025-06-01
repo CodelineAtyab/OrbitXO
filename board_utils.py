@@ -37,3 +37,8 @@ def try_to_make_a_move(board, input_seq, input_seq_index, symbol, is_player_move
     
     # Failure Case
     input_seq_index = input_seq_index + 1
+
+def is_trio_a_match(board, pos1, pos2, pos3, symbol):
+  return board[pos1[0]][pos1[1]] == symbol and \
+         board[pos2[0]][pos2[1]] == symbol and \
+         board[pos3[0]][pos3[1]] == symbol
