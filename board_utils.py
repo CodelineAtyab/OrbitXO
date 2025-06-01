@@ -8,7 +8,7 @@ def make_move(board, sel_row, sel_col, symbol):
       # User 1 Makes a move
       board[sel_row][sel_col] = symbol
       move_successful = True
-      print(f"User 1 Move: {sel_row} - {sel_col}")
+      print(f"{symbol} Move: {sel_row} - {sel_col}")
 
       # Print the entire board
       for row in board:
@@ -21,4 +21,4 @@ def make_move(board, sel_row, sel_col, symbol):
 
 
 def is_board_filled(board, empty_box_symbol):
-  return empty_box_symbol in str(board)
+  return empty_box_symbol not in str(board)
