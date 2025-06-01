@@ -3,31 +3,47 @@ import fastapi
 import uvicorn
 import os
 import hashlib
+import json
 
-FILE_PATH = ".\quotes.txt"
+FILE_PATH = ".\quotes.json"
 
 
 def add_new_quote(quote, author, category):
 
-    with open(FILE_PATH, "a") as file:
-        id = hashlib.md5(quote.encode()).hexdigest()
-        file.write(f"{id} - {quote} - {author} - {category}\n")
+    if os.path.exists(FILE_PATH):
+        with open(FILE_PATH, "r") as file:
+            quotes = json.load(file)
+    else:
+        quotes = []
+    id = hashlib.md5(quote.encode()).hexdigest()
+    new_quote = {
+        "id": id,
+        "quote": quote,
+        "author": author,
+        "category": category
+        }
+    quotes.append(new_quote)
+    with open(FILE_PATH, "w") as file:
+        json.dump(quotes, file, indent=2)
     print("New quote added successfully!")
 
 def get_random_quote():
     with open(FILE_PATH, "r") as file:
-        quotes = file.readlines()
+        quotes = json.load(file)
     if not quotes:
         return "No quotes available."
-    random_quote = random.choice(quotes).strip()
+    random_quote = random.choice(quotes)
     return random_quote
 
 def search_quotes_by_category(category):
     with open(FILE_PATH, "r") as file:
-        quotes = file.readlines()
+            quotes = json.load(file)
+    matching_quotes = []
     for quote in quotes:
-        if category.lower() in quote.lower():
-            return quote.strip()
+        if category.lower() in quote["category"].lower():
+            matching_quotes.append(quote)
+    if matching_quotes:
+        return matching_quotes
     return "No quotes found in this category."
 
 app = fastapi.FastAPI()
@@ -46,5 +62,5 @@ if __name__ == "__main__":
   
   if not os.path.exists(FILE_PATH):
         with open(FILE_PATH, "w") as file:
-            file.write("")
+            json.dump([], file)
   uvicorn.run(app, host="0.0.0.0", port=8888)
