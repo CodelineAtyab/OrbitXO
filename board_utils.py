@@ -23,6 +23,7 @@ def make_move(board, sel_row, sel_col, symbol):
 def is_board_filled(board, empty_box_symbol):
   return empty_box_symbol not in str(board)
 
+
 def try_to_make_a_move(board, input_seq, input_seq_index, symbol, is_player_move):
   is_move_successfully_made = False
   while not is_move_successfully_made:
@@ -38,7 +39,25 @@ def try_to_make_a_move(board, input_seq, input_seq_index, symbol, is_player_move
     # Failure Case
     input_seq_index = input_seq_index + 1
 
+
 def is_trio_a_match(board, pos1, pos2, pos3, symbol):
   return board[pos1[0]][pos1[1]] == symbol and \
          board[pos2[0]][pos2[1]] == symbol and \
          board[pos3[0]][pos3[1]] == symbol
+
+
+def is_there_a_winner(board, symbol):
+  is_a_winner = False
+  # Check All Rows For the Win 
+  for row in range(3):
+    is_a_winner = is_a_winner or is_trio_a_match(board=board, pos1=(row, 0), pos2=(row, 1), pos3=(row, 2), symbol=symbol)
+  
+  # Check All Col For the Win
+  for col in range(3):
+    is_a_winner = is_a_winner or is_trio_a_match(board=board, pos1=(0, col), pos2=(1, col), pos3=(2, col), symbol=symbol)
+  
+  # # Check Diagonals
+  is_a_winner = is_a_winner or is_trio_a_match(board=board, pos1=(0, 0), pos2=(1, 1), pos3=(2, 2), symbol=symbol)
+  is_a_winner = is_a_winner or is_trio_a_match(board=board, pos1=(0, 2), pos2=(1, 1), pos3=(2, 0), symbol=symbol)
+
+  return is_a_winner
