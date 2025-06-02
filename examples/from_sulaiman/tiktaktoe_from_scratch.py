@@ -1,7 +1,9 @@
+EMPTY_SYMBOL = "-"
+
 board = [
-    ["-", "-", "-"],
-    ["-", "-", "-"],
-    ["-", "-", "-"]
+    [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL],
+    [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL],
+    [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL]
     ]
 
 def play_a_turn(pos1, pos2, symbol):
