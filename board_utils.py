@@ -16,28 +16,12 @@ def make_move(board, sel_row, sel_col, symbol):
   else:
     print(f"Unable to make a move at {sel_row}-{sel_col} with {symbol}")
     
-  time.sleep(1)
+  # time.sleep(1)
   return move_successful
 
 
 def is_board_filled(board, empty_box_symbol):
   return empty_box_symbol not in str(board)
-
-
-def try_to_make_a_move(board, move_location, symbol, is_player_move):
-  is_move_successfully_made = False
-  while not is_move_successfully_made:
-    is_move_successfully_made = make_move(board=board, 
-                                          sel_row=move_location[0], 
-                                          sel_col=move_location[1], 
-                                          symbol=symbol)
-    
-    if is_move_successfully_made:
-      # input_seq_index = input_seq_index + 1
-      return (not is_player_move, input_seq_index)
-    
-    # Failure Case
-    input_seq_index = input_seq_index + 1
 
 
 def is_trio_a_match(board, pos1, pos2, pos3, symbol):
