@@ -14,8 +14,17 @@ all_positions = ["00", "01", "02", "10", "11", "12", "20", "21", "22"]
 user_1_symbol = "X"
 bot_symbol = "O"
 
-user_1_inp_sequence = ["12", "20", "10", "21", "20"]
-bot_inp_sequence = ["00", "01", "02", "11", "22", "12", "00"]
+# user_1_inp_sequence = ["00", "01", "02", "11", "22", "12", "00"]
+# bot_inp_sequence = ["12", "20", "10", "21", "20"]
+
+"""
+X | X | O
+O | O | 12
+X | 21 | X
+"""
+
+user_1_inp_sequence = ["00", "20", "22", "01", "12"]
+bot_inp_sequence = ["02", "10", "11", "22", "21"]
 
 user_move_index = 0
 bot_move_index = 0
@@ -52,3 +61,12 @@ while not board_utils.is_board_filled(board, EMPTY_SYMBOL) and not is_a_winner:
 
   except IndexError:
     print("Board is already filled. Thanks!")
+
+# Handle the Winner Announcement
+if is_a_winner:
+  if is_players_move == False:
+    print("Player Wins")
+  else:
+    print("Bot Wins")
+else:
+  print("Its a Draw!")
