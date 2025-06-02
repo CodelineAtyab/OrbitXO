@@ -5,9 +5,6 @@ def read_data_file(file_name):
         if not content:
             print("The file is empty")
             return False
-        if not content[0].isalpha():  #content start with a letter
-            print("File does not start with a letter")
-            return False
         return True
 
     try:   # check the file exists before open it
@@ -48,6 +45,6 @@ text=read_data_file(my_file)
 
 if text is not None:
     print("\nFile Preview:")
-    print(text[:100])  # Show first 100 characters
+    print(text) 
 else:
     print("There is no data loaded")
