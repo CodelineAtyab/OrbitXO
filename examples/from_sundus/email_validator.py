@@ -27,4 +27,4 @@ def validate_email(email: str = Form(...)):
 
 
 if __name__ == "__main__":
-    uvicorn.run("email_validator:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("email_validator:app", host="localhost", port=8888, reload=True)
