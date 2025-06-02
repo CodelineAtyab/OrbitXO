@@ -1,4 +1,14 @@
-# Step 1: Save data
+import csv
+
+# Function to check if a value is a number
+def is_number(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+# Step 1: Save sample data
 data = [
     "Name,Age,Salary",
     "haya,26,50000",
@@ -8,32 +18,55 @@ data = [
     "arooba,24,52000"
 ]
 
-with open("data.csv", "w") as file:
-    file.write("\n".join(data))
+# Write data to a CSV file
+with open("data.csv", "w", newline="") as file:
+    for line in data:
+        file.write(line + "\n")
 
-# Step 2: Read and calculate
+# Step 2: Read CSV file and detect if it has a header
 with open("data.csv", "r") as file:
-    lines = file.readlines()
+    first_line = file.readline().strip()
+    has_header = any(char.isalpha() for char in first_line)
+    file.seek(0)  # Go back to start of file
+    
+    reader = csv.reader(file)
 
-ages = []
-salaries = []
-filtered = []
+    if has_header:
+        headers = next(reader)
+    else:
+        headers = ["Column1", "Column2", "Column3"]
 
-for line in lines[1:]:
-    name, age, salary = line.strip().split(",")
-    age = int(age)
-    salary = int(salary)
-    ages.append(age)
-    salaries.append(salary)
-    if age > 22:
-        filtered.append(line.strip())
+    # Set up lists to hold numeric data
+    numeric_data = {header: [] for header in headers}
+    filtered_rows = []
 
-# Step 3: Show results
-print("Age: min =", min(ages), "max =", max(ages), "avg =", sum(ages) / len(ages))
-print("Salary: min =", min(salaries), "max =", max(salaries), "avg =", sum(salaries) / len(salaries))
+    for row in reader:
+        for i in range(len(row)):
+            value = row[i]
+            header = headers[i]
 
-# Step 4: Save filtered rows
-with open("filtered_output.csv", "w") as file:
-    file.write(lines[0])  # write header
-    file.write("\n".join(filtered))
-    file.write("\n")
+            # If it's a number, add it to the numeric_data dictionary
+            if is_number(value):
+                numeric_data[header].append(float(value))
+
+        # Filter: Keep rows where Age > 22 (if 'Age' column exists)
+        try:
+            age_index = headers.index("Age")
+            if float(row[age_index]) > 22:
+                filtered_rows.append(row)
+        except (ValueError, IndexError):
+            pass  # Ignore errors if 'Age' column missing or invalid data
+
+# Step 3: Show results for numeric columns
+for header, values in numeric_data.items():
+    if values:  # Only show if there are numbers collected for this column
+        print(f"{header}: Min = {min(values)}, Max = {max(values)}, Avg = {sum(values)/len(values):.2f}")
+
+# Step 4: Write filtered rows to a new CSV file
+with open("filtered_output.csv", "w", newline="") as file:
+    writer = csv.writer(file)
+    if has_header:
+        writer.writerow(headers)
+    writer.writerows(filtered_rows)
+
+print("Filtered data saved to filtered_output.csv")
