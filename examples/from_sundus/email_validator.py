@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request
-import re 
-import uvicorn 
+from fastapi import FastAPI, Form
+import re
+import uvicorn
 
 app = FastAPI() 
 
@@ -18,16 +18,7 @@ def validate_email_format(email: str):
     return True, "Email address is valid"
 
 @app.post("/validate-email")
-async def validate_email(request: Request):
-    data = await request.json()
-    email = data.get("email")
-
-    if not email:
-        return {
-            "is_valid": False,
-            "message": "Missing 'email' field in the request body"
-        }
-
+def validate_email(email: str = Form(...)):
     is_valid, message = validate_email_format(email)
     return {
         "is_valid": is_valid,
