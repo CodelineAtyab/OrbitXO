@@ -1,44 +1,33 @@
-from fastapi import FastAPI, Request
-import re
+from fastapi import FastAPI, Body
 import uvicorn
 
 app = FastAPI()
 
-EMAIL_REGEX = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+def validate_email(email: str):
+    if not email or email[0] in ["_", "-", "@", "."]:
+        return {"is_valid": False, "message": "Email should start with a letter not '_', '-', '@', or '.'"}
 
-# ^ means “start of the string”
-# [\w\.-]+ means “one or more letters, numbers, dot or dash”
-# @ means the literal @ symbol
-# \. means a literal dot .
-# $ means “end of the string”
-# json = { "email": "example@domain.com" }
+    if "@" not in email:
+        return {"is_valid": False, "message": "Email must include the '@' symbol"}
 
-@app.post("/validate-email")
-async def validate_email(request: Request):  
-    try:
-        data = await request.json()  
-    except:
-        return {
-            "is_valid": False,
-            "message": "Invalid request format. Please send a JSON with an email field."
-        }
+    at_pos = email.find("@")
+    dot_pos = email.rfind(".")
+    underscore_pos = email.find("_")
+    dash_pos = email.find("-")
 
-    email = data.get("email")
-    if not email:
-        return {"is_valid": False, "message": "Email address is missing."}
-
-    # Email format checks
-    if not re.match(EMAIL_REGEX, email):
-        if '@' not in email:
-            return {"is_valid": False, "message": "Invalid email format. Missing @ symbol."}
-        elif email.count('@') > 1:
-            return {"is_valid": False, "message": "Invalid email format. More than one @ symbol."}
-        elif '.' not in email.split('@')[1]:
-            return {"is_valid": False, "message": "Invalid email format. Missing domain dot (e.g. .com)."}
-        else:
-            return {"is_valid": False, "message": "Invalid email format."}
-
+    if dot_pos < at_pos + 2 or dot_pos >= len(email) - 2:
+        return {"is_valid": False, "message": "Invalid domain format after '@'"}
+    if underscore_pos != -1 and underscore_pos < at_pos:
+        return {"is_valid": False, "message": "Underscore cannot be used before '@'"}
+    if dash_pos != -1 and dash_pos < at_pos:
+        return {"is_valid": False, "message": "Dash cannot be used before '@'"}
+    if email.count("@") > 1:
+        return {"is_valid": False, "message": "Email cannot contain multiple '@' symbols"}
     return {"is_valid": True, "message": "Email address is valid"}
 
+@app.post("/validate-email")
+def validate_email_endpoint(email: str):
+    return validate_email(email)
+
 if __name__ == "__main__":
-    uvicorn.run("email_validator:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("email_validator:app", host="localhost", port=8888, reload=True)
