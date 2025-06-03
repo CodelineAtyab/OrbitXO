@@ -1,55 +1,55 @@
+import random
+import fastapi
+import uvicorn
+import os
+import hashlib
 
-from fastapi import FastAPI, Request # FastAPI for building APIs
-# Request for handling incoming requests
-import uvicorn #web server for running the API
-import random # for selecting random quotes
+QUOTE_FILE = "./quote.txt"
 
-app = FastAPI()
+def store_quote(title, content, category):
+    unique_id = hashlib.md5(content.encode()).hexdigest()
+    record = f"{unique_id} | {title} | {content} | {category}\n"
+    with open(QUOTE_FILE, "a", encoding="utf-8") as f:
+        f.write(record)
+    print("quote saved.")
 
-quotes_db = [
-    {
-        "quote": "The only way to do great work is to love what you do.",
-        "author": "Steve Jobs",
-        "category": "Inspiration"
-    },
-    {
-        "quote": "Life is what happens when you're busy making other plans.",
-        "author": "John Lennon",
-        "category": "Life"
-    }
-]
+def fetch_random_quote():
+    if not os.path.exists(QUOTE_FILE):
+        return "No quotes found."
+    with open(QUOTE_FILE, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    if not lines:
+        return "No quotes available."
+    return random.choice(lines).strip()
 
+def find_quote_by_category(category):
+    if not os.path.exists(QUOTE_FILE):
+        return "Quote file missing."
+    with open(QUOTE_FILE, "r", encoding="utf-8") as f:
+        records = f.readlines()
+    for line in records:
+        parts = line.strip().split("|")
+        if len(parts) == 4 and category.lower() in parts[3].lower():
+            return line.strip()
+    return "No matching category found."
 
-@app.get("/get_random_quote")
+app = fastapi.FastAPI()
+
+@app.post("/add-quote")
+def add_quote(title: str, content: str, category: str):
+    store_quote(title, content, category)
+    return {"status": "Quote successfully stored"}
+
+@app.get("/random-quote")
 def get_random_quote():
-  return random.choice(quotes_db)
+    return {"quote": fetch_random_quote()}
 
-# Accept JSON body with POST
-@app.post("/add_quote")
-async def add_quote(request: Request):
-    new_quote =  await request.json()
-    quotes_db.append({
-    "quote": new_quote["quote"],
-    "author": new_quote["author"],
-    "category": new_quote["category"]
-})
-    return {"message": "Quote added successfully", "quote": new_quote}
-
-@app.get("/get_category_quotes")
-def get_all_quotes(category: str):
-    quotes_db_filtered = [
-        quote for quote in quotes_db if quote["category"].lower() == category.lower()
-    ]
-
-    if not quotes_db_filtered:
-        return {"message": f"No quotes found for category '{category}'"}
-
-    return quotes_db_filtered
-
-@app.get("/list_categories")
-def list_categories():
-    categories = {quote["category"] for quote in quotes_db}
-    return {"categories": categories}
+@app.get("/search-category")
+def search_by_category(category: str):
+    return {"result": find_quote_by_category(category)}
 
 if __name__ == "__main__":
-  uvicorn.run(app, host="0.0.0.0", port=8888)
+    if not os.path.exists(QUOTE_FILE):
+        with open(QUOTE_FILE, "w", encoding="utf-8") as f:
+            f.write("")
+    uvicorn.run(app, host="0.0.0.0", port=8888)
