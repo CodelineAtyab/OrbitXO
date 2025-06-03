@@ -13,30 +13,29 @@ board = [
 user_1_symbol = "X"
 bot_symbol = "O"
 
-# Player Winning Input Sequence
-# user_1_inp_sequence = ["00", "01", "02", "11", "22", "12", "00"]
-# bot_inp_sequence = ["12", "20", "10", "21", "20"]
-
-# Draw Input Sequence
-# user_1_inp_sequence = ["00", "20", "22", "01", "12"]
-# bot_inp_sequence = ["02", "10", "11", "22", "21"]
-
-# user_move_index = 0
-# bot_move_index = 0
-
 is_players_move = True
 is_a_winner = False
 
-# Process
-while not board_utils.is_board_filled(board) and not is_a_winner:
+
+def perform_move(move: str):
+  msg_to_return = {"msg": "Success", "board": board}
+
   try:
+    global is_players_move
+    global is_a_winner
+
     if is_players_move:
       """
       Step 1 - User Makes a Move
       """
       is_players_move = player_utils.try_to_make_a_move(board=board,
                                                         symbol=user_1_symbol,
+                                                        incoming_move=move,
                                                         is_player_move=is_players_move)
+      
+      # Invalid Move - Tell the User by responding
+      if is_players_move is None:
+        return {"msg": "Move is invalid", "board": board}
 
       is_a_winner = board_utils.is_there_a_winner(board=board, symbol="X")
 
@@ -50,14 +49,32 @@ while not board_utils.is_board_filled(board) and not is_a_winner:
       
       is_a_winner = board_utils.is_there_a_winner(board=board, symbol="O")
 
-  except IndexError:
-    print("Board is already filled. Thanks!")
+    # Handle the Winner Announcement
+    if is_a_winner:
+      if is_players_move == False:
+        msg_to_return["msg"] = "Player Wins!"
+        print("Player Wins")
+      else:
+        msg_to_return["msg"] = "Bot Wins!"
+        print("Bot Wins")
+    elif board_utils.is_board_filled(board):
+      msg_to_return["msg"] = "Its a Draw!"
+      print("Its a Draw!")
 
-# Handle the Winner Announcement
-if is_a_winner:
-  if is_players_move == False:
-    print("Player Wins")
-  else:
-    print("Bot Wins")
-else:
-  print("Its a Draw!")
+    return msg_to_return
+
+  except IndexError:
+    err_msg = "Board is already filled. Thanks!"
+    msg_to_return["msg"] = err_msg
+
+    print(err_msg)
+    return msg_to_return
+
+# Process
+# while not board_utils.is_board_filled(board) and not is_a_winner:
+#   perform_move()
+
+print(perform_move("00"))
+print(perform_move("02"))
+print(perform_move("22"))
+print(perform_move("11"))
