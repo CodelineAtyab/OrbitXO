@@ -1,7 +1,8 @@
 
-from fastapi import FastAPI, Request
-import uvicorn
-import random
+from fastapi import FastAPI, Request # FastAPI for building APIs
+# Request for handling incoming requests
+import uvicorn #web server for running the API
+import random # for selecting random quotes
 
 app = FastAPI()
 
