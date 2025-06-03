@@ -24,7 +24,7 @@ def write_entry():
         lines.append(line)
 
     try:
-        with open(file_path, "a", encoding="utf-8") as file:
+        with open(file_path, "a") as file:
             file.write("\n".join(lines) + "\n")
         print("Entry saved.")
     except Exception as e:
@@ -35,7 +35,7 @@ def read_entry():
     file_path = os.path.join(JOURNAL_FOLDER, f"{date_str}.txt")
 
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r") as file:
             content = file.read()
         print(f"\nEntry for {date_str}:\n{content}")
     except FileNotFoundError:
