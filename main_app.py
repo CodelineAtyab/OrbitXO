@@ -1,10 +1,8 @@
 import board_utils
 import bot_utils
 import player_utils
-from utils import convert_two_digit_string_to_tuple
+from board_utils import EMPTY_SYMBOL
 
-
-EMPTY_SYMBOL = "-"
 
 board = [
   [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL],
@@ -30,7 +28,7 @@ is_players_move = True
 is_a_winner = False
 
 # Process
-while not board_utils.is_board_filled(board, EMPTY_SYMBOL) and not is_a_winner:
+while not board_utils.is_board_filled(board) and not is_a_winner:
   try:
     if is_players_move:
       """
@@ -42,7 +40,7 @@ while not board_utils.is_board_filled(board, EMPTY_SYMBOL) and not is_a_winner:
 
       is_a_winner = board_utils.is_there_a_winner(board=board, symbol="X")
 
-    if not is_players_move and not is_a_winner and not board_utils.is_board_filled(board, EMPTY_SYMBOL):
+    if not is_players_move and not is_a_winner and not board_utils.is_board_filled(board):
       """
       Step 2 - Bot Makes a Move
       """

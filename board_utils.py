@@ -1,9 +1,12 @@
 import time
 
 
+EMPTY_SYMBOL = "-"
+
+
 def make_move(board, sel_row, sel_col, symbol):
   move_successful = False
-  if board[sel_row][sel_col] == "-":
+  if board[sel_row][sel_col] == EMPTY_SYMBOL:
     if (sel_row >= 0 and sel_row <= 2) and (sel_col >= 0 and sel_col <= 2):
       # User 1 Makes a move
       board[sel_row][sel_col] = symbol
@@ -20,8 +23,8 @@ def make_move(board, sel_row, sel_col, symbol):
   return move_successful
 
 
-def is_board_filled(board, empty_box_symbol):
-  return empty_box_symbol not in str(board)
+def is_board_filled(board):
+  return EMPTY_SYMBOL not in str(board)
 
 
 def is_trio_a_match(board, pos1, pos2, pos3, symbol):
