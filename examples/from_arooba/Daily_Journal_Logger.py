@@ -1,138 +1,103 @@
-import os
+
 import sys
 import datetime
+import os
 
-main_file = "arooba_diary.txt"
-backup_path = "arooba_backup.txt"
-
-data_dict = {}
-
-
-if not os.path.exists(main_file):
+def load_entries_from_file(file_path):
+    data_store_dict = {}
     try:
-        with open(main_file, "w") as f:
-            f.write("2000-09-24 : This is a sample entry\n")
-        print(f"Created new file: {main_file}")
+        with open(file_path, 'r') as f:
+            for line in f:
+                if ':' in line:
+                    date_str, entry = line.strip().split(' : ', 1)
+                    try:
+                        entry_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+                        if entry_date not in data_store_dict:
+                            data_store_dict[entry_date] = []
+                        data_store_dict[entry_date].append(entry)
+                    except ValueError:
+                        continue
+    except FileNotFoundError:
+        return {}
+    return data_store_dict
+
+def create_new_dated_entry(data_store_dict, entry):
+    entry_date = datetime.date.today()
+    if entry_date not in data_store_dict:
+        data_store_dict[entry_date] = []
+    data_store_dict[entry_date].append(entry)
+    return data_store_dict
+
+def read_entry_by_date(data_store_dict, entry_date):
+    return data_store_dict.get(entry_date, [])
+
+def search_entries_by_keyword(data_store_dict, keyword):
+    results = []
+    for date, entries in data_store_dict.items():
+        for entry in entries:
+            if keyword.lower() in entry.lower():
+                results.append((date, entry))
+    return results
+
+def back_up_entries(data_store_dict, backup_file):
+    with open(backup_file, 'w') as f:
+        for date, entries in data_store_dict.items():
+            f.write(f"{date}:\n")
+            for entry in entries:
+                f.write(f"  - {entry}\n")
+    print(f"Backup completed to {backup_file}")
+
+FILE_PATH = 'journal.txt'
+data_store_dict = load_entries_from_file(FILE_PATH)
+
+if not os.path.exists(FILE_PATH):
+    try:
+        with open(FILE_PATH, "w") as f:
+            f.write("yyyy-mm-dd : this a dummy entry\n")
+        print(f"Created new file: {FILE_PATH}")
     except Exception as ex:
         print(f"Error creating file: {ex}")
 
 
-def load_entries_from_file(filepath):
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                if ':' in line:
-                    date_str, entry_txt = line.strip().split(' : ', 1)
-                    date_now = datetime.datetime.strptime(date_str, "%Y-%m-%d").date().isoformat()
-                    if date_now not in data_dict:
-                        data_dict[date_now] = []
-                    data_dict[date_now].append(entry_txt)
-    except ValueError:
-        print("Error parsing date in file.")
-    except FileNotFoundError:
-        print("File not found.")
-    except PermissionError:
-        print("Permission denied.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    return data_dict
 
-
-def create_entry(data_dict, entry_txt):
-    try:
-        date_now = datetime.date.today().isoformat()
-        entry_txt = " ".join(sys.argv[2:])
-
-        if date_now not in data_dict:
-            data_dict[date_now] = []
-        data_dict[date_now].append(entry_txt)
-
-        with open(main_file, "a") as f:
-            f.write(f"{date_now} : {entry_txt}\n")
-        return data_dict
-    except FileNotFoundError:
-        print("File not found.")
-    except PermissionError:
-        print("Permission denied.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-def read_entry(date_now):
-    try: 
-     return data_dict.get(date_now, [])
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-def search_entry(data_dict, keyword):
-    try:
-        results = []
-        for date, entries in data_dict.items():
-            for entry in entries:
-                if keyword.lower() in entry.lower():
-                    results.append((date, entry))
-        return results
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-def backup_file():
-    try:
-        with open(main_file, "r") as file:
-            content = file.read()
-        with open(backup_path, "w") as file:
-            file.write(content)
-        print("Backup created successfully.")
-    except FileNotFoundError:
-        print("File not found.")
-    except PermissionError:
-        print("Permission denied.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-data_dict = load_entries_from_file(main_file)
-
-if len(sys.argv) < 2:
-    print("No command provided.")
-    sys.exit()
-
-command = sys.argv[1]
-
-if command == "write":
-    if len(sys.argv) < 3:
-        print("Please provide text to write.")
+if len(sys.argv) >= 2 and sys.argv[1].lower() == "entry":
+    entry_text = " ".join(sys.argv[2:])
+    if entry_text:
+        data_store_dict = create_new_dated_entry(data_store_dict, entry_text)
+        with open(FILE_PATH, "a") as f:
+            f.write(f"{datetime.date.today()} : {entry_text}\n")
+        print("Entry added successfully!")
     else:
-        entry_txt = sys.argv[2]
-        data_dict = create_entry(data_dict, entry_txt)
-        print("Note added successfully.")
+        print("No entry text provided!")
+else:
+    print("Usage: python daily-journal-logger.py entry <your journal entry>")
 
-elif command == "read":
-    if len(sys.argv) < 3:
-        print("Please provide a date (YYYY-MM-DD).")
-    else:
-        date_str = sys.argv[2]
-        entries = read_entry(date_str)
+if len(sys.argv) >= 2 and sys.argv[1].lower() == "read":
+    try:
+        entry_date = datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date()
+        entries = read_entry_by_date(data_store_dict, entry_date)
         if entries:
-            print(f"Entries for {date_str}:")
+            print(f"Entries for {entry_date}:")
             for entry in entries:
-                print(f"- {entry}")
+                print(f"  - {entry}")
         else:
-            print(f"No entries found for date: {date_str}")
+            print(f"No entries found for {entry_date}.")
+    except ValueError:
+        print("Invalid date format. Please use YYYY-MM-DD.")
 
-elif command == "search":
-    if len(sys.argv) < 3:
-        print("Please provide a keyword to search.")
-    else:
-        keyword = " ".join(sys.argv[2:])
-        results = search_entry(data_dict, keyword)
+if len(sys.argv) >= 2 and sys.argv[1].lower() == "search":
+    keyword = " ".join(sys.argv[2:])
+    if keyword:
+        results = search_entries_by_keyword(data_store_dict, keyword)
         if results:
             print(f"Search results for '{keyword}':")
             for date, entry in results:
                 print(f"{date}: {entry}")
         else:
             print(f"No entries found containing '{keyword}'.")
+    else:
+        print("No keyword provided for search.")
 
-elif command == "backup":
-    backup_file()
-
-else:
-    print("Invalid command. Use: write, read, search, or backup.")
+if len(sys.argv) >= 2 and sys.argv[1].lower() == "backup":
+    backup_file = sys.argv[2] if len(sys.argv) > 2 else "journal_backup.txt"
+    back_up_entries(data_store_dict, backup_file)
