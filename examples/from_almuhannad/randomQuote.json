@@ -1,0 +1,27 @@
+[
+  {
+    "quote": "The only way to do great work is to love what you do.",
+    "author": "Steve Jobs",
+    "category": "Inspiration"
+  },
+  {
+    "quote": "Doubt kills more dreams than failure ever will.",
+    "author": "muhammed",
+    "category": "Inspiration"
+  },
+  {
+    "quote": "Start where you are. Use what you have. Do what you can.",
+    "author": "Tariq",
+    "category": "Inspiration"
+  },
+  {
+    "quote": "Talk is cheap. Show me the code.",
+    "author": "Linus Torvalds",
+    "category": "tech"
+  },
+  {
+    "quote": "hELLO",
+    "author": "ali",
+    "category": "life"
+  }
+]
