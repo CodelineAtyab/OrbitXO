@@ -1,9 +1,10 @@
 import os
 import datetime
 import shutil
+import sys
 
-JOURNAL_FOLDER = "journal"
-BACKUP_FOLDER = "backup"
+JOURNAL_FOLDER = "examples/from_mariya/journal"
+BACKUP_FOLDER = "examples/from_mariya/backup"
 
 if not os.path.exists(JOURNAL_FOLDER):
     os.makedirs(JOURNAL_FOLDER)
@@ -13,48 +14,39 @@ if not os.path.exists(BACKUP_FOLDER):
 
 def write_entry():
     today = datetime.date.today().isoformat() #.isoformat() it converts a date into a string
-    file_path = os.path.join(JOURNAL_FOLDER, f"{today}.txt")
-
-    print("Write your journal entry. Press Enter twice to save.")
-    lines = []
-    while True:
-        line = input()
-        if line == "":
-            break
-        lines.append(line)
-
+    file_path = f"{JOURNAL_FOLDER}/data.txt"
+    line = f"{today}:{sys.argv[2]}"
     try:
         with open(file_path, "a") as file:
-            file.write("\n".join(lines) + "\n")
+            file.write(line + "\n")
         print("Entry saved.")
     except Exception as e:
         print("Error saving entry:", e)
 
 def read_entry():
-    date_str = input("Enter the date to read (YYYY-MM-DD): ")
-    file_path = os.path.join(JOURNAL_FOLDER, f"{date_str}.txt")
+    file_path = f"{JOURNAL_FOLDER}/data.txt"
 
     try:
         with open(file_path, "r") as file:
             content = file.read()
-        print(f"\nEntry for {date_str}:\n{content}")
+        print(f"\nEntry for data.txt:\n{content}")
     except FileNotFoundError:
         print("No entry found for that date.")
     except Exception as e:
         print("Error reading entry:", e)
 
 def search_entries():
-    keyword = input("Enter a keyword to search: ").lower()
+    keyword = sys.argv[2].lower()
     found = False
 
     try:
-        for filename in os.listdir(JOURNAL_FOLDER):
-            file_path = os.path.join(JOURNAL_FOLDER, filename)
-            with open(file_path, "r", encoding="utf-8") as file:
-                content = file.read().lower()
-                if keyword in content:
-                    print(f"Found in {filename}")
+        file_path = f"{JOURNAL_FOLDER}/data.txt"
+        with open(file_path, "r") as file:
+            contents = file.readlines()
+            for content in contents:
+                if keyword in content[content.index(":"):].lower():
                     found = True
+                    print(content)
         if not found:
             print("No entries found with that keyword.")
     except Exception as e:
@@ -62,37 +54,27 @@ def search_entries():
 
 def backup_entries():
     try:
-        for filename in os.listdir(JOURNAL_FOLDER):
-            src_path = os.path.join(JOURNAL_FOLDER, filename)
-            dst_path = os.path.join(BACKUP_FOLDER, filename)
-            shutil.copy(src_path, dst_path)
+        src_path = f"{JOURNAL_FOLDER}/data.txt"
+        dst_path = f"{BACKUP_FOLDER}/data.txt"
+        shutil.copy(src_path, dst_path)
         print(f"All entries backed up to '{BACKUP_FOLDER}/'.")
     except Exception as e:
         print("Error during backup:", e)
 
 def show_menu():
-    while True:
-        print("\nJournal Menu:")
-        print("1. Write a new entry")
-        print("2. Read an entry by date")
-        print("3. Search entries by keyword")
-        print("4. Backup all entries")
-        print("5. Exit")
+    choice = sys.argv[1]
 
-        choice = input("Choose an option (1-5): ")
-
-        if choice == "1":
-            write_entry()
-        elif choice == "2":
-            read_entry()
-        elif choice == "3":
-            search_entries()
-        elif choice == "4":
-            backup_entries()
-        elif choice == "5":
-            print("Goodbye.")
-            break
-        else:
-            print("Invalid choice. Please enter a number from 1 to 5.")
+    if choice == "write":
+        write_entry()
+    elif choice == "read":
+        read_entry()
+    elif choice == "search":
+        search_entries()
+    elif choice == "backup":
+        backup_entries()
+    elif choice == "exit":
+        print("Goodbye.")
+    else:
+        print("Invalid choice.")
 
 show_menu()
