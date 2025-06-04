@@ -3,7 +3,7 @@ import uvicorn
 
 app = FastAPI() # This line tells FastAPI to use the function below for POST requests to /check-email
 @app.post("/check-email") #@ is a decorator this will oprate when the user 
-def validate_email(email: str = Body(..., embed=True)):
+def validate_email(email: str):
 
     if " " in email:
         return {"is_valid": False, "message": "Email must not contain spaces"}  # Check for any spaces in the email
