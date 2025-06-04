@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrbitXO - Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid #e94560;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #e94560, #0f3460);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleGlow 2s infinite alternate;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-style: italic;
+            color: #ccc;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            height: calc(100vh - 120px);
+            gap: 10px;
+            padding: 10px;
+        }
+
+        /* Modified to span both rows */
+        .board-quarter {
+            grid-row: span 2;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quarter {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quarter h2, .board-quarter h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        /* Board styling - updated for larger size */
+        .board-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+
+        .cell {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .cell:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+        }
+
+        .cell.X {
+            color: #e94560;
+        }
+
+        .cell.O {
+            color: #4ecdc4;
+        }
+
+        .cell.winner {
+            animation: winPulse 1s infinite alternate;
+        }
+
+        /* Connection status styling */
+        .connection-status {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .status-indicator {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .connected {
+            background: linear-gradient(45deg, #43aa8b, #4ecdc4);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.7);
+        }
+
+        .disconnected {
+            background: linear-gradient(45deg, #e94560, #ff7700);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.7);
+        }
+
+        .flames {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: transparent;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .flame {
+            position: absolute;
+            bottom: -10px;
+            width: 20px;
+            height: 40px;
+            background-color: #ff7700;
+            border-radius: 50% 50% 20% 20%;
+            transform-origin: bottom;
+            opacity: 0.9;
+            animation: flameAnimation 1s infinite alternate;
+        }
+
+        /* Winner and game info styling */
+        .game-status {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+
+        .winner-announcement {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .winner-message {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s ease;
+        }
+
+        .winner-message.show {
+            opacity: 1;
+            transform: scale(1);
+            animation: celebrate 1s infinite alternate;
+        }
+
+        .player-win {
+            color: #e94560;
+        }
+
+        .bot-win {
+            color: #4ecdc4;
+        }
+
+        .draw {
+            color: #f9c74f;
+        }
+
+        /* Game info styling */
+        .game-info {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .game-info p {
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        /* Animations */
+        @keyframes winPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(249, 199, 79, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(249, 199, 79, 0.8);
+            }
+        }
+
+        @keyframes flameAnimation {
+            0% {
+                height: 40px;
+                opacity: 0.7;
+            }
+            100% {
+                height: 60px;
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 5px rgba(233, 69, 96, 0.5);
+            }
+            100% {
+                text-shadow: 0 0 15px rgba(233, 69, 96, 0.9);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OrbitXO</h1>
+        <p>Developed by Team Code Orbit</p>
+    </div>
+
+    <div class="grid-container">
+        <!-- Left Side - Tic Tac Toe Board (spans both rows) -->
+        <div class="board-quarter">
+            <h2>Tic Tac Toe</h2>
+            <div class="board-container">
+                <div class="board" id="board">
+                    <!-- Board cells will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Right Quarter - Connection Status -->
+        <div class="quarter">
+            <h2>Connection Status</h2>
+            <div class="connection-status">
+                <div class="status-indicator" id="connection-indicator">
+                    <span id="connection-text">Connecting...</span>
+                    <div class="flames" id="flames"></div>
+                </div>
+                <p id="connection-details">Attempting to connect to the game server...</p>
+            </div>
+        </div>
+
+        <!-- Bottom Right Quarter - Game Status & Info -->
+        <div class="quarter">
+            <h2>Game Status</h2>
+            <div class="game-status">
+                <div class="winner-announcement">
+                    <div class="winner-message" id="winner-message">
+                        Waiting for game to start...
+                    </div>
+                </div>
+                
+                <div class="game-info">
+                    <p>Player Symbol: <span style="color: #e94560; font-weight: bold;">X</span></p>
+                    <p>Bot Symbol: <span style="color: #4ecdc4; font-weight: bold;">O</span></p>
+                    <p>Click on any empty cell to make your move!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = "http://192.168.100.156:8888";
+        const BOARD_REFRESH_INTERVAL = 1000; // 1 second
+
+        // Game state
+        let gameActive = true;
+        let connected = false;
+        let lastBoardState = null;
+        let refreshTimer = null;
+
+        // DOM Elements
+        const boardElement = document.getElementById("board");
+        const connectionIndicator = document.getElementById("connection-indicator");
+        const connectionText = document.getElementById("connection-text");
+        const connectionDetails = document.getElementById("connection-details");
+        const flamesElement = document.getElementById("flames");
+        const winnerMessage = document.getElementById("winner-message");
+
+        // Initialize the game
+        function initGame() {
+            createBoard();
+            updateConnectionStatus(false);
+            fetchBoard();
+            startBoardRefresh();
+        }
+
+        // Create the Tic Tac Toe board
+        function createBoard() {
+            boardElement.innerHTML = "";
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.id = `${row}${col}`;
+                    cell.addEventListener("click", () => handleCellClick(`${row}${col}`));
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Fetch and render the board
+        async function fetchBoard() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/display_board`);
+                if (!response.ok) throw new Error("Failed to fetch board");
+                
+                const board = await response.json();
+                renderBoard(board);
+                updateConnectionStatus(true);
+                return board;
+            } catch (error) {
+                console.error("Error fetching board:", error);
+                updateConnectionStatus(false);
+                return null;
+            }
+        }
+
+        // Render the board based on the data
+        function renderBoard(board) {
+            if (!board) return;
+            
+            // Check if the board state has changed
+            const boardStateString = JSON.stringify(board);
+            if (boardStateString === lastBoardState) return;
+            
+            lastBoardState = boardStateString;
+            
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    const cell = document.getElementById(`${row}${col}`);
+                    const value = board[row][col];
+                    
+                    // Clear existing classes
+                    cell.classList.remove("X", "O");
+                    
+                    // Update cell content
+                    if (value === "X" || value === "O") {
+                        cell.textContent = value;
+                        cell.classList.add(value);
+                    } else {
+                        cell.textContent = "";
+                    }
+                }
+            }
+        }
+
+        // Handle cell click
+        async function handleCellClick(cellId) {
+            if (!gameActive || !connected) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/make_move?move=${cellId}`);
+                if (!response.ok) throw new Error("Failed to make move");
+                
+                const data = await response.json();
+                renderBoard(data.board);
+                
+                // Check game status based on the response message
+                if (data.msg.includes("Wins") || data.msg.includes("Draw")) {
+                    handleGameEnd(data.msg);
+                }
+            } catch (error) {
+                console.error("Error making move:", error);
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Handle game end
+        function handleGameEnd(message) {
+            gameActive = false;
+            
+            // Show winner message with animation
+            winnerMessage.textContent = message;
+            winnerMessage.classList.add("show");
+            
+            if (message.includes("Player Wins")) {
+                winnerMessage.classList.add("player-win");
+                highlightWinningPattern("X");
+            } else if (message.includes("Bot Wins")) {
+                winnerMessage.classList.add("bot-win");
+                highlightWinningPattern("O");
+            } else if (message.includes("Draw")) {
+                winnerMessage.classList.add("draw");
+            }
+            
+            // Stop the board refresh
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+                refreshTimer = null;
+            }
+        }
+
+        // Highlight the winning pattern
+        function highlightWinningPattern(symbol) {
+            // Get the current board state
+            const boardState = JSON.parse(lastBoardState);
+            
+            // Check rows
+            for (let row = 0; row < 3; row++) {
+                if (boardState[row][0] === symbol && 
+                    boardState[row][1] === symbol && 
+                    boardState[row][2] === symbol) {
+                    
+                    animateWinningCells([`${row}0`, `${row}1`, `${row}2`]);
+                    return;
+                }
+            }
+            
+            // Check columns
+            for (let col = 0; col < 3; col++) {
+                if (boardState[0][col] === symbol && 
+                    boardState[1][col] === symbol && 
+                    boardState[2][col] === symbol) {
+                    
+                    animateWinningCells([`0${col}`, `1${col}`, `2${col}`]);
+                    return;
+                }
+            }
+            
+            // Check diagonals
+            if (boardState[0][0] === symbol && 
+                boardState[1][1] === symbol && 
+                boardState[2][2] === symbol) {
+                
+                animateWinningCells(["00", "11", "22"]);
+                return;
+            }
+            
+            if (boardState[0][2] === symbol && 
+                boardState[1][1] === symbol && 
+                boardState[2][0] === symbol) {
+                
+                animateWinningCells(["02", "11", "20"]);
+                return;
+            }
+        }
+
+        // Animate the winning cells
+        function animateWinningCells(cellIds) {
+            cellIds.forEach(cellId => {
+                const cell = document.getElementById(cellId);
+                cell.classList.add("winner");
+            });
+        }
+
+        // Update connection status
+        function updateConnectionStatus(isConnected) {
+            connected = isConnected;
+            
+            connectionIndicator.classList.remove("connected", "disconnected");
+            connectionIndicator.classList.add(isConnected ? "connected" : "disconnected");
+            
+            connectionText.textContent = isConnected ? "Connected" : "Disconnected";
+            connectionDetails.textContent = isConnected 
+                ? "Successfully connected to the game server."
+                : "Unable to connect to the game server. Retrying...";
+            
+            // Update flames animation
+            if (isConnected) {
+                flamesElement.innerHTML = "";
+            } else {
+                createFlames();
+            }
+        }
+
+        // Create flame elements for disconnected status
+        function createFlames() {
+            flamesElement.innerHTML = "";
+            const flameCount = 12;
+            
+            for (let i = 0; i < flameCount; i++) {
+                const flame = document.createElement("div");
+                flame.classList.add("flame");
+                
+                // Position flames around the circle
+                const angle = (i / flameCount) * 360;
+                const x = 50 + 45 * Math.cos(angle * Math.PI / 180);
+                flame.style.left = `${x}%`;
+                
+                // Random animation delay
+                flame.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                flamesElement.appendChild(flame);
+            }
+        }
+
+        // Start periodic board refresh
+        function startBoardRefresh() {
+            if (refreshTimer) clearInterval(refreshTimer);
+            
+            refreshTimer = setInterval(async () => {
+                if (!gameActive) return;
+                
+                const board = await fetchBoard();
+                if (board) {
+                    // Check if the game has ended based on the board state
+                    const isBoardFilled = board.every(row => row.every(cell => cell !== "-"));
+                    if (isBoardFilled && gameActive) {
+                        // Check game status by making an additional API call
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/make_move?move=00`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.msg.includes("Wins") || data.msg.includes("Draw")) {
+                                    handleGameEnd(data.msg);
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error checking game status:", error);
+                        }
+                    }
+                }
+            }, BOARD_REFRESH_INTERVAL);
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener("load", initGame);
+    </script>
+</body>
+</html>
