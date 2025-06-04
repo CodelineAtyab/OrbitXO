@@ -7,7 +7,7 @@ import hashlib
 DATA_FILE = "examples/from_haya/quotes_data.txt"
 
 def save_quote(title_text, quote_text, quote_category):
-    quote_id = hashlib.md5(quote_text.encode()).hexdigest()
+    quote_id = hashlib.md5(quote_text)
     entry = f"{quote_id} | {title_text} | {quote_text} | {quote_category}\n"
     with open(DATA_FILE, "a") as file:
         file.write(entry)
