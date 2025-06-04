@@ -16,7 +16,7 @@ def load_quotes():
     if not os.path.exists(file_path):
         open(file_path, "w").close()  # Create file if not exists
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r") as file:
             for line in file:
                 parts = line.strip().split("|")
                 if len(parts) == 4:
@@ -31,16 +31,16 @@ def load_quotes():
         print(f"Error loading quotes: {e}")
     return loaded_quotes
 
-
+# Save quotes to the file
 def save_quotes():
     try:
-        with open(file_path, "w") as file: 
+        with open(file_path, "w") as file:
             for q in quotes:
                 line = f"{q['id']}|{q['quote']}|{q['author']}|{q['category']}\n"
                 file.write(line)
         print(f"Saved {len(quotes)} quotes to {file_path}")
     except Exception as e:
-        print(f"Error saving quotes: {e}") 
+        print(f"Error saving quotes: {e}")
 
 # Get next unique ID
 def get_next_id():
