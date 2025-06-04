@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>OrbitXO</title>
+  </head>
+
+  <body>
+    <h1>This is from  Team Code Orbit!</h1>
+    <h2 id="ttt-board">This is the place where you will see tic tac toe board</h2>
+
+    <script>
+      async function getBoard() {
+        let response = await fetch("http://192.168.100.156:8888/display_board");
+        let jsonResponse = await response.json();
+        console.log(`${jsonResponse}`);
+
+        let tttObj = document.getElementById("ttt-board");
+        tttObj.innerText = `This is the board: ${jsonResponse}`;
+      }
+      getBoard();
+    </script>
+  </body>
+</html>
