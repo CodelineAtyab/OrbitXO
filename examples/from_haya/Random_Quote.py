@@ -9,14 +9,14 @@ DATA_FILE = "./quotes_data.txt"
 def save_quote(title_text, quote_text, quote_category):
     quote_id = hashlib.md5(quote_text.encode()).hexdigest()
     entry = f"{quote_id} | {title_text} | {quote_text} | {quote_category}\n"
-    with open(DATA_FILE, "a", encoding="utf-8") as file:
+    with open(DATA_FILE, "a") as file:
         file.write(entry)
     print("Quote has been saved.")
 
 def get_random_quote():
     if not os.path.exists(DATA_FILE):
         return "No quotes found."
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
+    with open(DATA_FILE, "r") as file:
         all_quotes = file.readlines()
     if not all_quotes:
         return "No quotes available."
@@ -25,7 +25,7 @@ def get_random_quote():
 def search_quote_by_category(search_category):
     if not os.path.exists(DATA_FILE):
         return "Quote file not found."
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
+    with open(DATA_FILE, "r") as file:
         quote_records = file.readlines()
     for record in quote_records:
         parts = record.strip().split("|")
@@ -50,6 +50,6 @@ def category_search(category: str):
 
 if __name__ == "__main__":
     if not os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "w", encoding="utf-8") as file:
+        with open(DATA_FILE, "w") as file:
             file.write("")
     uvicorn.run(app, host="0.0.0.0", port=8888)
