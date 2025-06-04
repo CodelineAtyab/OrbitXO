@@ -1,35 +1,55 @@
-from fastapi import FastAPI, HTTPException, Body
 import random
+import fastapi
+import uvicorn
+import os
+import hashlib
 
-app = FastAPI()
-quotes_db = []
+DATA_FILE = "./quotes_data.txt"
 
-@app.post("/quotes")
-def add_quote(quote_data: dict = Body(...)):
-    quote_id = len(quotes_db) + 1
-    new_quote = {
-        "id": quote_id,
-        "quote": quote_data["quote"],
-        "author": quote_data["author"],
-        "category": quote_data["category"]
-    }
-    quotes_db.append(new_quote)
-    return {"id": quote_id, "message": "Quote added successfully"}
+def save_quote(title_text, quote_text, quote_category):
+    quote_id = hashlib.md5(quote_text.encode()).hexdigest()
+    entry = f"{quote_id} | {title_text} | {quote_text} | {quote_category}\n"
+    with open(DATA_FILE, "a", encoding="utf-8") as file:
+        file.write(entry)
+    print("Quote has been saved.")
 
-@app.get("/quotes/random")
 def get_random_quote():
-    if not quotes_db:
-        raise HTTPException(status_code=404, detail="No quotes available")
-    return random.choice(quotes_db)
+    if not os.path.exists(DATA_FILE):
+        return "No quotes found."
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        all_quotes = file.readlines()
+    if not all_quotes:
+        return "No quotes available."
+    return random.choice(all_quotes).strip()
 
-@app.get("/quotes/category/{category_name}")
-def get_quotes_by_category(category_name: str):
-    filtered_quotes = [q for q in quotes_db if q["category"].lower() == category_name.lower()]
-    if not filtered_quotes:
-        raise HTTPException(status_code=404, detail="No quotes found in this category")
-    return filtered_quotes
+def search_quote_by_category(search_category):
+    if not os.path.exists(DATA_FILE):
+        return "Quote file not found."
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        quote_records = file.readlines()
+    for record in quote_records:
+        parts = record.strip().split("|")
+        if len(parts) == 4 and search_category.lower() in parts[3].lower():
+            return record.strip()
+    return "No matching category found."
 
-@app.get("/quotes/categories")
-def get_categories():
-    categories = list(set(q["category"] for q in quotes_db))
-    return {"categories": categories}
+app = fastapi.FastAPI()
+
+@app.post("/create-quote")
+def create_quote(title: str, content: str, category: str):
+    save_quote(title, content, category)
+    return {"status": "Quote added successfully"}
+
+@app.get("/random")
+def random_quote():
+    return {"quote": get_random_quote()}
+
+@app.get("/category-search")
+def category_search(category: str):
+    return {"result": search_quote_by_category(category)}
+
+if __name__ == "__main__":
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "w", encoding="utf-8") as file:
+            file.write("")
+    uvicorn.run(app, host="0.0.0.0", port=8888)
