@@ -31,16 +31,16 @@ def load_quotes():
         print(f"Error loading quotes: {e}")
     return loaded_quotes
 
-# Save quotes to the file
+
 def save_quotes():
     try:
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(file_path, "w") as file: 
             for q in quotes:
                 line = f"{q['id']}|{q['quote']}|{q['author']}|{q['category']}\n"
                 file.write(line)
         print(f"Saved {len(quotes)} quotes to {file_path}")
     except Exception as e:
-        print(f"Error saving quotes: {e}")
+        print(f"Error saving quotes: {e}") 
 
 # Get next unique ID
 def get_next_id():
