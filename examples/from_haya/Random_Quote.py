@@ -4,7 +4,7 @@ import uvicorn
 import os
 import hashlib
 
-DATA_FILE = "./quotes_data.txt"
+DATA_FILE = "examples/from_haya/quotes_data.txt"
 
 def save_quote(title_text, quote_text, quote_category):
     quote_id = hashlib.md5(quote_text.encode()).hexdigest()
