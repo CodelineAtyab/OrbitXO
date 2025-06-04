@@ -74,7 +74,8 @@ def perform_move(move: str):
 # while not board_utils.is_board_filled(board) and not is_a_winner:
 #   perform_move()
 
-print(perform_move("00"))
-print(perform_move("02"))
-print(perform_move("22"))
-print(perform_move("11"))
+if __name__ == "__main__":
+  print(perform_move("00"))
+  print(perform_move("02"))
+  print(perform_move("22"))
+  print(perform_move("11"))

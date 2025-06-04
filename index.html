@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit XO - Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cell {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cell:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .x {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            font-weight: bold;
+            transform: scale(1.1);
+            transition: all 0.3s ease;
+        }
+        
+        .o {
+            color: #48dbfb;
+            text-shadow: 0 0 10px rgba(72, 219, 251, 0.5);
+            font-weight: bold;
+            transform: scale(1.1);
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0.5); }
+            70% { transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .appear {
+            animation: appear 0.5s forwards;
+        }
+        
+        .status {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Orbit XO</h1>
+        <div class="board" id="board">
+            <div class="cell" data-row="0" data-col="0"></div>
+            <div class="cell" data-row="0" data-col="1"></div>
+            <div class="cell" data-row="0" data-col="2"></div>
+            <div class="cell" data-row="1" data-col="0"></div>
+            <div class="cell" data-row="1" data-col="1"></div>
+            <div class="cell" data-row="1" data-col="2"></div>
+            <div class="cell" data-row="2" data-col="0"></div>
+            <div class="cell" data-row="2" data-col="1"></div>
+            <div class="cell" data-row="2" data-col="2"></div>
+        </div>
+        <div class="status" id="status">Game in progress...</div>
+    </div>
+
+    <script>
+        // Function to fetch the board state from the API
+        async function fetchBoardState() {
+            try {
+                const response = await fetch('http://192.168.100.156:8888/display_board');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching board state:', error);
+                document.getElementById('status').textContent = 'Error connecting to server';
+                return null;
+            }
+        }
+
+        // Function to update the board UI based on the state
+        function updateBoard(boardState) {
+            if (!boardState) return;
+            
+            const cells = document.querySelectorAll('.cell');
+            
+            cells.forEach(cell => {
+                const row = parseInt(cell.getAttribute('data-row'));
+                const col = parseInt(cell.getAttribute('data-col'));
+                
+                const value = boardState[row][col];
+                const currentValue = cell.textContent;
+                
+                // Clear existing classes
+                cell.classList.remove('x', 'o', 'appear');
+                
+                if (value === 'X') {
+                    // Add animation class if the value changed
+                    if (currentValue !== 'X') {
+                        cell.classList.add('appear');
+                    }
+                    cell.textContent = 'X';
+                    cell.classList.add('x');
+                } else if (value === 'O') {
+                    // Add animation class if the value changed
+                    if (currentValue !== 'O') {
+                        cell.classList.add('appear');
+                    }
+                    cell.textContent = 'O';
+                    cell.classList.add('o');
+                } else {
+                    cell.textContent = '';
+                }
+            });
+
+            // Update status based on board state
+            const filledCells = boardState.flat().filter(cell => cell !== '-').length;
+            if (filledCells > 0) {
+                document.getElementById('status').textContent = `Game in progress (${filledCells} moves made)`;
+            } else {
+                document.getElementById('status').textContent = 'New game starting...';
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load initial board state
+            const initialState = await fetchBoardState();
+            updateBoard(initialState);
+            
+            // Set up interval to update every second
+            setInterval(async () => {
+                const boardState = await fetchBoardState();
+                updateBoard(boardState);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
