@@ -47,7 +47,7 @@ def back_up_entries(data_store_dict, backup_file):
                 f.write(f"  - {entry}\n")
     print(f"Backup completed to {backup_file}")
 
-FILE_PATH = 'journal.txt'
+FILE_PATH = 'examples/from_arooba/journal.txt'
 data_store_dict = load_entries_from_file(FILE_PATH)
 
 if not os.path.exists(FILE_PATH):
@@ -61,7 +61,7 @@ if not os.path.exists(FILE_PATH):
 
 
 if len(sys.argv) >= 2 and sys.argv[1].lower() == "entry":
-    entry_text = " ".join(sys.argv[2:])
+    entry_text = sys.argv[2]
     if entry_text:
         data_store_dict = create_new_dated_entry(data_store_dict, entry_text)
         with open(FILE_PATH, "a") as f:
@@ -86,7 +86,7 @@ if len(sys.argv) >= 2 and sys.argv[1].lower() == "read":
         print("Invalid date format. Please use YYYY-MM-DD.")
 
 if len(sys.argv) >= 2 and sys.argv[1].lower() == "search":
-    keyword = " ".join(sys.argv[2:])
+    keyword = sys.argv[2]
     if keyword:
         results = search_entries_by_keyword(data_store_dict, keyword)
         if results:
