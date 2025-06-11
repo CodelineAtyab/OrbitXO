@@ -3,9 +3,7 @@ import uuid
 import uvicorn
 import util
 
-games = {}
 
-empty_symbol = "_"
 
 app = FastAPI()
 
@@ -13,7 +11,7 @@ app = FastAPI()
 def create_board():
     board_id = str(uuid.uuid4())
 
-    games[board_id] = {
+    util.games[board_id] = {
         "board": util.board(),
         "active_player": "X"
     }
