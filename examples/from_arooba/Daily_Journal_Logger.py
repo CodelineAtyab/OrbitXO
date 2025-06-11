@@ -100,4 +100,4 @@ if len(sys.argv) >= 2 and sys.argv[1].lower() == "search":
 
 if len(sys.argv) >= 2 and sys.argv[1].lower() == "backup":
     backup_file = sys.argv[2] if len(sys.argv) > 2 else "journal_backup.txt"
-    back_up_entries(data_store_dict, backup_file)
+    back_up_entries(data_store_dict, f"examples/from_arooba/{backup_file}")
