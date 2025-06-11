@@ -34,7 +34,7 @@ def add_quote(quote: str, author: str, category: str):
         "category": category
     }
     my_quotes.append(q)
-    write_quotes()
+    add_quote()
     return {"message": "Quote added!"}
 
 # Get a random quote
