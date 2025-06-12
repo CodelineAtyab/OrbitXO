@@ -13,3 +13,4 @@ def get_board(board_id):
     if board_id in boards:
         return boards[board_id]
     return None
+

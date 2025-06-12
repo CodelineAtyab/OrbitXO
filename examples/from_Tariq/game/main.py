@@ -3,7 +3,6 @@ import fastapi
 import utility as util
 
 
-
 app = fastapi.FastAPI()
 @app.post("/board")
 def create_board_endpoint():
