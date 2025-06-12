@@ -19,5 +19,11 @@ def board_endpoint():
     board_creation(uuid_board) 
     return {"id_board": uuid_board}
 
+@app.get("/board/{id_board}")
+def get_board_endpoint(id_board: str):
+    if id_board not in xo_board:
+        return {"error": "Board not found"}
+    return {"board": xo_board[id_board]}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8888)
