@@ -7,7 +7,7 @@ app = fastapi.FastAPI()
 xo_board = {}
 
 def unique_uuid():
-    return str(uuid.uuid3())
+    return str(uuid.uuid4())
 
 def board_creation(id_board):
     xo_board[id_board] = [["","",""], ["","",""], ["","",""]]
