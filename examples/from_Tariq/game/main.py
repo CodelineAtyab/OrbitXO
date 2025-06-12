@@ -18,7 +18,7 @@ def get_board_endpoint(board_id):
         return fastapi.HTTPException(status_code=404, detail="Board not found")
     return {"board": board}
 
-@app.post("/board/{board_id}/move")
+@app.get("/board/{board_id}/move")
 def player_turn(board_id):
     turn = util.turn(board_id)
     if turn == 'X':
