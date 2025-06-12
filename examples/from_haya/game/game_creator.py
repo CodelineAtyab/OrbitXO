@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from uuid import uuid1
+from uuid import uuid4
 import uvicorn
 
 app=FastAPI()
@@ -7,14 +7,13 @@ board_state={}
 
 @app.post("/board")
 def board():
-    board_id = uuid1()
+    board_id = uuid4()
     board_state[board_id] = {
         "board": [
            ["", "", ""],
            ["", "", ""],
            ["", "", ""]
         ],
-    "active_player":"x"
     }
     return board_id
 
