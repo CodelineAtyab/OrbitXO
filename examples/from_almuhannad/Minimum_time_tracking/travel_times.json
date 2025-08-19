@@ -1,0 +1,18 @@
+{
+  "muscat, oman_salalah, oman": {
+    "source": "Muscat, Oman",
+    "destination": "Salalah, Oman",
+    "min_duration": 601.7,
+    "recorded_at": "2025-08-19 11:06:38",
+    "history": [
+      {
+        "duration": 700.0,
+        "timestamp": "2025-08-19 11:05:23"
+      },
+      {
+        "duration": 601.7,
+        "timestamp": "2025-08-19 11:06:38"
+      }
+    ]
+  }
+}
