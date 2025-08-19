@@ -32,4 +32,4 @@ def get_travel_time(origin: str = Query(...), destination: str = Query(...)):
     }
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("google_api:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("Google_Maps_API:app", host="127.0.0.1", port=8000, reload=True)
