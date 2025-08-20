@@ -4,29 +4,57 @@ import os
 import requests
 import json
 import datetime
+import traceback
 from pathlib import Path
+
+class JSONLogFormatter(logging.Formatter):
+    """
+    Custom formatter that outputs logs in JSON format
+    """
+    def format(self, record):
+        # Get the original formatted message
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "file": record.filename,
+            "line": record.lineno,
+            "message": record.getMessage()
+        }
+        
+        # Add exception info if present
+        if record.exc_info:
+            log_record["traceback"] = traceback.format_exception(*record.exc_info)
+        
+        # Add context if available
+        if hasattr(record, 'context'):
+            log_record["context"] = record.context
+            
+        return json.dumps(log_record)
 
 class LoggingSystem:
     """
     A comprehensive logging system that implements Python's built-in logging library
-    with rotation, different log levels, and consistent formatting.
+    with rotation, different log levels, and JSON formatting.
     """
     
-    def __init__(self, app_name="OrbitXO", log_dir=None):
+    def __init__(self, app_name="OrbitXO", log_dir=None, use_json=True):
         """
         Initialize the logging system with the application name and log directory
         
         Args:
             app_name (str): Name of the application for logging purposes
             log_dir (str): Directory to store log files, defaults to logs directory in project root
+            use_json (bool): Whether to output logs in JSON format
+            log_dir (str): Directory to store log files, defaults to logs directory in project root
         """
         self.app_name = app_name
+        self.use_json = use_json
         
         # Set up log directory path
         if log_dir is None:
-            # Get the project root directory (2 levels up from this file)
+            # Get the project root directory (3 levels up from this file)
             current_dir = Path(__file__).resolve().parent
-            project_root = current_dir.parent.parent
+            project_root = current_dir.parent.parent.parent
             self.log_dir = project_root / 'logs'
         else:
             self.log_dir = Path(log_dir)
@@ -49,20 +77,23 @@ class LoggingSystem:
         self.setup_file_handler()
         self.setup_console_handler()
         
+        # Set up JSON log file
+        if self.use_json:
+            self.setup_json_log_file()
+        
         # Log initialization
-        self.logger.info("Logging system initialized", extra={"context": {"app_name": app_name}})
+        self.log_with_context('info', "Logging system initialized", {"app_name": app_name})
     
     def setup_formatters(self):
         """Set up formatters for different handlers"""
         # Standard format for file logs: timestamp loglevel [filename] message
         self.file_formatter = logging.Formatter(
-            '%(asctime)s %(levelname)s [%(filename)s] %(message)s',
+            '%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         
-        # More detailed format for console output during development
-        self.console_formatter = logging.Formatter(
-            '%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s',
+        # JSON formatter
+        self.json_formatter = JSONLogFormatter(
             datefmt='%Y-%m-%d %H:%M:%S'
         )
     
@@ -112,8 +143,25 @@ class LoggingSystem:
         """Set up console handler for development"""
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.DEBUG)
-        console_handler.setFormatter(self.console_formatter)
+        console_handler.setFormatter(self.file_formatter)
         self.logger.addHandler(console_handler)
+        
+    def setup_json_log_file(self):
+        """Set up JSON log file handler"""
+        # Create JSON log directory if it doesn't exist
+        json_log_dir = Path(__file__).resolve().parent
+        os.makedirs(json_log_dir, exist_ok=True)
+        
+        # Set up JSON log file
+        json_log_file = json_log_dir / 'logging_output.json'
+        
+        # Create an empty JSON log file if it doesn't exist
+        if not json_log_file.exists():
+            with open(json_log_file, 'w') as f:
+                json.dump({"loggers": []}, f, indent=2)
+        
+        # We don't add a handler for JSON logs because we'll write them manually
+        # to maintain the array structure
     
     def log_with_context(self, level, message, context=None):
         """
@@ -127,21 +175,72 @@ class LoggingSystem:
         if context is None:
             context = {}
             
-        # Convert context to a JSON string for the log message
+        # Add context to the log record
+        extra = {'context': context}
+        
+        # Format message for regular log files
         context_str = f" - Context: {json.dumps(context)}" if context else ""
         full_message = f"{message}{context_str}"
         
         # Log at the appropriate level
         if level.lower() == 'debug':
-            self.logger.debug(full_message)
+            self.logger.debug(full_message, extra=extra)
         elif level.lower() == 'info':
-            self.logger.info(full_message)
+            self.logger.info(full_message, extra=extra)
         elif level.lower() == 'warning':
-            self.logger.warning(full_message)
+            self.logger.warning(full_message, extra=extra)
         elif level.lower() == 'error':
-            self.logger.error(full_message)
+            self.logger.error(full_message, extra=extra)
         elif level.lower() == 'critical':
-            self.logger.critical(full_message)
+            self.logger.critical(full_message, extra=extra)
+            
+        # If JSON logging is enabled, also write to the JSON log file
+        if self.use_json:
+            self.write_to_json_log(level, message, context)
+    
+    def write_to_json_log(self, level, message, context=None):
+        """
+        Write a log entry to the JSON log file
+        
+        Args:
+            level (str): Log level
+            message (str): The log message
+            context (dict): Additional context to include in the log
+        """
+        try:
+            # Get the current frame info to determine file and line number
+            frame = traceback._getframe(2)  # Get the caller's frame
+            filename = os.path.basename(frame.f_code.co_filename)
+            lineno = frame.f_lineno
+            
+            # Create log entry
+            log_entry = {
+                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "level": level.upper(),
+                "file": filename,
+                "line": lineno,
+                "message": message
+            }
+            
+            # Add context if available
+            if context:
+                log_entry["context"] = context
+                
+            # Read existing logs
+            json_log_file = Path(__file__).resolve().parent / 'logging_output.json'
+            with open(json_log_file, 'r') as f:
+                log_data = json.load(f)
+                
+            # Append new log entry
+            log_data["loggers"].append(log_entry)
+            
+            # Write updated logs back to file
+            with open(json_log_file, 'w') as f:
+                json.dump(log_data, f, indent=2)
+                
+        except Exception as e:
+            # If there's an error writing to the JSON log, fall back to console
+            print(f"Error writing to JSON log: {str(e)}")
     
     def log_api_request(self, api_name, endpoint, params=None, headers=None):
         """
