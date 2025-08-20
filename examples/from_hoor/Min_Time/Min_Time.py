@@ -115,3 +115,4 @@ def get_travel_time(origin: str = Query(..., description="Starting point address
         "distance_km": distance_km,
         "new_record": new_record
     }
+
