@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query
 import os
 import requests
 import dotenv
-import json
+import json 
 from datetime import datetime
 import schedule
 import time
