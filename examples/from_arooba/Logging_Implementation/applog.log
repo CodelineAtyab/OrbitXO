@@ -1,0 +1,24 @@
+2025-08-23 15:35:14 INFO [log:69] Sendeing request to Google API
+2025-08-23 15:35:14 DEBUG [log:70] Body request:{'origin': {'address': 'Muscat Private Hospital, Muscat, Oman'}, 'destination': {'address': 'Codeline, Muscat, Oman'}, 'travelMode': 'DRIVE', 'routingPreference': 'TRAFFIC_AWARE', 'computeAlternativeRoutes': False, 'routeModifiers': {'avoidTolls': False, 'avoidHighways': False, 'avoidFerries': False}, 'languageCode': 'en-US', 'units': 'METRIC'}
+2025-08-23 15:35:14 DEBUG [connectionpool:1049] Starting new HTTPS connection (1): routes.googleapis.com:443
+2025-08-23 15:35:18 DEBUG [connectionpool:544] https://routes.googleapis.com:443 "POST /directions/v2:computeRoutes HTTP/1.1" 403 None
+2025-08-23 15:35:18 ERROR [log:92] Error response 403: {
+  "error": {
+    "code": 403,
+    "message": "Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+2025-08-23 15:35:44 INFO [log:69] Sendeing request to Google API
+2025-08-23 15:35:44 DEBUG [log:70] Body request:{'origin': {'address': 'Muscat Private Hospital, Muscat, Oman'}, 'destination': {'address': 'Codeline, Muscat, Oman'}, 'travelMode': 'DRIVE', 'routingPreference': 'TRAFFIC_AWARE', 'computeAlternativeRoutes': False, 'routeModifiers': {'avoidTolls': False, 'avoidHighways': False, 'avoidFerries': False}, 'languageCode': 'en-US', 'units': 'METRIC'}
+2025-08-23 15:35:44 DEBUG [connectionpool:1049] Starting new HTTPS connection (1): routes.googleapis.com:443
+2025-08-23 15:35:45 DEBUG [connectionpool:544] https://routes.googleapis.com:443 "POST /directions/v2:computeRoutes HTTP/1.1" 403 None
+2025-08-23 15:35:45 ERROR [log:92] Error response 403: {
+  "error": {
+    "code": 403,
+    "message": "Method doesn't allow unregistered callers (callers without established identity). Please use API Key or other form of API consumer identity to call this API.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
