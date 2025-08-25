@@ -4,6 +4,7 @@ import Logging_Implementation
 import sys
 import os
 import dotenv
+from connection_module import get_db_connector
 
 def setup_environment():
     """Setup environment by loading .env file from the same directory as main.py"""
@@ -58,6 +59,21 @@ def track_travel_time(source, destination):
     logger.info(f"Travel time: {travel_result['duration']} ({duration_minutes} minutes)")
     logger.info(f"Distance: {travel_result['distance']}")
     
+   
+    db = get_db_connector()
+    is_recorded = db["add_travel_time_record"](
+        source=source,
+        destination=destination,
+        duration_minutes=duration_minutes,
+        distance=travel_result["distance"],
+        distance_value=travel_result.get("distance_value")
+    )
+    
+    if is_recorded:
+        logger.info("Travel time recorded in database")
+    else:
+        logger.warning("Failed to record travel time in database")
+    
     logger.info("Checking if this is a new minimum travel time...")
     tracker_result = timetracker.check_and_notify_new_minimum(source, destination, duration_minutes)
     
@@ -65,6 +81,16 @@ def track_travel_time(source, destination):
         logger.info(f"New minimum travel time detected: {tracker_result['current_duration']} minutes")
         logger.info(f"Previous minimum: {tracker_result['previous_min']} minutes")
         logger.info(f"Time saved: {tracker_result['time_saved']} minutes")
+        
+       
+        db["add_travel_time_record"](
+            source=source,
+            destination=destination,
+            duration_minutes=duration_minutes,
+            distance=travel_result["distance"],
+            distance_value=travel_result.get("distance_value"),
+            is_minimum=True
+        )
         
         if tracker_result["notification_sent"]:
             logger.info("Slack notification sent successfully")
