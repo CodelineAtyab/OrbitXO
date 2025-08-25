@@ -18,7 +18,7 @@ SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 NOTIFICATION_COOLDOWN_MINUTES = 60
 LOCATIONS = {
     "home": "Muscat Grand Mall, Muscat, Oman",
-    "work": "salalh, Oman"
+    "work": "salalah, Oman"
 }
 
 db = TinyDB('db.json')
