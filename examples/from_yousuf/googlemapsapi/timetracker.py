@@ -1,8 +1,9 @@
-import requests
-import json
 import os
+import json
 import datetime
 import time
+
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,58 +14,62 @@ DATA_FILE = "travel_times.json"
 
 class MinimumTimeTracker:
     def __init__(self, data_file=DATA_FILE):
-        self.data_file = data_file
-        self.min_times = self._load_data()
-        self.last_notification_time = {}
+       
+        self.min_records = self._load_data()
+        self.last_notified_at = {}
 
     def _load_data(self):
         try:
-            with open(self.data_file, 'r') as f:
+            with open(self.storage_file, 'r') as f:
                 return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
     def _save_data(self):
-        with open(self.data_file, 'w') as f:
-            json.dump(self.min_times, f, indent=2)
+        with open(self.storage_file, 'w') as f:
+            json.dump(self.min_records, f, indent=2)
 
     def get_route_key(self, source, destination):
         return f"{source.lower().strip()}_{destination.lower().strip()}"
 
     def update_travel_time(self, source, destination, duration_minutes, current_time=None):
         if current_time is None:
-            current_time = datetime.datetime.now()
-        time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            now = datetime.datetime.now()
+        else:
+            now = current_time
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
         route_key = self.get_route_key(source, destination)
-        if route_key not in self.min_times:
-            self.min_times[route_key] = {
+        if route_key not in self.min_records:
+            self.min_records[route_key] = {
                 "source": source,
                 "destination": destination,
                 "min_duration": duration_minutes,
-                "recorded_at": time_str,
+                "recorded_at": timestamp,
                 "history": []
             }
             new_min = True
             time_saved = 0
             previous_min = duration_minutes
         else:
-            previous_min = self.min_times[route_key]["min_duration"]
-            if duration_minutes < previous_min:
+            prev_min = self.min_records[route_key]["min_duration"]
+            if duration_minutes < prev_min:
                 new_min = True
-                time_saved = previous_min - duration_minutes
-                self.min_times[route_key]["min_duration"] = duration_minutes
-                self.min_times[route_key]["recorded_at"] = time_str
+                time_saved = prev_min - duration_minutes
+                self.min_records[route_key]["min_duration"] = duration_minutes
+                self.min_records[route_key]["recorded_at"] = timestamp
+                previous_min = prev_min
             else:
                 new_min = False
                 time_saved = 0
+                previous_min = prev_min
         history_entry = {
             "duration": duration_minutes,
-            "timestamp": time_str
+            "timestamp": timestamp
         }
-        if "history" not in self.min_times[route_key]:
-            self.min_times[route_key]["history"] = []
-        self.min_times[route_key]["history"].append(history_entry)
-        self.min_times[route_key]["history"] = self.min_times[route_key]["history"][-10:]
+        if "history" not in self.min_records[route_key]:
+            self.min_records[route_key]["history"] = []
+        self.min_records[route_key]["history"].append(history_entry)
+        self.min_records[route_key]["history"] = self.min_records[route_key]["history"][-10:]
         self._save_data()
         return {
             "new_minimum": new_min,
@@ -74,14 +79,14 @@ class MinimumTimeTracker:
             "current_duration": duration_minutes,
             "previous_min": previous_min,
             "time_saved": time_saved,
-            "current_time": time_str
+            "current_time": timestamp
         }
 
     def should_send_notification(self, route_key):
         current_time = time.time()
-        if (route_key not in self.last_notification_time or
-            current_time - self.last_notification_time[route_key] > NOTIFICATION_COOLDOWN):
-            self.last_notification_time[route_key] = current_time
+        if (route_key not in self.last_notified_at or
+            current_time - self.last_notified_at[route_key] > NOTIFICATION_COOLDOWN):
+            self.last_notified_at[route_key] = current_time
             return True
         return False
 
@@ -183,4 +188,9 @@ if __name__ == "__main__":
             print("Notification was not sent (cooldown active or webhook not configured)")
     else:
         print(f"Not a new minimum. Current: {result['current_duration']} minutes, Minimum: {result['previous_min']} minutes")
+
+
+
+
+
 
