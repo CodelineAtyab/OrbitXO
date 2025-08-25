@@ -2,6 +2,7 @@ import logging
 import os
 import json
 import sys
+import sqlite3
 from logging.handlers import RotatingFileHandler
 # Import database logger functionality
 from db_logger import setup_database, log_to_database, record_travel_time, get_historical_data
@@ -176,10 +177,12 @@ if __name__ == "__main__":
                 connection = create_db_connection()
                 if connection:
                     print("✓ Database connection successful")
-                    cursor = connection.cursor(dictionary=True)
-                    cursor.execute("SHOW TABLES")
+                    # Configure SQLite connection to return dictionaries
+                    connection.row_factory = sqlite3.Row
+                    cursor = connection.cursor()
+                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
                     tables = cursor.fetchall()
-                    print(f"Available tables: {[table for table in tables]}")
+                    print(f"Available tables: {[table[0] for table in tables]}")
                     cursor.close()
                     connection.close()
                 else:
