@@ -55,8 +55,6 @@ def set_debug_mode():
     database_logger.setLevel(logging.DEBUG)
     notifier_logger.setLevel(logging.DEBUG)
 
-class LogContext:
-
     def __init__(self, logger, context):
         self.logger = logger
         self.original_format = LOG_FORMAT

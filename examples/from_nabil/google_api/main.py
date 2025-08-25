@@ -11,7 +11,6 @@ def main():
     if "--debug" in sys.argv:
         set_debug_mode()
         logger.debug("Debug mode enabled")
-    
     try:
         logger.info("Requesting directions")
         directions = get_directions("home", "work")
