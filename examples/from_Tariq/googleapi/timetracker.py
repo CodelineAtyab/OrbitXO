@@ -182,10 +182,5 @@ if __name__ == "__main__":
         else:
             print("Notification was not sent (cooldown active or webhook not configured)")
     else:
+
         print(f"Not a new minimum. Current: {result['current_duration']} minutes, Minimum: {result['previous_min']} minutes")
-
-
-
-
-
-
