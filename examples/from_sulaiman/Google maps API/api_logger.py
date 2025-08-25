@@ -7,211 +7,212 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-class ApiLogger:
+# Constants
+LOG_DIR = "logs"
+LOG_LEVEL = logging.INFO
+
+# Create logs directory if it doesn't exist
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Set up simple loggers
+def setup_logger(name, filename):
     """
-    A logger class to track calls to the Google Maps API, route tracker, and Slack notifications.
+    Set up a logger with file handler.
+    
+    Args:
+        name (str): Logger name
+        filename (str): Log filename
+        
+    Returns:
+        logging.Logger: Configured logger
     """
+    logger = logging.getLogger(name)
+    logger.setLevel(LOG_LEVEL)
     
-    def __init__(self, log_dir="logs", log_level=logging.INFO):
-        """
-        Initialize the logger.
-        
-        Args:
-            log_dir (str): Directory to store log files
-            log_level: Logging level (default: INFO)
-        """
-        self.log_dir = log_dir
-        self.log_level = log_level
-        
-        # Create logs directory if it doesn't exist
-        os.makedirs(log_dir, exist_ok=True)
-        
-        # Set up loggers
-        self.api_logger = self._setup_logger("api_calls", "api_calls.log")
-        self.route_logger = self._setup_logger("route_tracker", "route_tracking.log")
-        self.slack_logger = self._setup_logger("slack_notifications", "slack_notifications.log")
-        self.error_logger = self._setup_logger("errors", "errors.log")
+    # Remove any existing handlers
+    if logger.hasHandlers():
+        logger.handlers.clear()
     
-    def _setup_logger(self, name, filename):
-        """
-        Set up a logger with file and console handlers.
-        
-        Args:
-            name (str): Logger name
-            filename (str): Log filename
-            
-        Returns:
-            logging.Logger: Configured logger
-        """
-        logger = logging.getLogger(name)
-        logger.setLevel(self.log_level)
-        
-        # Remove any existing handlers
-        if logger.hasHandlers():
-            logger.handlers.clear()
-        
-        # Create file handler
-        file_handler = logging.FileHandler(os.path.join(self.log_dir, filename), encoding='utf-8')
-        file_handler.setLevel(self.log_level)
-        
-        # Create formatters
-        file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(file_formatter)
-        
-        # Add handlers
-        logger.addHandler(file_handler)
-        
-        return logger
+    # Create file handler
+    file_handler = logging.FileHandler(os.path.join(LOG_DIR, filename), encoding='utf-8')
+    file_handler.setLevel(LOG_LEVEL)
     
-    def log_api_call(self, origin, destination, mode, api_key_used=None, response_status=None, response_data=None):
-        """
-        Log a call to the Google Maps API.
-        
-        Args:
-            origin: Origin location
-            destination: Destination location
-            mode: Transportation mode
-            api_key_used: Whether an API key was provided (True/False)
-            response_status: Response status code
-            response_data: JSON response data (optional)
-        """
-        log_data = {
-            "timestamp": datetime.now().isoformat(),
-            "service": "Google Maps Routes API",
-            "origin": origin,
-            "destination": destination,
-            "mode": mode,
-            "api_key_provided": api_key_used is not None,
-            "response_status": response_status
-        }
-        
-        # Include summary of response data if available
-        if response_data and isinstance(response_data, dict):
-            status = response_data.get("status")
-            log_data["api_status"] = status
-            
-            # Add error message if available
-            if status != "OK" and "error_message" in response_data:
-                log_data["error_message"] = response_data["error_message"]
-        
-        self.api_logger.info(json.dumps(log_data))
-        
-        # Log errors separately
-        if response_status != 200 or (response_data and response_data.get("status") != "OK"):
-            self.error_logger.warning(f"API call failed: {json.dumps(log_data)}")
+    # Create simple formatter
+    file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(file_formatter)
     
-    def log_route_tracking(self, route_data, continuous_tracking=False, check_interval=None):
-        """
-        Log route tracking information.
+    # Add handler
+    logger.addHandler(file_handler)
+    
+    return logger
+
+# Create individual loggers
+api_logger = setup_logger("api_calls", "api.log")
+route_logger = setup_logger("route_tracker", "route.log")
+slack_logger = setup_logger("slack_notifications", "notifier.log")
+error_logger = setup_logger("errors", "error.log")
+application_logger = setup_logger("application", "application.log")
+    
+# Simple logging functions
+
+def log_api_call(origin, destination, mode, api_key_used=None, response_status=None, response_data=None):
+    """
+    Log a call to the Google Maps API.
+    
+    Args:
+        origin: Origin location
+        destination: Destination location
+        mode: Transportation mode
+        api_key_used: Whether an API key was provided (True/False)
+        response_status: Response status code
+        response_data: JSON response data (optional)
+    """
+    log_data = {
+        "timestamp": datetime.now().isoformat(),
+        "origin": origin,
+        "destination": destination,
+        "mode": mode,
+        "api_key_provided": api_key_used is not None,
+        "response_status": response_status
+    }
+    
+    # Include summary of response data if available
+    if response_data and isinstance(response_data, dict):
+        status = response_data.get("status")
+        log_data["api_status"] = status
         
-        Args:
-            route_data: Dictionary containing route information
-            continuous_tracking: Whether continuous tracking is enabled
-            check_interval: Interval between checks (if continuous tracking)
-        """
-        if not route_data:
-            self.route_logger.warning("Route tracking failed: No route data available")
-            return
-        
-        log_data = {
-            "timestamp": datetime.now().isoformat(),
-            "tracking_time": route_data.get("timestamp"),
-            "origin": route_data.get("origin"),
-            "destination": route_data.get("destination"),
-            "distance_meters": route_data.get("distance_meters"),
-            "distance_text": route_data.get("distance_text"),
-            "duration_seconds": route_data.get("duration_seconds"),
-            "duration_text": route_data.get("duration_text"),
-            "is_min_distance": route_data.get("is_min_distance", False),
-            "is_min_duration": route_data.get("is_min_duration", False),
-            "continuous_tracking": continuous_tracking
-        }
-        
-        if continuous_tracking and check_interval:
+        # Add error message if available
+        if status != "OK" and "error_message" in response_data:
+            log_data["error_message"] = response_data["error_message"]
+    
+    message = json.dumps(log_data)
+    api_logger.info(message)
+    
+    # Log errors separately
+    if response_status != 200 or (response_data and response_data.get("status") != "OK"):
+        error_logger.warning(f"API call failed: {message}")
+
+def log_route_tracking(route_data, continuous_tracking=False, check_interval=None):
+    """
+    Log route tracking information.
+    
+    Args:
+        route_data: Dictionary containing route information
+        continuous_tracking: Whether continuous tracking is enabled
+        check_interval: Interval between checks (if continuous tracking)
+    """
+    if not route_data:
+        route_logger.warning("Route tracking failed: No route data available")
+        return
+    
+    log_data = {
+        "timestamp": datetime.now().isoformat(),
+        "tracking_time": route_data.get("timestamp"),
+        "origin": route_data.get("origin"),
+        "destination": route_data.get("destination"),
+        "distance": route_data.get("distance_text"),
+        "duration": route_data.get("duration_text"),
+        "is_min_distance": route_data.get("is_min_distance", False),
+        "is_min_duration": route_data.get("is_min_duration", False)
+    }
+    
+    if continuous_tracking:
+        log_data["continuous_tracking"] = True
+        if check_interval:
             log_data["check_interval_seconds"] = check_interval
-        
-        self.route_logger.info(json.dumps(log_data))
     
-    def log_slack_notification(self, route_data, success=True, error_message=None):
-        """
-        Log Slack notification information.
-        
-        Args:
-            route_data: Dictionary containing route information
-            success: Whether the notification was sent successfully
-            error_message: Error message if notification failed
-        """
-        log_data = {
-            "timestamp": datetime.now().isoformat(),
-            "notification_time": route_data.get("timestamp") if route_data else None,
-            "success": success
-        }
-        
-        if route_data:
-            log_data.update({
-                "origin": route_data.get("origin"),
-                "destination": route_data.get("destination"),
-                "distance": route_data.get("distance_text"),
-                "duration": route_data.get("duration_text")
-            })
-        
-        if not success and error_message:
-            log_data["error_message"] = error_message
-            self.error_logger.error(f"Slack notification failed: {error_message}")
-        
-        self.slack_logger.info(json.dumps(log_data))
+    route_logger.info(json.dumps(log_data))
+
+def log_slack_notification(route_data, success=True, error_message=None):
+    """
+    Log Slack notification information.
     
-    def log_error(self, module, function, error_message):
-        """
-        Log general errors.
+    Args:
+        route_data: Dictionary containing route information
+        success: Whether the notification was sent successfully
+        error_message: Error message if notification failed
+    """
+    if not route_data:
+        slack_logger.warning("Slack notification attempted without route data")
+        return
         
-        Args:
-            module: Module name
-            function: Function name
-            error_message: Error message
-        """
-        log_data = {
-            "timestamp": datetime.now().isoformat(),
-            "module": module,
-            "function": function,
-            "error": error_message
-        }
-        
-        self.error_logger.error(json.dumps(log_data))
+    log_data = {
+        "timestamp": datetime.now().isoformat(),
+        "origin": route_data.get("origin"),
+        "destination": route_data.get("destination"),
+        "success": success
+    }
+    
+    if not success and error_message:
+        log_data["error_message"] = error_message
+        error_logger.error(f"Slack notification failed: {error_message}")
+    
+    slack_logger.info(json.dumps(log_data))
 
-# Create a singleton instance
-logger = ApiLogger()
-
-# Convenience functions
-def log_api_call(*args, **kwargs):
-    return logger.log_api_call(*args, **kwargs)
-
-def log_route_tracking(*args, **kwargs):
-    return logger.log_route_tracking(*args, **kwargs)
-
-def log_slack_notification(*args, **kwargs):
-    return logger.log_slack_notification(*args, **kwargs)
-
-def log_error(*args, **kwargs):
-    return logger.log_error(*args, **kwargs)
+def log_error(module, function, error_message):
+    """
+    Log general errors.
+    
+    Args:
+        module: Module name
+        function: Function name
+        error_message: Error message
+    """
+    log_data = {
+        "timestamp": datetime.now().isoformat(),
+        "module": module,
+        "function": function,
+        "error": error_message
+    }
+    
+    error_logger.error(json.dumps(log_data))
+    
+def log_app_info(message, **extra_data):
+    """
+    Log general application information.
+    
+    Args:
+        message: Log message
+        extra_data: Additional data to include in the log
+    """
+    if extra_data:
+        message = f"{message} - {json.dumps(extra_data)}"
+    
+    application_logger.info(message)
 
 if __name__ == "__main__":
-    # Test the logger
-    print("Testing API Logger...")
+    """
+    Simple examples of using the logger functions
+    """
+    print("Simple API Logger Example")
+    print("========================")
     
-    # Test API call logging
+    # Example 1: Log API call with success
+    print("Example 1: Logging successful API call...")
     log_api_call(
-        "Seattle, WA",
-        "Portland, OR",
-        "DRIVE",
+        origin="Seattle, WA",
+        destination="Portland, OR",
+        mode="DRIVE",
         api_key_used=True,
         response_status=200,
         response_data={"status": "OK"}
     )
     
-    # Test route tracking logging
+    # Example 2: Log API call with error
+    print("Example 2: Logging failed API call...")
+    log_api_call(
+        origin="Invalid Location",
+        destination="Portland, OR",
+        mode="DRIVE",
+        api_key_used=True,
+        response_status=400,
+        response_data={"status": "INVALID_REQUEST", "error_message": "Invalid origin"}
+    )
+    
+    # Example 3: Log route tracking
+    print("Example 3: Logging route tracking...")
     test_route_data = {
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "origin": "Seattle, WA",
         "destination": "Portland, OR",
         "distance_meters": 280000,
@@ -221,13 +222,23 @@ if __name__ == "__main__":
         "is_min_distance": True,
         "is_min_duration": True
     }
+    log_route_tracking(test_route_data)
     
-    log_route_tracking(test_route_data, continuous_tracking=True, check_interval=300)
-    
-    # Test Slack notification logging
+    # Example 4: Log Slack notification
+    print("Example 4: Logging Slack notification...")
     log_slack_notification(test_route_data, success=True)
     
-    # Test error logging
-    log_error("test_module", "test_function", "This is a test error message")
+    # Example 5: Log application info
+    print("Example 5: Logging general application info...")
+    log_app_info("Application started", version="1.0.0", user="test_user")
     
-    print("Log entries created successfully in the 'logs' directory.")
+    # Example 6: Log error
+    print("Example 6: Logging error...")
+    log_error("api_module", "get_distance", "Connection timed out")
+    
+    print("\nLog files created in 'logs' directory:")
+    print("- api.log: API calls")
+    print("- route.log: Route tracking")
+    print("- notifier.log: Slack notifications")
+    print("- error.log: Error messages")
+    print("- application.log: General application logs")
