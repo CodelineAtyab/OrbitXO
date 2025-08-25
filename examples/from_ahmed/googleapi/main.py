@@ -1,4 +1,4 @@
-from from_ahmed.googleapi.loginImplemenation import (
+from loginImplemenation import (
     get_api_logger, get_db_logger, get_app_logger,
     log_api_call, log_db_operation
 )
@@ -10,7 +10,7 @@ def run_api_example():
         api_logger,
         method="GET",
         url="https://maps.googleapis.com/maps/api/directions/json",
-        params={"origin": "home", "destination": "work"}
+        params={"origin": "home", "destination": "work"},
         headers={"User-Agent": "OrbitXO", "api-key": "SECRET"},
         response=type('Response', (), {"status_code": 200, "elapsed": "120ms"})(),
         error=None
