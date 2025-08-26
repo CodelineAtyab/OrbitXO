@@ -5,7 +5,7 @@ from examples.from_nabil.google_api.logging_implementation import root_logger as
 from api import get_directions
 from examples.from_nabil.google_api.notifier import SlackNotifier, EmailNotifier
 
-def main():
+def main(): 
     logger.info("Application starting")
     
     if "--debug" in sys.argv:
