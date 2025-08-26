@@ -1,0 +1,46 @@
+{
+  "muscat, oman_salalah, oman": {
+    "source": "Muscat, Oman",
+    "destination": "Salalah, Oman",
+    "min_duration": 601,
+    "recorded_at": "2025-08-26 11:30:34",
+    "history": [
+      {
+        "duration": 601,
+        "timestamp": "2025-08-26 11:30:34"
+      },
+      {
+        "duration": 601,
+        "timestamp": "2025-08-26 11:32:22"
+      }
+    ]
+  },
+  "muscat, wadi kaber_salalah, oman": {
+    "source": "Muscat, wadi kaber",
+    "destination": "Salalah, Oman",
+    "min_duration": 611,
+    "recorded_at": "2025-08-26 11:56:35",
+    "history": [
+      {
+        "duration": 611,
+        "timestamp": "2025-08-26 11:56:35"
+      }
+    ]
+  },
+  "muscat, codeline_salalah, oman": {
+    "source": "Muscat, Codeline",
+    "destination": "Salalah, Oman",
+    "min_duration": 589,
+    "recorded_at": "2025-08-26 12:05:46",
+    "history": [
+      {
+        "duration": 592,
+        "timestamp": "2025-08-26 11:56:53"
+      },
+      {
+        "duration": 589,
+        "timestamp": "2025-08-26 12:05:46"
+      }
+    ]
+  }
+}
