@@ -3,11 +3,12 @@ import os
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 
+
 LOG_DIR = "logs"
 LOG_FORMAT = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 MAX_LOG_SIZE = 5 * 1024 * 1024  
-BACKUP_COUNT = 7 k
+BACKUP_COUNT = 7 
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
