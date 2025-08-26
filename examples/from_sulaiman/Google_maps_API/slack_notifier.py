@@ -1,19 +1,30 @@
 import requests
 import json
 import os
+import logging
 from dotenv import load_dotenv
 from datetime import datetime
-from logger_implementation import logger
+
+# Configure logging if not already configured
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logging.basicConfig(
+        filename='logs/notifier.log',
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-def send_slack_notification(route_data, slack_url=None):
+def send_slack_notification(message, username="Route Tracker", slack_url=None):
     """
-    Send a notification to Slack with route information.
+    Send a notification to Slack.
     
     Args:
-        route_data (dict): Dictionary containing route information
+        message (str): Message to send to Slack
+        username (str): Username to display in Slack
         slack_url (str, optional): Slack webhook URL. If None, it will be loaded from env var
         
     Returns:
@@ -26,16 +37,20 @@ def send_slack_notification(route_data, slack_url=None):
             print("Error: SLACK_URL not found in environment variables")
             return False
     
-    # Format the message
-    message = format_slack_message(route_data)
+    # Prepare the message payload
+    payload = {
+        "text": message,
+        "username": username,
+        "icon_emoji": ":car:"
+    }
     
     # Send the notification
     try:
-        logger.info(f"Sending Slack notification for route: {route_data.get('origin', 'N/A')} to {route_data.get('destination', 'N/A')}")
+        logger.info(f"Sending Slack notification from {username}")
         
         response = requests.post(
             slack_url,
-            json=message,
+            json=payload,
             headers={"Content-Type": "application/json"}
         )
         
