@@ -1,0 +1,14 @@
+{
+  "home_work": {
+    "source": "Home",
+    "destination": "Work",
+    "min_duration": 22,
+    "recorded_at": "2025-08-19 13:46:26",
+    "history": [
+      {
+        "duration": 22,
+        "timestamp": "2025-08-19 13:46:26"
+      }
+    ]
+  }
+}
