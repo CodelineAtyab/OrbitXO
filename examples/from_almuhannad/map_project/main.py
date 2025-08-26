@@ -265,6 +265,27 @@ async def api_info():
         "description": "API for tracking travel times between locations"
     }
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for container monitoring"""
+    try:
+        # Test database connection
+        connection = create_connection()
+        if not connection:
+            return JSONResponse(
+                status_code=500,
+                content={"status": "error", "message": "Database connection failed"}
+            )
+        connection.close()
+        
+        return {"status": "healthy", "timestamp": datetime.datetime.now().isoformat()}
+    except Exception as e:
+        logger.log_with_context('error', "Health check failed", {"error": str(e)})
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": str(e)}
+        )
+
 @app.post("/travel-time", response_model=TravelTimeResponse)
 async def get_travel_time_api(request: TravelTimeRequest):
     """Get travel time between source and destination"""
