@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  map-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: map-project-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./travel_time.db:/app/travel_time.db
+      - ./logs:/logs  # Add this line to mount a logs directory
+    environment:
+      - SOURCE=${SOURCE:-Muscat, Codeline}
+      - DESTINATION=${DESTINATION:-Salalah, Oman}
+      - API_KEY=${API_KEY}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
