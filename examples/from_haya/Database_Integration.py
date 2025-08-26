@@ -99,16 +99,16 @@ def get_historical_data(origin: str, destination: str, date: str):
 
 # ================== Main ==================
 if __name__ == "__main__":
-    # ===== طلب origin و destination =====
+    # ===== Request origin and destination =====
     origin = input("Enter origin: ").strip()
     destination = input("Enter destination: ").strip()
     if not origin or not destination:
         raise ValueError("❌ Origin and destination cannot be empty")
 
-    # ===== تشغيل فوري للتجربة =====
+    # ===== Run immediately for testing =====
     scheduled_job(origin, destination)
 
-    # ===== تشغيل دوري كل 15 دقيقة =====
+    # ===== Run periodically every 15 minutes =====
     scheduler = BackgroundScheduler()
     scheduler.add_job(lambda: scheduled_job(origin, destination), "interval", minutes=15)
     scheduler.start()
