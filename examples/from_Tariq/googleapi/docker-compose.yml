@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: travel-time-tracker
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./database:/app/database  # Mount database directory for SQLite persistence
+      - ./logs:/app/logs          # Mount logs directory
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - SOURCE=${SOURCE}
+      - DESTINATION=${DESTINATION}
+      - RECORDING_INTERVAL_MINUTES=${RECORDING_INTERVAL_MINUTES}
+    networks:
+      - travel-network
+
+networks:
+  travel-network:
+    driver: bridge
