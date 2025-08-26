@@ -1,6 +1,3 @@
--- SQLite Database Schema for Travel Time Tracking
-
--- Create travel time history table
 CREATE TABLE IF NOT EXISTS travel_time_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp TEXT NOT NULL,
@@ -12,6 +9,5 @@ CREATE TABLE IF NOT EXISTS travel_time_history (
     is_minimum BOOLEAN DEFAULT 0
 );
 
--- Create indexes for faster querying
 CREATE INDEX IF NOT EXISTS idx_source_dest ON travel_time_history(source, destination);
 CREATE INDEX IF NOT EXISTS idx_timestamp ON travel_time_history(timestamp);
