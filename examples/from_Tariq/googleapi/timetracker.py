@@ -184,8 +184,3 @@ if __name__ == "__main__":
     else:
         print(f"Not a new minimum. Current: {result['current_duration']} minutes, Minimum: {result['previous_min']} minutes")
 
-
-
-
-
-
