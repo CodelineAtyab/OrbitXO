@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
-
 from loginImplemenation import (
     get_api_logger, get_db_logger, get_app_logger,
     log_api_call, log_db_operation
@@ -34,7 +33,6 @@ def root():
 def calculate_travel_time(request: LocationRequest):
     """Get real travel time using Google Maps API"""
     api_logger = get_api_logger("googlemaps")
-
     
     try:
         # Log the API call
@@ -82,20 +80,6 @@ def calculate_travel_time(request: LocationRequest):
 
 @app.post("/log/db")
 def log_db(record: TravelTimeRecord):
-=======
-    log_api_call(
-        api_logger,
-        method="GET",
-        url="https://maps.googleapis.com/maps/api/directions/json",
-        params={"origin": "home", "destination": "work"},
-        headers={"User-Agent": "OrbitXO", "api-key": "SECRET"},
-        response=type('Response', (), {"status_code": 200, "elapsed": "120ms"})(),
-        error=None
-    )
-
-# Example usage for DB logging
-def run_db_example():
-
     db_logger = get_db_logger("travel_times")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
