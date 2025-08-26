@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Route Tracker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check API status on load
+            checkApiStatus();
+            
+            // Set up form submission
+            const routeForm = document.getElementById('routeForm');
+            if (routeForm) {
+                routeForm.addEventListener('submit', handleFormSubmit);
+            }
+        });
+
+        // Check if the API key is configured
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('apiStatus');
+                if (statusElement) {
+                    if (data.api_configured) {
+                        statusElement.textContent = 'API Status: Connected';
+                        statusElement.className = 'status-connected';
+                    } else {
+                        statusElement.textContent = 'API Status: Not Configured';
+                        statusElement.className = 'status-disconnected';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking API status:', error);
+                const statusElement = document.getElementById('apiStatus');
+                if (statusElement) {
+                    statusElement.textContent = 'API Status: Error';
+                    statusElement.className = 'status-error';
+                }
+            }
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+            
+            // Get form data
+            const formData = new FormData(event.target);
+            
+            try {
+                // Send API request
+                const response = await fetch('/api/track-route', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Process response
+                const result = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                
+                if (result.success) {
+                    // Display results
+                    displayResults(result.data);
+                } else {
+                    // Show error
+                    document.getElementById('errorContainer').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = result.message || 'An error occurred';
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                // Hide loading indicator and show error
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'block';
+                document.getElementById('errorMessage').textContent = 'Failed to connect to the API. Please try again.';
+            }
+        }
+
+        // Display route results
+        function displayResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.style.display = 'block';
+            
+            // Populate result fields
+            document.getElementById('resultOrigin').textContent = data.origin;
+            document.getElementById('resultDestination').textContent = data.destination;
+            document.getElementById('resultDistance').textContent = data.distance;
+            document.getElementById('resultDuration').textContent = data.duration;
+            
+            // Show min route indicators if applicable
+            const minDistanceIndicator = document.getElementById('minDistanceIndicator');
+            minDistanceIndicator.style.display = data.is_min_distance ? 'inline' : 'none';
+            
+            const minDurationIndicator = document.getElementById('minDurationIndicator');
+            minDurationIndicator.style.display = data.is_min_duration ? 'inline' : 'none';
+            
+            // Show timestamp
+            document.getElementById('resultTimestamp').textContent = data.timestamp;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Google Maps Route Tracker</h1>
+            <p id="apiStatus" class="status-checking">API Status: Checking...</p>
+        </header>
+        
+        <main>
+            <section class="form-container">
+                <h2>Find Route</h2>
+                <form id="routeForm">
+                    <div class="form-group">
+                        <label for="origin">Origin:</label>
+                        <input type="text" id="origin" name="origin" placeholder="Enter starting location" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destination">Destination:</label>
+                        <input type="text" id="destination" name="destination" placeholder="Enter destination" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Find Route</button>
+                    </div>
+                </form>
+            </section>
+            
+            <div id="loadingIndicator" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Processing route data...</p>
+            </div>
+            
+            <div id="errorContainer" class="error-container" style="display: none;">
+                <h3>Error</h3>
+                <p id="errorMessage"></p>
+            </div>
+            
+            <section id="resultContainer" class="result-container" style="display: none;">
+                <h2>Route Information</h2>
+                
+                <div class="result-item">
+                    <span class="result-label">From:</span>
+                    <span id="resultOrigin" class="result-value"></span>
+                </div>
+                
+                <div class="result-item">
+                    <span class="result-label">To:</span>
+                    <span id="resultDestination" class="result-value"></span>
+                </div>
+                
+                <div class="result-item">
+                    <span class="result-label">Distance:</span>
+                    <span id="resultDistance" class="result-value"></span>
+                    <span id="minDistanceIndicator" class="indicator min-indicator">Shortest!</span>
+                </div>
+                
+                <div class="result-item">
+                    <span class="result-label">Duration:</span>
+                    <span id="resultDuration" class="result-value"></span>
+                    <span id="minDurationIndicator" class="indicator min-indicator">Fastest!</span>
+                </div>
+                
+                <div class="result-item">
+                    <span class="result-label">Timestamp:</span>
+                    <span id="resultTimestamp" class="result-value"></span>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Google Maps Route Tracker System</p>
+        </footer>
+    </div>
+</body>
+</html>
