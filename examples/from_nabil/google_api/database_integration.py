@@ -111,6 +111,7 @@ def get_historical_data(connection, source, destination, date_str):
             dt = datetime.strptime(record["recorded_at"], "%Y-%m-%d %H:%M:%S")
             time_str = dt.strftime("%H:%M:%S")
             formatted_duration = format_duration(record["duration"])
+        
             historical_data["times"].append({
                 "time": time_str,
                 "duration": record["duration"],
