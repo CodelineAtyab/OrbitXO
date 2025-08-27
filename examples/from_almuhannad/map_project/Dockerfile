@@ -9,9 +9,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Initialize the database in the builder stage
-RUN python init_db.py
-
 # Create a clean runtime image
 FROM python:3.11-slim
 
@@ -21,13 +18,14 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy application files and the initialized database
+# Copy application files
 COPY --from=builder /app /app
 
 # Create a non-root user to run the application
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        ca-certificates \
+       curl \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -m appuser \
     && mkdir -p /logs \
@@ -39,4 +37,4 @@ USER appuser
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python init_mysql_db.py && uvicorn main:app --host 0.0.0.0 --port 8000"]
