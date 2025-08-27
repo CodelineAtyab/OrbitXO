@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  db:
+    image: mysql:8.0
+    container_name: map-project-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-travel_times}
+      - MYSQL_USER=${MYSQL_USER:-mapuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-mappassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    command: --default-authentication-plugin=mysql_native_password
+
   map-api:
     build:
       context: .
@@ -10,16 +30,25 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./travel_time.db:/app/travel_time.db
-      - ./logs:/logs  # Add this line to mount a logs directory
+      - ./logs:/logs
     environment:
       - SOURCE=${SOURCE:-Muscat, Codeline}
       - DESTINATION=${DESTINATION:-Salalah, Oman}
       - API_KEY=${API_KEY}
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-travel_times}
+      - MYSQL_USER=${MYSQL_USER:-mapuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-mappassword}
+    depends_on:
+      - db
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 5s
+
+volumes:
+  mysql_data:

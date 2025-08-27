@@ -6,7 +6,6 @@ from pydantic import BaseModel
 import uvicorn
 import sys
 import os
-import sqlite3
 import datetime
 import json
 from typing import Optional, List, Dict, Any
@@ -15,6 +14,7 @@ from pathlib import Path
 from googleApi import get_travel_time, load_locations_from_config
 from minimum_time_tracking import check_and_notify_new_minimum
 from logging_task import LoggingSystem
+from db_helper import create_connection, add_travel_time_record, get_historical_data, get_minimum_travel_time
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -59,103 +59,6 @@ class TravelTimeResponse(BaseModel):
     duration_minutes: Optional[int] = None
     minimum_time_info: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
-
-# Database functions
-def get_db_path():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "travel_time.db")
-    return db_path
-
-def create_connection():
-    db_path = get_db_path()
-    
-    try:
-        connection = sqlite3.connect(db_path)
-        connection.row_factory = sqlite3.Row
-        
-        create_tables(connection)
-        
-        return connection
-    except sqlite3.Error as e:
-        logger.log_with_context('error', "Database connection error", {"error": str(e)})
-        return None
-
-def add_travel_time_record(source, destination, duration_minutes, distance, distance_value=None, is_minimum=False):
-    try:
-        connection = create_connection()
-        if not connection:
-            return False
-        
-        try:
-            cursor = connection.cursor()
-            sql = """
-            INSERT INTO travel_time_history (timestamp, source, destination, duration_minutes, distance, distance_value, is_minimum)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """
-            timestamp = datetime.datetime.now().isoformat()
-            cursor.execute(sql, (
-                timestamp,
-                source,
-                destination,
-                duration_minutes,
-                distance,
-                distance_value,
-                1 if is_minimum else 0
-            ))
-            
-            connection.commit()
-            record_id = cursor.lastrowid
-            return True
-            
-        except sqlite3.Error as e:
-            logger.log_with_context('error', "Failed to add record to database", {"error": str(e)})
-            return False
-        finally:
-            connection.close()
-    except Exception as e:
-        logger.log_with_context('error', "Unexpected error adding travel time record", {"error": str(e)})
-        return False
-
-def get_historical_data(source, destination, date_str=None):
-    connection = create_connection()
-    if not connection:
-        return []
-    
-    try:
-        cursor = connection.cursor()
-        
-        if date_str:
-            sql = """
-            SELECT timestamp, duration_minutes, distance
-            FROM travel_time_history
-            WHERE source = ? AND destination = ? 
-            AND substr(timestamp, 1, 10) = ?
-            ORDER BY timestamp
-            """
-            cursor.execute(sql, (source, destination, date_str))
-        else:
-            sql = """
-            SELECT timestamp, duration_minutes, distance
-            FROM travel_time_history
-            WHERE source = ? AND destination = ?
-            ORDER BY timestamp DESC
-            LIMIT 100
-            """
-            cursor.execute(sql, (source, destination))
-            
-        results = cursor.fetchall()
-        
-        formatted_results = []
-        for row in results:
-            formatted_results.append(dict(row))
-        
-        return formatted_results
-        
-    except sqlite3.Error as e:
-        logger.log_with_context('error', "Database query error", {"error": str(e)})
-        return []
-    finally:
-        connection.close()
 
 def process_travel_time(source, destination, use_mock_data=False):
     """
@@ -385,130 +288,6 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
-
-def get_db_path():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "travel_time.db")
-    return db_path
-
-def create_connection():
-    db_path = get_db_path()
-    
-    try:
-        connection = sqlite3.connect(db_path)
-        connection.row_factory = sqlite3.Row
-        
-        create_tables(connection)
-        
-        return connection
-    except sqlite3.Error as e:
-        return None
-
-def create_tables(connection):
-    try:
-        cursor = connection.cursor()
-        
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS travel_time_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp TEXT NOT NULL,
-            source TEXT NOT NULL,
-            destination TEXT NOT NULL,
-            duration_minutes INTEGER NOT NULL,
-            distance TEXT,
-            distance_value INTEGER,
-            is_minimum BOOLEAN DEFAULT 0
-        )
-        ''')
-        
-        cursor.execute('''
-        CREATE INDEX IF NOT EXISTS idx_source_dest 
-        ON travel_time_history(source, destination)
-        ''')
-        
-        cursor.execute('''
-        CREATE INDEX IF NOT EXISTS idx_timestamp 
-        ON travel_time_history(timestamp)
-        ''')
-        
-        connection.commit()
-        return True
-    except sqlite3.Error as e:
-        return False
-
-def add_travel_time_record(source, destination, duration_minutes, distance, distance_value=None, is_minimum=False):
-    try:
-        connection = create_connection()
-        if not connection:
-            return False
-        
-        try:
-            cursor = connection.cursor()
-            sql = """
-            INSERT INTO travel_time_history (timestamp, source, destination, duration_minutes, distance, distance_value, is_minimum)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """
-            timestamp = datetime.datetime.now().isoformat()
-            cursor.execute(sql, (
-                timestamp,
-                source,
-                destination,
-                duration_minutes,
-                distance,
-                distance_value,
-                1 if is_minimum else 0
-            ))
-            
-            connection.commit()
-            record_id = cursor.lastrowid
-            return True
-            
-        except sqlite3.Error as e:
-            return False
-        finally:
-            connection.close()
-    except Exception as e:
-        return False
-
-def get_historical_data(source, destination, date_str=None):
-    connection = create_connection()
-    if not connection:
-        return []
-    
-    try:
-        cursor = connection.cursor()
-        
-        if date_str:
-            sql = """
-            SELECT timestamp, duration_minutes, distance
-            FROM travel_time_history
-            WHERE source = ? AND destination = ? 
-            AND substr(timestamp, 1, 10) = ?
-            ORDER BY timestamp
-            """
-            cursor.execute(sql, (source, destination, date_str))
-        else:
-            sql = """
-            SELECT timestamp, duration_minutes, distance
-            FROM travel_time_history
-            WHERE source = ? AND destination = ?
-            ORDER BY timestamp DESC
-            LIMIT 100
-            """
-            cursor.execute(sql, (source, destination))
-            
-        results = cursor.fetchall()
-        
-        formatted_results = []
-        for row in results:
-            formatted_results.append(dict(row))
-        
-        return formatted_results
-        
-    except sqlite3.Error as e:
-        return []
-    finally:
-        connection.close()
 
 def track_travel_time(source, destination, use_mock_data=False):
     logger = LoggingSystem(app_name="MapProject")
