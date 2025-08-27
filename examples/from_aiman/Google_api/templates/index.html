@@ -1,0 +1,94 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Route Monitor</title>
+        <link rel="stylesheet" href="/static/styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Route Monitor</h1>
+            
+            <div class="card">
+                <h2>API Key Configuration</h2>
+                <form action="/update-api-key" method="post">
+                    <div class="form-group">
+                        <label for="api_key">Google Maps API Key:</label>
+                        <input type="text" id="api_key" name="api_key" value="{{ api_key }}" required>
+                    </div>
+                    <button type="submit" class="btn">Update API Key</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Your Routes</h2>
+                {% if routes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Current Estimate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for route in routes %}
+                        <tr>
+                            <td>
+                                <strong>{{ route.source_name }}</strong><br>
+                                <small>{{ route.source_address }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ route.destination_name }}</strong><br>
+                                <small>{{ route.destination_address }}</small>
+                            </td>
+                            <td>
+                                {% if route.duration != "N/A" %}
+                                {{ route.duration }} min
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="/remove-route" method="post">
+                                    <input type="hidden" name="source_address" value="{{ route.source_address }}">
+                                    <input type="hidden" name="destination_address" value="{{ route.destination_address }}">
+                                    <button type="submit" class="btn-delete">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No routes added yet. Add your first route below.</p>
+                {% endif %}
+            </div>
+            
+            <div class="card">
+                <h2>Add New Route</h2>
+                <form action="/add-route" method="post">
+                    <div class="form-group">
+                        <label for="source_name">Source Name:</label>
+                        <input type="text" id="source_name" name="source_name" required placeholder="Home, Work, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="source_address">Source Address:</label>
+                        <input type="text" id="source_address" name="source_address" required placeholder="Full address">
+                    </div>
+                    <div class="form-group">
+                        <label for="destination_name">Destination Name:</label>
+                        <input type="text" id="destination_name" name="destination_name" required placeholder="Home, Work, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="destination_address">Destination Address:</label>
+                        <input type="text" id="destination_address" name="destination_address" required placeholder="Full address">
+                    </div>
+                    <button type="submit" class="btn">Add Route</button>
+                </form>
+            </div>
+        </div>
+    </body>
+    </html>
+    
