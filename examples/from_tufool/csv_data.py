@@ -7,34 +7,59 @@ data = [
     "Ava,36,79000"
 ]
 
-file = open("data.csv", "w")
-for line in data:
-    file.write(line + "\n")
-file.close()
+# Write the data to CSV
+with open("data.csv", "w") as file:
+    for line in data:
+        file.write(line + "\n")
 
-file = open("data.csv", "r")
-lines = file.readlines()
-file.close()
+# Read the data with error handling
+try:
+    with open("data.csv", "r") as file:
+        lines = file.readlines()
+except FileNotFoundError:
+    print("Error: data.csv not found.")
+    lines = []
+except PermissionError:
+    print("Error: Permission denied when accessing data.csv.")
+    lines = []
+except Exception as e:
+    print(f"Unexpected error: {e}")
+    lines = []
 
 ages = []
 salaries = []
 filtered = []
 
-for line in lines[1:]:
-    name, age, salary = line.strip().split(",")
-    age = int(age)
-    salary = int(salary)
-    ages.append(age)
-    salaries.append(salary)
-    if age > 30:
-        filtered.append(line.strip()) #filtering ages > 30
+if lines:
+    # Check if the first line is a header
+    first_line = lines[0].strip().split(",")
+    has_header = not all(item.isdigit() for item in first_line[1:])  # "Age" or "Salary" won't be numeric
 
-print("Age: min =", min(ages), "max =", max(ages), "avg =", sum(ages)//len(ages))
-print("Salary: min =", min(salaries), "max =", max(salaries), "avg =", sum(salaries)//len(salaries))
+    # Use appropriate lines depending on header presence
+    data_lines = lines[1:] if has_header else lines[:]
 
-#Save filtered rows
-file = open("filtered_tech_employees.csv", "w")
-file.write(lines[0])  
-for row in filtered:
-    file.write(row + "\n")
-file.close()
+    for line in data_lines:
+        try:
+            name, age, salary = line.strip().split(",")
+            age = int(age)
+            salary = int(salary)
+            ages.append(age)
+            salaries.append(salary)
+
+            # Filtering ages > 30
+            if age > 30:
+                filtered.append(line.strip())
+        except ValueError:
+            print(f"Skipping invalid line: {line.strip()}")
+
+    # Only calculate if we have valid data
+    if ages and salaries:
+        print("Age: min =", min(ages), "max =", max(ages), "avg =", sum(ages)//len(ages))
+        print("Salary: min =", min(salaries), "max =", max(salaries), "avg =", sum(salaries)//len(salaries))
+
+        # Save filtered rows (with header if present)
+        with open("filtered_tech_employees.csv", "w") as file:
+            if has_header:
+                file.write(lines[0])
+            for row in filtered:
+                file.write(row + "\n")
