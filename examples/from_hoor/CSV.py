@@ -1,0 +1,47 @@
+employees = [
+    {"name": "Hoor", "age": 24, "salary": 4000, "company": "PDO"},
+    {"name": "Maryia", "age": 32, "salary": 3000, "company": "Omantel"},
+    {"name": "Arooba", "age": 20, "salary": 2800, "company": "Codeline"},
+    {"name": "Haya", "age": 30, "salary": 3200, "company": "OBB"},
+    {"name": "Aya", "age": 21, "salary": 2600, "company": "Infoline"},
+    {"name": "Ghadeer", "age": 22, "salary": 2200, "company": "Asyad"}
+]
+
+file = open("examples/from_Hoor/data.csv", "w")
+for emp in employees:
+    line = f"{emp['name']},{emp['age']},{emp['salary']},{emp['company'].strip()}"
+    file.write(line + "\n")
+file.close()
+
+file = open("examples/from_Hoor/data.csv", "r")
+lines = file.readlines()
+file.close()
+
+print("Raw File Content:")
+print(lines)
+
+print("\nAll Employees:\n")
+for emp in employees:
+    print(f"{emp['name']} | Age: {emp['age']} | Salary: {emp['salary']} | Company: {emp['company']}")
+print("\n")
+
+def calculate_statistics(data, key):
+    values = [emp[key] for emp in data]
+    return {
+        "min": min(values),
+        "max": max(values),
+        "avg": sum(values) / len(values)
+    }
+
+age_stats = calculate_statistics(employees, "age")
+salary_stats = calculate_statistics(employees, "salary")
+
+print("Statistics:")
+print(f"Age -> Min: {age_stats['min']}, Max: {age_stats['max']}, Average: {age_stats['avg']}")
+print(f"Salary -> Min: {salary_stats['min']}, Max: {salary_stats['max']}, Average: {salary_stats['avg']}")
+print("\n")
+
+print("Employees with Age > 23:\n")
+for emp in employees:
+    if emp["age"] > 23:
+        print(f"{emp['name']} | Age: {emp['age']} | Salary: {emp['salary']} | Company: {emp['company']}")
