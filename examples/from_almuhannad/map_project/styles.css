@@ -1,0 +1,81 @@
+/* Additional styles for the Travel Time Tracker application */
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .card {
+        width: 100%;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #f5f5f5;
+    }
+    
+    .card {
+        background-color: #2d2d2d;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    input[type="text"] {
+        background-color: #333;
+        color: #fff;
+        border-color: #444;
+    }
+    
+    .result {
+        background-color: #333;
+    }
+    
+    .success {
+        background-color: #1e3a2d;
+        border-left: 4px solid #28a745;
+        color: #a7d7b8;
+    }
+    
+    .error {
+        background-color: #3d1e28;
+        border-left: 4px solid #dc3545;
+        color: #f5c6ce;
+    }
+    
+    .stat-card {
+        background-color: #2d2d2d;
+    }
+    
+    .stat-value {
+        color: #3498db;
+    }
+    
+    th, td {
+        border-bottom: 1px solid #444;
+    }
+    
+    th {
+        background-color: #333;
+    }
+    
+    tr:hover {
+        background-color: #3a3a3a;
+    }
+}

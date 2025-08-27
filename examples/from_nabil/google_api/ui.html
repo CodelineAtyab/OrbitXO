@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Time Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .result-item {
+            margin-bottom: 1rem;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #ffeaea;
+            border-radius: 4px;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Travel Time Calculator</h1>
+    </header>
+    
+    <main>
+        <div class="container">
+            <form id="travelForm">
+                <div class="form-group">
+                    <label for="source">Starting Point</label>
+                    <input type="text" id="source" name="source" placeholder="Enter starting location (e.g., New York, NY)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" name="destination" placeholder="Enter destination (e.g., Boston, MA)" required>
+                </div>
+                
+                <button type="submit" id="calculateBtn">Calculate Travel Time</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Calculating travel time...</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="result" id="result">
+                <h3>Travel Information</h3>
+                <div class="result-item">
+                    <span class="result-label">From:</span>
+                    <span id="resultSource"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">To:</span>
+                    <span id="resultDestination"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Distance:</span>
+                    <span id="resultDistance"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Travel Time:</span>
+                    <span id="resultDuration"></span>
+                </div>
+                <div class="result-item" id="mockDataWarning" style="display: none; color: #e67e22; background-color: #fff3e0; padding: 0.5rem; border-radius: 4px;">
+                    <strong>Note:</strong> Using mock data. For actual travel times, please configure a valid Google Maps API key.
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Travel Time API &copy; 2025</p>
+    </footer>
+    
+    <script>
+        document.getElementById('travelForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const source = document.getElementById('source').value;
+            const destination = document.getElementById('destination').value;
+            
+            // Reset UI
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const response = await fetch('/travel-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        source: source,
+                        destination: destination,
+                        use_mock: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.success) {
+                    // Display results
+                    document.getElementById('resultSource').textContent = data.source;
+                    document.getElementById('resultDestination').textContent = data.destination;
+                    document.getElementById('resultDistance').textContent = data.distance;
+                    document.getElementById('resultDuration').textContent = data.duration;
+                    
+                    // Show mock data warning if applicable
+                    if (data.mock_data) {
+                        document.getElementById('mockDataWarning').style.display = 'block';
+                    } else {
+                        document.getElementById('mockDataWarning').style.display = 'none';
+                    }
+                    
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    // Display error
+                    const errorMessage = data.error || 'An unknown error occurred';
+                    document.getElementById('errorMessage').textContent = `Error: ${errorMessage}`;
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+                
+            } catch (error) {
+                // Hide loading, show error
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').textContent = `Error: Could not connect to the server. Please try again later.`;
+                document.getElementById('errorMessage').style.display = 'block';
+                console.error('Error:', error);
+            }
+        });
+
+        // Pre-fill with default values when page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/default-route');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('source').value = data.source || '';
+                    document.getElementById('destination').value = data.destination || '';
+                }
+            } catch (error) {
+                console.error('Error loading defaults:', error);
+            }
+        });
+    </script>
+</body>
+</html>
