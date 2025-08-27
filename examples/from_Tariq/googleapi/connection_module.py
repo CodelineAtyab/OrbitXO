@@ -1,153 +1,155 @@
 import os
-import sqlalchemy
-from sqlalchemy import Table, MetaData, Column, Integer, String, DateTime, Boolean, Float, text, create_engine
 import datetime
 import logging
+import mysql.connector
+from mysql.connector import Error
 
 _logger = logging.getLogger("db_connector")
-_engine = None
 _conn = None
-_metadata = MetaData()
-
-travel_time_history = Table(
-    'travel_time_history', _metadata,
-    Column('id', Integer, primary_key=True),
-    Column('timestamp', DateTime, nullable=False),
-    Column('source', String(255), nullable=False),
-    Column('destination', String(255), nullable=False),
-    Column('duration_minutes', Integer, nullable=False),
-    Column('distance', String(100)),
-    Column('distance_value', Integer),
-    Column('is_minimum', Boolean, default=False)
-)
 
 def initialize_connection():
-    global _engine, _conn, _metadata
+    global _conn
     try:
-        # Create database directory if it doesn't exist
-        db_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database")
-        os.makedirs(db_dir, exist_ok=True)
+        # Get connection parameters from environment variables or use defaults
+        host = os.environ.get('MYSQL_HOST', 'mysql')
+        user = os.environ.get('MYSQL_USER', 'orbitxo')
+        password = os.environ.get('MYSQL_PASSWORD', 'yourpassword')
+        database = os.environ.get('MYSQL_DATABASE', 'traveltime')
+        port = int(os.environ.get('MYSQL_PORT', '3306'))
         
-        # Use SQLite instead of MySQL
-        db_path = os.path.join(db_dir, "travel_time.db")
-        _logger.info(f"Using SQLite database at {db_path}")
+        _conn = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database,
+            port=port
+        )
         
-        connection_string = f"sqlite:///{db_path}"
-        _engine = create_engine(connection_string, echo=False)
-        
-        # Create tables
-        _metadata.create_all(_engine)
-        _conn = _engine.connect()
-        _logger.info("Database connection initialized")
+        _logger.info(f"MySQL database connection initialized to {host}:{port}/{database}")
         return True
-    except Exception as e:
+    except Error as e:
         _logger.error(f"Database connection failed: {e}")
         return False
 
 def add_travel_time_record(source, destination, duration_minutes, distance=None, distance_value=None, is_minimum=False):
-    global _engine, _conn
+    global _conn
     
-    if _engine is None:
+    if _conn is None or not _conn.is_connected():
         if not initialize_connection():
             return False
         
     try:
-        ins = travel_time_history.insert().values(
-            timestamp=datetime.datetime.now(),
-            source=source,
-            destination=destination,
-            duration_minutes=duration_minutes,
-            distance=distance,
-            distance_value=distance_value,
-            is_minimum=is_minimum
+        cursor = _conn.cursor()
+        
+        query = """
+        INSERT INTO travel_time_history 
+        (timestamp, source, destination, duration_minutes, distance, distance_value, is_minimum)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+        
+        values = (
+            datetime.datetime.now(),
+            source,
+            destination,
+            duration_minutes,
+            distance,
+            distance_value,
+            is_minimum
         )
         
-        with _engine.begin() as conn:
-            conn.execute(ins)
+        cursor.execute(query, values)
+        _conn.commit()
+        cursor.close()
             
         _logger.info(f"Added travel time record: {source} to {destination}, {duration_minutes} minutes")
         return True
         
-    except Exception as e:
+    except Error as e:
         _logger.error(f"Failed to add travel time record: {e}")
         return False
 
 def get_travel_time_history(source=None, destination=None, start_date=None, end_date=None, limit=100):
-    global _engine
+    global _conn
     
-    if _engine is None:
+    if _conn is None or not _conn.is_connected():
         if not initialize_connection():
             return []
         
     try:
-        query = sqlalchemy.select([travel_time_history])
+        cursor = _conn.cursor(dictionary=True)
+        
+        query = "SELECT * FROM travel_time_history WHERE 1=1"
+        params = []
         
         if source:
-            query = query.where(travel_time_history.c.source == source)
+            query += " AND source = %s"
+            params.append(source)
         if destination:
-            query = query.where(travel_time_history.c.destination == destination)
+            query += " AND destination = %s"
+            params.append(destination)
         if start_date:
-            query = query.where(travel_time_history.c.timestamp >= start_date)
+            query += " AND timestamp >= %s"
+            params.append(start_date)
         if end_date:
-            query = query.where(travel_time_history.c.timestamp <= end_date)
+            query += " AND timestamp <= %s"
+            params.append(end_date)
             
-        query = query.order_by(travel_time_history.c.timestamp.desc()).limit(limit)
+        query += " ORDER BY timestamp DESC LIMIT %s"
+        params.append(limit)
         
-        with _engine.connect() as conn:
-            result = conn.execute(query)
-            records = [dict(row) for row in result]
+        cursor.execute(query, params)
+        records = cursor.fetchall()
+        cursor.close()
             
         _logger.info(f"Retrieved {len(records)} travel time records")
         return records
         
-    except Exception as e:
+    except Error as e:
         _logger.error(f"Failed to retrieve travel time history: {e}")
         return []
 
 def get_minimum_travel_times(source=None, destination=None):
-    global _engine
+    global _conn
     
-    if _engine is None:
+    if _conn is None or not _conn.is_connected():
         if not initialize_connection():
             return []
         
     try:
-        sql = """
+        cursor = _conn.cursor(dictionary=True)
+        
+        query = """
         SELECT source, destination, MIN(duration_minutes) as min_duration
         FROM travel_time_history
+        WHERE 1=1
         """
         
-        params = {}
-        where_clauses = []
+        params = []
         
         if source:
-            where_clauses.append("source = :source")
-            params["source"] = source
+            query += " AND source = %s"
+            params.append(source)
         if destination:
-            where_clauses.append("destination = :destination")
-            params["destination"] = destination
+            query += " AND destination = %s"
+            params.append(destination)
             
-        if where_clauses:
-            sql += " WHERE " + " AND ".join(where_clauses)
-            
-        sql += " GROUP BY source, destination"
+        query += " GROUP BY source, destination"
         
-        with _engine.connect() as conn:
-            result = conn.execute(text(sql), params)
-            records = [dict(row) for row in result]
+        cursor.execute(query, params)
+        records = cursor.fetchall()
+        cursor.close()
         
         _logger.info(f"Retrieved {len(records)} minimum travel time records")
         return records
         
-    except Exception as e:
+    except Error as e:
         _logger.error(f"Failed to retrieve minimum travel times: {e}")
         return []
 
 def get_db_connector():
-    if _engine is None:
+    if _conn is None or not _conn.is_connected():
         if not initialize_connection():
             _logger.error("Failed to initialize database connection")
-            # Return functions that will handle errors gracefully
             return {
                 "add_travel_time_record": lambda **kwargs: False,
                 "get_travel_time_history": lambda **kwargs: [],

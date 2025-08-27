@@ -8,25 +8,23 @@ import os
 import dotenv
 from pydantic import BaseModel
 
-# Import your existing modules
+
 from googlemapapi import get_travel_time
 import timetracker
 import Logging_Implementation
 from connection_module import get_db_connector
 
-# Initialize FastAPI
 app = FastAPI(
     title="Travel Time Tracker API",
     description="API for tracking travel times between locations using Google Maps",
     version="1.0.0"
 )
 
-# Set up static files and templates
-# Create a 'static' directory for CSS, JS, etc. if needed
+
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 os.makedirs(static_dir, exist_ok=True)
 
-# Mount static directory if you need to serve static files
+
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 def get_logger():
@@ -35,7 +33,6 @@ def get_logger():
 def get_api_logger():
     return Logging_Implementation.get_api_logger("google_maps")
 
-# Setup environment on startup (reusing your existing function)
 @app.on_event("startup")
 def startup_event():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +53,6 @@ def startup_event():
         logger.error(f"Environment file not found at {env_path}")
         raise Exception("Environment file not found")
 
-# Serve UI.html at root
 @app.get("/", response_class=HTMLResponse)
 async def get_ui():
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "UI.html"), "r") as f:
@@ -74,12 +70,11 @@ def get_default_locations():
     
     return {"source": source, "destination": destination}
 
-# Add this model
+
 class LocationRequest(BaseModel):
     source: str
     destination: str
 
-# Replace the track_travel_time function with this
 @app.post("/track-travel-time")
 def track_travel_time(
     location_data: LocationRequest,
@@ -144,7 +139,7 @@ async def track_default_locations(background_tasks: BackgroundTasks):
     if not source or not destination:
         raise HTTPException(status_code=404, detail="Default locations not configured")
     
-    # Run tracking in a background task to avoid blocking the response
+
     background_tasks.add_task(track_travel_time, source, destination)
     
     return {"message": "Travel time tracking started in background", "source": source, "destination": destination}
@@ -158,11 +153,9 @@ def track_now():
     if not source or not destination:
         raise HTTPException(status_code=404, detail="Default locations not configured")
     
-    # This will block until complete, but will return full results
     result = track_travel_time(source, destination)
     
     return result
 
-# Run the application
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
