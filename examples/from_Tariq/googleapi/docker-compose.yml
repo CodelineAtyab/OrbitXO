@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   app:
@@ -16,9 +16,34 @@ services:
       - SOURCE=${SOURCE}
       - DESTINATION=${DESTINATION}
       - RECORDING_INTERVAL_MINUTES=${RECORDING_INTERVAL_MINUTES}
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=orbitxo
+      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_DATABASE=traveltime
+      - MYSQL_PORT=3306
     networks:
       - travel-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: orbitxo-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=traveltime
+      - MYSQL_USER=orbitxo
+      - MYSQL_PASSWORD=yourpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 networks:
   travel-network:
     driver: bridge
+
+volumes:
+  mysql_data:
