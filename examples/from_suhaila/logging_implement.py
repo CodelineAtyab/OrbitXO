@@ -90,7 +90,9 @@ def log_api_call(logger, method, url, params=None, headers=None, response=None, 
         "method": method,
         "url": url,
         "params": params,
+
         "headers": {k: v for k, v in (headers or {}).items() if k.lower() not in ("authorization", "api-key", "x-goog-api-key")}
+
     }
 
     if response:
@@ -104,6 +106,8 @@ def log_api_call(logger, method, url, params=None, headers=None, response=None, 
         logger.info(f"API call to {url}")
         log_dict(logger, "API call details", log_data, level=logging.DEBUG)
 
+=======
+        
 def log_google_maps_api_call(logger, source, destination, duration=None, distance=None, error=None):
     """
     Special logger method for Google Maps API calls
@@ -113,19 +117,20 @@ def log_google_maps_api_call(logger, source, destination, duration=None, distanc
         "destination": destination,
         "api": "Google Maps Directions API v2"
     }
-
+    
     if duration is not None:
         log_data["duration_minutes"] = duration
-
+        
     if distance is not None:
         log_data["distance_meters"] = distance
-
+        
     if error:
         logger.error(f"Google Maps API call failed: {error}")
         log_dict(logger, "Google Maps API call details", log_data, level=logging.ERROR)
     else:
         logger.info(f"Google Maps API call: {source} → {destination}")
         log_dict(logger, "Google Maps API call details", log_data, level=logging.DEBUG)
+
 
 def log_db_operation(logger, operation, table=None, query=None, params=None, result=None, error=None):
     log_data = {
