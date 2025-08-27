@@ -1,0 +1,10 @@
+{
+  "ibri->nizwa": {
+    "min": 84,
+    "last_notified_ts": 1756102334
+  },
+  "ibri->muscat": {
+    "min": 158,
+    "last_notified_ts": 1756102400
+  }
+}

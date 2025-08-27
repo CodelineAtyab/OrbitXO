@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    container_name: travel-time-tracker
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./database:/app/database  # Mount database directory for SQLite persistence
+      - ./logs:/app/logs          # Mount logs directory
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - SOURCE=${SOURCE}
+      - DESTINATION=${DESTINATION}
+      - RECORDING_INTERVAL_MINUTES=${RECORDING_INTERVAL_MINUTES}
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=orbitxo
+      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_DATABASE=traveltime
+      - MYSQL_PORT=3306
+    networks:
+      - travel-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: orbitxo-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=traveltime
+      - MYSQL_USER=orbitxo
+      - MYSQL_PASSWORD=yourpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+networks:
+  travel-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
