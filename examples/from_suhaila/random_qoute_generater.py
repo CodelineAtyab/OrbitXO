@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 import uvicorn
 import random
 app = FastAPI()
+
 quotes_db = [
     {
         "quote": "The only way to do great work is to love what you do.",
