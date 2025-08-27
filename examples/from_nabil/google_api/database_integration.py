@@ -4,7 +4,11 @@ import logging
 import sqlite3
 from datetime import datetime
 import time
+from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
+
+# Load environment variables
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 logger = logging.getLogger(__name__)

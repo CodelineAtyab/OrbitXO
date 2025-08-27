@@ -2,18 +2,26 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
-LOG_DIR = "logs"
-LOG_FORMAT = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-MAX_LOG_SIZE = 5 * 1024 * 1024  
-BACKUP_COUNT = 7 
+LOG_DIR = os.environ.get("LOG_DIR", "logs")
+LOG_FORMAT = os.environ.get("LOG_FORMAT", "%(asctime)s %(levelname)s [%(name)s] %(message)s")
+DATE_FORMAT = os.environ.get("DATE_FORMAT", "%Y-%m-%d %H:%M:%S")
+MAX_LOG_SIZE = int(os.environ.get("MAX_LOG_SIZE", str(5 * 1024 * 1024)))  # Default 5 MB
+BACKUP_COUNT = int(os.environ.get("BACKUP_COUNT", "7"))
+
+# Get default log level from environment
+DEFAULT_LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_LEVEL = getattr(logging, DEFAULT_LOG_LEVEL, logging.INFO)
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-def get_logger(name, log_file=None, level=logging.INFO):
+def get_logger(name, log_file=None, level=LOG_LEVEL):
 
     if log_file is None:
         log_file = f"{name}.log"
