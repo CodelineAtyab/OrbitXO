@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrbitXO - Travel Time Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3559A2;
+            --secondary: #F17D2D;
+            --accent: #77C4D3;
+            --background: #F4F7F9;
+            --card-bg: #FFFFFF;
+            --text: #2A3B4C;
+            --success: #4CAF50;
+            --border: #E0E6ED;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233559a2' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .map-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .compass {
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%233559A2' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%233559A2'/%3E%3Cpath d='M50 10L45 50 50 90 55 50z' fill='%23F17D2D'/%3E%3Cpath d='M10 50L50 45 90 50 50 55z' fill='%233559A2'/%3E%3Ctext x='50' y='20' text-anchor='middle' font-family='Arial' font-size='12' fill='%232A3B4C'%3EN%3C/text%3E%3Ctext x='50' y='85' text-anchor='middle' font-family='Arial' font-size='12' fill='%232A3B4C'%3ES%3C/text%3E%3Ctext x='85' y='52' text-anchor='middle' font-family='Arial' font-size='12' fill='%232A3B4C'%3EE%3C/text%3E%3Ctext x='15' y='52' text-anchor='middle' font-family='Arial' font-size='12' fill='%232A3B4C'%3EW%3C/text%3E%3C/svg%3E");
+            background-size: contain;
+            transform: rotate(0deg);
+            transition: transform 1s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .tagline {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .map-pin {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .pin-1 {
+            top: 20px;
+            right: 20px;
+        }
+
+        .pin-2 {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .map-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), 
+                              linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            font-size: 1.2rem;
+            color: var(--secondary);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #FFFFFF;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(119, 196, 211, 0.3);
+        }
+
+        .coordinates {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #7a8999;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            z-index: 1;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: #294985;
+        }
+
+        button i {
+            font-size: 1.2rem;
+        }
+
+        #result {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            position: relative;
+            min-height: 200px;
+        }
+
+        .route-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .route-line svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            gap: 20px;
+        }
+
+        .compass-loader {
+            width: 60px;
+            height: 60px;
+            animation: spin 3s infinite linear;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-data {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-data i {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .new-minimum {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid var(--success);
+            position: relative;
+            z-index: 1;
+        }
+
+        .map-marker {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .map-marker i {
+            color: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #7a8999;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .compass {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 0 auto 20px;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card, #result {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="compass" id="compass"></div>
+            <h1>Travel Time Tracker</h1>
+            <p class="tagline">Navigate with precision across any terrain</p>
+        </header>
+
+        <div class="card">
+            <div class="map-grid"></div>
+            <div class="map-pin pin-1"><i class="fas fa-map-pin"></i></div>
+            <div class="map-pin pin-2"><i class="fas fa-map-pin"></i></div>
+            
+            <form id="trackForm">
+                <div class="form-group">
+                    <label for="source"><i class="fas fa-location-arrow"></i> Starting Point</label>
+                    <div class="input-group">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="source" name="source" placeholder="Enter origin location" required>
+                    </div>
+                    <div class="coordinates">
+                        <span><i class="fas fa-crosshairs"></i> Lat/Long will be determined</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="destination"><i class="fas fa-flag-checkered"></i> Destination</label>
+                    <div class="input-group">
+                        <i class="fas fa-map-marker"></i>
+                        <input type="text" id="destination" name="destination" placeholder="Enter destination location" required>
+                    </div>
+                    <div class="coordinates">
+                        <span><i class="fas fa-crosshairs"></i> Lat/Long will be determined</span>
+                    </div>
+                </div>
+
+                <button type="submit">
+                    <i class="fas fa-route"></i> Calculate Journey
+                </button>
+            </form>
+        </div>
+
+        <div id="result">
+            <div class="route-line">
+                <svg>
+                    <path d="M50,30 C150,50 250,150 350,170" stroke="#3559A2" stroke-width="3" stroke-dasharray="5,5" fill="none"/>
+                    <circle cx="50" cy="30" r="5" fill="#F17D2D"/>
+                    <circle cx="350" cy="170" r="5" fill="#F17D2D"/>
+                </svg>
+            </div>
+            <div class="result-title">Journey Information</div>
+            <div class="map-marker">
+                <i class="fas fa-info-circle"></i> Enter your locations above to calculate travel time
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 OrbitXO Navigation Systems | Powered by Google Maps API
+    </footer>
+
+    <script>
+        // Random rotation for compass animation
+        function randomRotation() {
+            return Math.floor(Math.random() * 360);
+        }
+        
+        // Animate compass occasionally
+        setInterval(() => {
+            document.getElementById('compass').style.transform = `rotate(${randomRotation()}deg)`;
+        }, 10000);
+        
+        document.getElementById("trackForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            
+            const resultElement = document.getElementById("result");
+            resultElement.innerHTML = `
+                <div class="loading">
+                    <div class="compass-loader">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%233559A2' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%233559A2'/%3E%3Cpath d='M50 10L45 50 50 90 55 50z' fill='%23F17D2D'/%3E%3Cpath d='M10 50L50 45 90 50 50 55z' fill='%233559A2'/%3E%3C/svg%3E" alt="Compass">
+                    </div>
+                    <div>Calculating optimal route...</div>
+                </div>
+            `;
+            
+            const source = document.getElementById("source").value;
+            const destination = document.getElementById("destination").value;
+            
+            // Rotate compass to show activity
+            document.getElementById('compass').style.transform = `rotate(${randomRotation()}deg)`;
+            
+            try {
+                const response = await fetch("/track-travel-time", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ source, destination })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                let resultHTML = `
+                    <div class="route-line">
+                        <svg>
+                            <path d="M50,30 C150,50 250,150 350,170" stroke="#3559A2" stroke-width="3" stroke-dasharray="5,5" fill="none"/>
+                            <circle cx="50" cy="30" r="5" fill="#F17D2D"/>
+                            <circle cx="350" cy="170" r="5" fill="#F17D2D"/>
+                        </svg>
+                    </div>
+                    <div class="result-title">Journey Analysis</div>
+                    <div class="map-marker">
+                        <i class="fas fa-map-marker-alt"></i> <strong>From:</strong> ${source}
+                    </div>
+                    <div class="map-marker">
+                        <i class="fas fa-map-marker"></i> <strong>To:</strong> ${destination}
+                    </div>
+                `;
+                
+                if (result.travel_result && result.travel_result.success) {
+                    resultHTML += `
+                        <div class="result-data">
+                            <i class="fas fa-clock"></i> Travel Time: <span class="highlight">${result.travel_result.duration}</span>
+                        </div>
+                        <div class="result-data">
+                            <i class="fas fa-road"></i> Distance: <span class="highlight">${result.travel_result.distance}</span>
+                        </div>
+                    `;
+                    
+                    if (result.tracker_result && result.tracker_result.new_minimum) {
+                        resultHTML += `
+                            <div class="new-minimum">
+                                <i class="fas fa-award"></i> <span class="highlight">NEW RECORD!</span><br>
+                                Previous best time: ${result.tracker_result.previous_min} minutes<br>
+                                Time improvement: ${result.tracker_result.time_saved} minutes
+                            </div>
+                        `;
+                    }
+                } else {
+                    resultHTML = `
+                        <div class="result-title">Route Error</div>
+                        <div class="result-data">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            ${result.travel_result?.error || "Unknown error"}
+                        </div>
+                    `;
+                }
+                
+                resultElement.innerHTML = resultHTML;
+            } catch (error) {
+                resultElement.innerHTML = `
+                    <div class="result-title">Navigation Error</div>
+                    <div class="result-data">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        ${error.message}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
