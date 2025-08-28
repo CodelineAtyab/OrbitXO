@@ -233,6 +233,28 @@ async def start_mysql():
             status_code=500
         )
 
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint for Docker"""
+    try:
+        # Try to connect to the database
+        from db_logger import create_db_connection
+        
+        connection = create_db_connection()
+        if connection:
+            connection.close()
+            db_status = "healthy"
+        else:
+            db_status = "unhealthy"
+    except Exception:
+        db_status = "unhealthy"
+        
+    return {
+        "status": "healthy",
+        "database": db_status,
+        "timestamp": datetime.now().isoformat()
+    }
+
 # Mount static files directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -240,3 +262,4 @@ if __name__ == "__main__":
     import uvicorn
     logger.info("Starting FastAPI application")
     uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+
