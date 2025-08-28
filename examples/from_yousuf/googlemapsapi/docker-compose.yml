@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: googlemapsapi_web
+    ports:
+      - "8000:8000"
+    environment:
+      - LOG_LEVEL=INFO
+      - PORT=8000
+    # Mount source for development. Remove or adjust for production.
+    volumes:
+      - ./:/app/googlemapsapi
+    restart: unless-stopped
