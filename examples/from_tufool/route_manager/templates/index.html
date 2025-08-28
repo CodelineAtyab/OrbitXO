@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Route Manager</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Route Manager</h1>
+
+    {% if messages %}
+      <div class="messages">
+        {% for m in messages %}
+          <div class="msg {{ m.type }}">{{ m.text }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="routes">
+      <h2>Current Routes</h2>
+      {% if routes|length == 0 %}
+        <p class="muted">No routes yet. Add one below.</p>
+      {% else %}
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Source</th>
+              <th>Destination</th>
+              <th>Current Estimate</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for idx, r in routes %}
+              <tr>
+                <td>{{ idx + 1 }}</td>
+                <td>
+                  <div class="name">{{ r.source_name }}</div>
+                  <div class="addr">{{ r.source_address }}</div>
+                </td>
+                <td>
+                  <div class="name">{{ r.destination_name }}</div>
+                  <div class="addr">{{ r.destination_address }}</div>
+                </td>
+                <td class="estimate">—</td>
+                <td class="actions">
+                  <form action="/delete/{{ idx }}" method="post" onsubmit="return confirm('Delete this route?');">
+                    <button type="submit" class="danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </section>
+
+    <section class="add-form">
+      <h2>Add Route</h2>
+      <form action="/add" method="post" novalidate>
+        <div class="grid">
+          <label>
+            <span>Source Name</span>
+            <input name="source_name" placeholder="Home" minlength="2" maxlength="50" required>
+          </label>
+          <label>
+            <span>Source Address</span>
+            <input name="source_address" placeholder="123 Main St, City, Country" minlength="5" maxlength="255" required pattern=".*(,|\d).+">
+          </label>
+          <label>
+            <span>Destination Name</span>
+            <input name="destination_name" placeholder="Work" minlength="2" maxlength="50" required>
+          </label>
+          <label>
+            <span>Destination Address</span>
+            <input name="destination_address" placeholder="456 Office Rd, City, Country" minlength="5" maxlength="255" required pattern=".*(,|\d).+">
+          </label>
+        </div>
+        <button type="submit">Add Route</button>
+      </form>
+    </section>
+
+    <footer>
+      <p class="muted">Tip: The "Current Estimate" column is a placeholder. You can hook in a travel-time API later.</p>
+    </footer>
+  </div>
+</body>
+</html>
