@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Time Dashboard | OrbitXO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #4cc9f0;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --gray: #adb5bd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .result-card {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .result-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white;
+        }
+        
+        .result-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .result-body {
+            padding: 25px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .result-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .result-item .label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .result-item .value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .logs-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logs-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, var(--dark), #4a4e69);
+            color: white;
+        }
+        
+        .logs-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .logs-body {
+            padding: 20px 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 12px 15px;
+            border-left: 4px solid var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+        
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+        
+        .log-time {
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 8px;
+        }
+        
+        .error-message {
+            background-color: rgba(239, 71, 111, 0.1);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .result-item {
+                min-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card-header h2, .result-header h2, .logs-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OrbitXO Travel Dashboard</h1>
+            <p>Calculate and track travel times with real-time data</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-route"></i> Calculate Travel Time</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="source"><i class="fas fa-map-marker-alt"></i> Starting Location</label>
+                    <input type="text" id="source" class="form-control" placeholder="e.g. London">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination"><i class="fas fa-flag-checkered"></i> Destination</label>
+                    <input type="text" id="destination" class="form-control" placeholder="e.g. Manchester">
+                </div>
+                
+                <button id="calculate" class="btn">
+                    <i class="fas fa-calculator"></i> Calculate Route
+                </button>
+            </div>
+        </div>
+        
+        <div class="loader-container">
+            <div class="loader" id="loader"></div>
+        </div>
+        
+        <div class="error-message" id="error-message">
+            <i class="fas fa-exclamation-triangle"></i> <span id="error-text"></span>
+        </div>
+        
+        <div class="result-card" id="result">
+            <div class="result-header">
+                <h2><i class="fas fa-map"></i> Travel Information</h2>
+            </div>
+            <div class="result-body">
+                <div class="result-item">
+                    <div class="icon"><i class="fas fa-road"></i></div>
+                    <div class="label">Distance</div>
+                    <div class="value" id="distance">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="label">Travel Time</div>
+                    <div class="value" id="duration">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="logs-card">
+            <div class="logs-header">
+                <h2><i class="fas fa-list-alt"></i> Activity Logs</h2>
+            </div>
+            <div class="logs-body" id="log-container">
+                <div class="log-entry">
+                    <span class="log-time">[System]</span> Ready to calculate travel times
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('calculate').addEventListener('click', async function() {
+            const source = document.getElementById('source').value.trim();
+            const destination = document.getElementById('destination').value.trim();
+            
+            if (!source || !destination) {
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-text').textContent = 'Please enter both starting location and destination';
+                return;
+            }
+            
+            // Show loader and hide any previous errors
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            
+            addLogEntry('Calculating travel time...');
+            
+            try {
+                // Use the real Google Maps API via our backend
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        source: source,
+                        destination: destination
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to calculate travel time');
+                }
+                
+                const data = await response.json();
+                addLogEntry('Received travel time information');
+                
+                // Record in database
+                try {
+                    const dbResponse = await fetch('/log/db', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            source: source,
+                            destination: destination,
+                            duration: data.duration,
+                            distance: data.distance
+                        })
+                    });
+                    
+                    if (dbResponse.ok) {
+                        addLogEntry('Travel time recorded in database');
+                    }
+                } catch (error) {
+                    addLogEntry('Error recording data: ' + error.message);
+                }
+                
+                // Log app activity
+                await fetch('/log/app', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                addLogEntry('Application log recorded');
+                
+                // Display results
+                document.getElementById('distance').textContent = `${data.distance} km`;
+                document.getElementById('duration').textContent = `${data.duration} min`;
+                document.getElementById('result').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-text').textContent = error.message;
+                addLogEntry('Error: ' + error.message);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+        
+        function addLogEntry(message) {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = `[${timestamp}]`;
+            
+            logEntry.appendChild(timeSpan);
+            logEntry.append(` ${message}`);
+            
+            logContainer.prepend(logEntry);
+        }
+    </script>
+</body>
+</html>
+

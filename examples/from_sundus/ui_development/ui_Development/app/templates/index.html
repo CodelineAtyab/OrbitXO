@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if error %}
+    <div class="alert">{{ error }}</div>
+  {% endif %}
+
+  <section class="cards">
+    <div class="card">
+      <h2>Current Routes</h2>
+      {% if routes|length == 0 %}
+        <p>No routes yet. Add one below.</p>
+      {% else %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Destination</th>
+              <th>Current Estimate</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in routes %}
+            <tr>
+              <td>
+                <strong>{{ r.source_name }}</strong><br/>
+                <small>{{ r.source_address }}</small>
+              </td>
+              <td>
+                <strong>{{ r.destination_name }}</strong><br/>
+                <small>{{ r.destination_address }}</small>
+              </td>
+              <td>
+                {% if r.last_estimate_min %} {{ r.last_estimate_min }} min {% else %} — {% endif %}
+              </td>
+              <td>
+                <form method="post" action="/delete/{{ r.id }}" onsubmit="return confirm('Delete this route?');">
+                  <button class="danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Add Route</h2>
+      <form method="post" action="/add" class="form-grid">
+        <div class="field">
+          <label>Source Name</label>
+          <input name="source_name" placeholder="Home" required />
+        </div>
+        <div class="field">
+          <label>Source Address</label>
+          <input name="source_address" placeholder="123 Street, City, Country" required />
+        </div>
+        <div class="field">
+          <label>Destination Name</label>
+          <input name="destination_name" placeholder="Work" required />
+        </div>
+        <div class="field">
+          <label>Destination Address</label>
+          <input name="destination_address" placeholder="456 Avenue, City, Country" required />
+        </div>
+        <div class="actions">
+          <button type="submit">Add Route</button>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}
