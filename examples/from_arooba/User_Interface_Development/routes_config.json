@@ -1,0 +1,40 @@
+{
+  "routes": [
+    {
+      "id": "8a224e66-9d0d-42dc-9f6d-63577f346e4b",
+      "source_name": "Home",
+      "source_address": "Muscat",
+      "destination_name": "Work",
+      "destination_address": "Nizwa",
+      "current_estimate_min": 124,
+      "current_distance_km": 181.9,
+      "updated_at": "2025-08-27T10:47:46",
+      "last_error": null,
+      "provider": "osm"
+    },
+    {
+      "id": "6cec0655-8eaa-482e-b089-83c274511da7",
+      "source_name": "Home",
+      "source_address": "Nizwa",
+      "destination_name": "Work",
+      "destination_address": "Salalah",
+      "current_estimate_min": 579,
+      "current_distance_km": 877.1,
+      "updated_at": "2025-08-27T10:47:46",
+      "last_error": null,
+      "provider": "osm"
+    },
+    {
+      "id": "0fb6717b-a5ef-4535-9e76-232166dc383c",
+      "source_name": "Home",
+      "source_address": "Muscat",
+      "destination_name": "Work",
+      "destination_address": "Salalah",
+      "current_estimate_min": 685,
+      "current_distance_km": 1040.2,
+      "updated_at": "2025-08-27T10:47:46",
+      "last_error": null,
+      "provider": "osm"
+    }
+  ]
+}
