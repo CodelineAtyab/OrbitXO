@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Manager Dashboard</title>
+<style>
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: #f5f7fa; 
+    color: #333; 
+}
+
+.container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 20px; 
+}
+
+h1 { 
+    text-align: center; 
+    margin-bottom: 30px; 
+    color: #2c3e50;
+}
+
+.routes-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.routes-table th, .routes-table td { 
+    padding: 12px; 
+    text-align: left; 
+    border-bottom: 1px solid #ddd; 
+}
+
+.routes-table th { 
+    background-color: #3498db; 
+    color: white; 
+    font-weight: 600;
+}
+
+.route-info { 
+    font-weight: 500; 
+}
+
+.estimate { 
+    color: #27ae60; 
+    font-weight: 600; 
+}
+
+.remove-btn { 
+    background-color: #e74c3c; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    transition: background-color 0.3s;
+}
+
+.remove-btn:hover { 
+    background-color: #c0392b; 
+}
+
+.add-form { 
+    background: white; 
+    padding: 20px; 
+    border-radius: 10px; 
+    margin-top: 30px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.add-form h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.form-group { 
+    margin-bottom: 15px; 
+}
+
+.form-group label { 
+    font-weight: 600; 
+    display: block;
+    margin-bottom: 5px;
+    color: #34495e;
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 10px; 
+    border-radius: 4px; 
+    border: 1px solid #ddd; 
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.submit-btn { 
+    background-color: #3498db; 
+    color: white; 
+    padding: 12px 24px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover { 
+    background-color: #2980b9; 
+}
+
+.alert { 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border-radius: 5px; 
+    font-weight: 500;
+}
+
+.alert-success { 
+    background: #d4edda; 
+    color: #155724; 
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error { 
+    background: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb;
+}
+
+.empty-state { 
+    text-align: center; 
+    font-style: italic; 
+    padding: 20px; 
+    color: #7f8c8d; 
+}
+
+small {
+    color: #7f8c8d;
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🗺️ Route Manager</h1>
+    
+    <div id="alert-container"></div>
+    
+    <table class="routes-table">
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Estimated Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="routes-tbody">
+            <tr>
+                <td colspan="3" class="empty-state">Loading routes...</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="add-form">
+        <h2>Add New Route</h2>
+        <div class="form-group">
+            <label for="source_name">Source Name</label>
+            <input type="text" id="source_name" placeholder="e.g., Home, Office">
+        </div>
+        <div class="form-group">
+            <label for="source_address">Source Address</label>
+            <input type="text" id="source_address" placeholder="e.g., 123 Main St, City">
+        </div>
+        <div class="form-group">
+            <label for="destination_name">Destination Name</label>
+            <input type="text" id="destination_name" placeholder="e.g., Mall, Airport">
+        </div>
+        <div class="form-group">
+            <label for="destination_address">Destination Address</label>
+            <input type="text" id="destination_address" placeholder="e.g., 456 Oak Ave, City">
+        </div>
+        <button class="submit-btn" onclick="addRoute()">Add Route</button>
+    </div>
+</div>
+
+<script>
+function showAlert(msg, type = 'success') {
+    const container = document.getElementById('alert-container');
+    const div = document.createElement('div');
+    div.className = 'alert alert-' + type;
+    div.textContent = msg;
+    container.appendChild(div);
+    setTimeout(() => div.remove(), 4000);
+}
+
+async function loadRoutes() {
+    try {
+        const res = await fetch('/routes');
+        const data = await res.json();
+        const tbody = document.getElementById('routes-tbody');
+        
+        if (!data.routes || data.routes.length == 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No routes yet. Add your first route below!</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.routes.map(r => `
+            <tr>
+                <td>
+                    <div class="route-info">${r.source_name} → ${r.destination_name}</div>
+                    <small>${r.source_address} → ${r.destination_address}</small>
+                </td>
+                <td class="estimate">${r.estimated_time_minutes}</td>
+                <td>
+                    <button class="remove-btn" onclick="removeRoute('${r.source_address}','${r.destination_address}')">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) { 
+        showAlert('Error loading routes', 'error'); 
+    }
+}
+
+async function addRoute() {
+    const payload = {
+        source_name: document.getElementById('source_name').value,
+        source_address: document.getElementById('source_address').value,
+        destination_name: document.getElementById('destination_name').value,
+        destination_address: document.getElementById('destination_address').value
+    };
+    
+    // Basic validation
+    if (!payload.source_name || !payload.source_address || !payload.destination_name || !payload.destination_address) {
+        showAlert('Please fill in all fields', 'error');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/routes', {
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) { 
+            showAlert('Route added successfully!'); 
+            loadRoutes(); 
+            // Clear form
+            document.getElementById('source_name').value = '';
+            document.getElementById('source_address').value = '';
+            document.getElementById('destination_name').value = '';
+            document.getElementById('destination_address').value = '';
+        } else { 
+            showAlert('Error adding route', 'error'); 
+        }
+    } catch (e) { 
+        showAlert('Error adding route', 'error'); 
+    }
+}
+
+async function removeRoute(source, dest) {
+    try {
+        const routes = await fetch('/routes').then(r => r.json());
+        const index = routes.routes.findIndex(r => r.source_address == source && r.destination_address == dest);
+        
+        if (index == -1) { 
+            showAlert('Route not found', 'error'); 
+            return; 
+        }
+        
+        const all_routes = routes.routes;
+        all_routes.splice(index, 1);
+        
+        await fetch('/routes', {
+            method: 'PUT', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(all_routes)
+        });
+        
+        showAlert('Route removed successfully!'); 
+        loadRoutes();
+    } catch (e) {
+        showAlert('Error removing route', 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadRoutes);
+</script>
+</body>
+</html>

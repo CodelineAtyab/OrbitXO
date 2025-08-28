@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS travel_time_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    timestamp DATETIME NOT NULL,
+    source VARCHAR(255) NOT NULL,
+    destination VARCHAR(255) NOT NULL,
+    duration_minutes INT NOT NULL,
+    distance VARCHAR(100),
+    distance_value INT,
+    is_minimum BOOLEAN DEFAULT 0
+);
+
+CREATE INDEX idx_source_dest ON travel_time_history(source, destination);
+CREATE INDEX idx_timestamp ON travel_time_history(timestamp);
