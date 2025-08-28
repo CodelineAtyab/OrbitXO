@@ -77,6 +77,11 @@ class RouteTracker:
                     self.min_duration_timestamp = datetime.now()
                     is_min_duration = True
                 
+                # Also store these as separate attributes with consistent naming
+                # This ensures API compatibility
+                self.distance_meters = distance_meters
+                self.duration_seconds = duration_seconds
+                
                 # Current timestamp
                 now = datetime.now()
                 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")

@@ -109,22 +109,27 @@ def run_route_tracker(origin, destination, continuous=False, interval=300):
 def log_to_database(route_data, origin, destination):
     """Log route data to database"""
     try:
-        from db_logger import setup_database, log_to_database, record_travel_time
+        from db_logger import setup_database, log_to_database as db_log, record_travel_time
         
-        # Setup database tables
+        # Setup database tables - this will also ensure MySQL container is running
         logger.info("Setting up database tables")
         setup_database()
         
         # Log application event
-        log_to_database("INFO", f"Route tracked from {origin} to {destination}", source="main")
+        logger.info("Logging route tracking event to database")
+        db_log("INFO", f"Route tracked from {origin} to {destination}", source="main")
         
         # Record travel time data
         logger.info("Recording travel time data to database")
         api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-        record_travel_time([origin], [destination], api_key)
+        success = record_travel_time(origin, destination, api_key)
         
-        logger.info("Database logging completed successfully")
-        return True
+        if success:
+            logger.info("Database logging completed successfully")
+        else:
+            logger.warning("Database logging returned False - check MySQL connection")
+            
+        return success
     except Exception as e:
         logger.error(f"Error logging to database: {str(e)}")
         return False
