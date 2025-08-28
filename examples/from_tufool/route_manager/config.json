@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "source_name": "Home",
+      "source_address": "123 Main Street, Muscat, Oman",
+      "destination_name": "Work",
+      "destination_address": "Business Park, Muscat, Oman"
+    },
+    {
+      "source_name": "Home",
+      "source_address": "123 Main Street, Muscat, Oman",
+      "destination_name": "Gym",
+      "destination_address": "Fitness Ave, Muscat, Oman"
+    },
+    {
+      "source_name": "Home",
+      "source_address": "Alkhoud, 317",
+      "destination_name": "Work",
+      "destination_address": "Ghala, 110"
+    }
+  ]
+}

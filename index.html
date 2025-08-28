@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrbitXO - Tic Tac Toe</title>
+    <style>
+        :root {
+            --primary-color: #6C5CE7;
+            --secondary-color: #A29BFE;
+            --accent-color: #FD79A8;
+            --success-color: #00B894;
+            --danger-color: #E17055;
+            --warning-color: #FDCB6E;
+            --dark-bg: #2D3436;
+            --light-bg: #DDD6FE;
+            --text-dark: #2D3436;
+            --text-light: #FFFFFF;
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+            to { text-shadow: 0 4px 8px rgba(253, 121, 168, 0.5), 0 0 20px rgba(253, 121, 168, 0.3); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 2rem auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .cell {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell.x {
+            color: var(--accent-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell.o {
+            color: var(--warning-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .status {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            min-height: 2rem;
+            font-weight: bold;
+        }
+
+        .status.player-turn {
+            color: var(--accent-color);
+        }
+
+        .status.bot-turn {
+            color: var(--warning-color);
+        }
+
+        .status.game-over {
+            color: var(--success-color);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--warning-color));
+            color: var(--text-light);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 1rem;
+            /* Commented out as requested */
+            display: none;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading {
+            display: none;
+            font-size: 1.2rem;
+            color: var(--warning-color);
+            margin: 1rem 0;
+        }
+
+        .loading.show {
+            display: block;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .win-animation {
+            animation: celebrate 2s ease-in-out;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .game-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .player-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+
+        .player-x {
+            background: var(--accent-color);
+        }
+
+        .player-o {
+            background: var(--warning-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🚀 OrbitXO 🎯</h1>
+        <p class="subtitle">Challenge the Bot in Space Tic-Tac-Toe!</p>
+        
+        <div class="game-info">
+            <div>
+                <span class="player-indicator player-x"></span> You (X) vs 
+                <span class="player-indicator player-o"></span> Bot (O)
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <!-- Board cells will be generated by JavaScript -->
+        </div>
+
+        <div class="status" id="gameStatus">Click a cell to start your cosmic adventure!</div>
+        <div class="loading" id="loadingIndicator">🤖 Bot is thinking...</div>
+        
+        <!-- Reset button commented out as requested -->
+        <!-- <button class="reset-btn" id="resetBtn">🔄 New Game</button> -->
+    </div>
+
+    <script>
+        /**
+         * OrbitXO Game Client - Interactive Tic-Tac-Toe Interface
+         * Handles player moves, bot responses, and game state management
+         */
+
+        let gameBoard = [];
+        let gameStatus = 'playing';
+        let isPlayerTurn = true;
+        let isGameOver = false;
+
+        const statusElement = document.getElementById('gameStatus');
+        const loadingElement = document.getElementById('loadingIndicator');
+        const boardElement = document.getElementById('gameBoard');
+
+        /**
+         * Initialize the game board and create cell elements
+         */
+        function initializeBoard() {
+            boardElement.innerHTML = '';
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'cell';
+                cell.dataset.position = i;
+                cell.addEventListener('click', () => handleCellClick(i));
+                boardElement.appendChild(cell);
+            }
+            
+            updateBoardDisplay();
+            updateStatus('Your turn! Choose your move wisely! 🎯', 'player-turn');
+        }
+
+        /**
+         * Handle click on a board cell
+         * @param {number} position - Position of the clicked cell (0-8)
+         */
+        async function handleCellClick(position) {
+            if (isGameOver || !isPlayerTurn || gameBoard[position] !== '') {
+                return;
+            }
+
+            try {
+                isPlayerTurn = false;
+                updateStatus('Making your move...', 'bot-turn');
+                
+                const response = await fetch(`/board/player/${position}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to make move');
+                }
+
+                const gameData = await response.json();
+                gameBoard = gameData.board;
+                updateBoardDisplay();
+
+                if (gameData.game_status === 'won') {
+                    isGameOver = true;
+                    if (gameData.winner === 'player') {
+                        updateStatus('🎉 Congratulations! You conquered the cosmos! 🏆', 'game-over');
+                        createCelebrationEffect();
+                    } else {
+                        updateStatus('🤖 Bot wins this round! Try again, space cadet! 🛸', 'game-over');
+                    }
+                } else if (gameData.game_status === 'draw') {
+                    isGameOver = true;
+                    updateStatus('🌌 Cosmic draw! The universe is balanced! ⚖️', 'game-over');
+                } else {
+                    // Show bot thinking animation
+                    if (gameData.bot_move !== undefined) {
+                        updateStatus('🤖 Bot is calculating...', 'bot-turn');
+                        showLoading(true);
+                        
+                        // Delay to make bot move realistic
+                        setTimeout(() => {
+                            showLoading(false);
+                            updateBoardDisplay();
+                            
+                            if (gameData.game_status === 'won' && gameData.winner === 'bot') {
+                                isGameOver = true;
+                                updateStatus('🤖 Bot wins this round! Try again, space cadet! 🛸', 'game-over');
+                            } else if (gameData.game_status === 'draw') {
+                                isGameOver = true;
+                                updateStatus('🌌 Cosmic draw! The universe is balanced! ⚖️', 'game-over');
+                            } else {
+                                isPlayerTurn = true;
+                                updateStatus('Your turn! Make your next move! 🎯', 'player-turn');
+                            }
+                        }, 1000);
+                    } else {
+                        isPlayerTurn = true;
+                        updateStatus('Your turn! Make your next move! 🎯', 'player-turn');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error making move:', error);
+                updateStatus(`Error: ${error.message}`, 'game-over');
+                isPlayerTurn = true;
+            }
+        }
+
+        /**
+         * Update the visual display of the game board
+         */
+        function updateBoardDisplay() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const value = gameBoard[index];
+                cell.textContent = value;
+                cell.className = 'cell';
+                
+                if (value === 'X') {
+                    cell.classList.add('x');
+                } else if (value === 'O') {
+                    cell.classList.add('o');
+                }
+                
+                cell.disabled = value !== '' || isGameOver;
+            });
+        }
+
+        /**
+         * Update game status message
+         * @param {string} message - Status message to display
+         * @param {string} className - CSS class for styling
+         */
+        function updateStatus(message, className = '') {
+            statusElement.textContent = message;
+            statusElement.className = `status ${className}`;
+        }
+
+        /**
+         * Show or hide loading indicator
+         * @param {boolean} show - Whether to show the loading indicator
+         */
+        function showLoading(show) {
+            loadingElement.classList.toggle('show', show);
+        }
+
+        /**
+         * Create celebration effect for player win
+         */
+        function createCelebrationEffect() {
+            boardElement.classList.add('win-animation');
+            
+            // Create falling particles
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createParticle();
+                }, i * 100);
+            }
+            
+            setTimeout(() => {
+                boardElement.classList.remove('win-animation');
+            }, 2000);
+        }
+
+        /**
+         * Create a single celebration particle
+         */
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.backgroundColor = Math.random() > 0.5 ? 'var(--accent-color)' : 'var(--warning-color)';
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 3000);
+        }
+
+        /**
+         * Fetch and display current board state
+         */
+        async function fetchBoardState() {
+            try {
+                const response = await fetch('/board/main_game');
+                if (response.ok) {
+                    const gameData = await response.json();
+                    gameBoard = gameData.board;
+                    updateBoardDisplay();
+                    
+                    if (gameData.game_status !== 'playing') {
+                        isGameOver = true;
+                        if (gameData.game_status === 'won') {
+                            const winner = gameData.winner === 'player' ? 'You' : 'Bot';
+                            updateStatus(`${winner} won! 🏆`, 'game-over');
+                        } else {
+                            updateStatus('It\'s a draw! ⚖️', 'game-over');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching board state:', error);
+            }
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeBoard();
+            fetchBoardState();
+        });
+
+        // Reset button functionality (commented out as requested)
+        // document.getElementById('resetBtn').addEventListener('click', async () => {
+        //     try {
+        //         const response = await fetch('/board/main_game/reset', {
+        //             method: 'POST'
+        //         });
+        //         
+        //         if (response.ok) {
+        //             isGameOver = false;
+        //             isPlayerTurn = true;
+        //             initializeBoard();
+        //         }
+        //     } catch (error) {
+        //         console.error('Error resetting game:', error);
+        //     }
+        // });
+    </script>
+</body>
+</html>

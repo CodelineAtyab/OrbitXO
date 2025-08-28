@@ -1,21 +1,15 @@
 import os
-import json
-
 import requests
 from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def get_travel_time(source, destination, api_key=None):
     if api_key is None:
-        try:
-            with open("config.json", 'r') as f:
-                config = json.load(f)
-                api_key = config.get("api_key")
-        except (FileNotFoundError, json.JSONDecodeError, KeyError):
-            load_dotenv()
-            api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
         if not api_key:
-            raise ValueError("Google Maps API key not found in config file or environment variables")
+            raise ValueError("Google Maps API key not found in environment variables")
     API_ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
     request_headers = {
         "Content-Type": "application/json",
@@ -83,23 +77,16 @@ def get_travel_time(source, destination, api_key=None):
         }
 
 
-def load_locations_from_config(config_path):
-    try:
-        with open(config_path, 'r') as f:
-            conf = json.load(f)
-        source = conf.get("source")
-        destination = conf.get("destination")
-        if not source or not destination:
-            raise ValueError("Source or destination missing in config file")
-        return source, destination
-    except (json.JSONDecodeError, FileNotFoundError) as e:
-        raise ValueError(f"Error loading config file: {str(e)}")
-
+def load_locations_from_config(config_path=None):
+    source = os.environ.get("SOURCE")
+    destination = os.environ.get("DESTINATION")
+    if not source or not destination:
+        raise ValueError("SOURCE or DESTINATION missing in environment variables")
+    return source, destination
 
 if __name__ == "__main__":
     try:
-        config_path = "config.json"
-        source, destination = load_locations_from_config(config_path)
+        source, destination = load_locations_from_config()
         result = get_travel_time(source, destination)
         if result["success"]:
             print(f"Travel from {result['source']} to {result['destination']}:")

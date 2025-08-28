@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Time Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        .history-container {
+            margin-top: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .notification {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .min-time {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Travel Time Tracker</h1>
+        <p>Check the travel time and distance between locations</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Get Travel Time</h2>
+            <form id="travelForm">
+                <div class="form-group">
+                    <label for="source">Source Location:</label>
+                    <input type="text" id="source" name="source" placeholder="e.g., Muscat, Oman" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination Location:</label>
+                    <input type="text" id="destination" name="destination" placeholder="e.g., Salalah, Oman" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="useMockData" name="useMockData">
+                        Use mock data (for testing)
+                    </label>
+                </div>
+                
+                <button type="submit">Get Travel Time</button>
+            </form>
+            
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Calculating travel time...</p>
+            </div>
+            
+            <div id="result" class="result" style="display: none;">
+                <!-- Results will be shown here -->
+            </div>
+            
+            <div id="minTimeNotification" class="notification min-time">
+                <!-- Minimum time notification will be shown here -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Travel Statistics</h2>
+            <div id="stats" class="stats">
+                <div class="stat-card">
+                    <div class="stat-label">Distance</div>
+                    <div id="distanceStat" class="stat-value">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Travel Time</div>
+                    <div id="durationStat" class="stat-value">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Min. Time</div>
+                    <div id="minTimeStat" class="stat-value">-</div>
+                </div>
+            </div>
+            
+            <div class="history-container">
+                <h3>Recent Travel Times</h3>
+                <div id="historicalData">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Duration</th>
+                                <th>Distance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="3">No data available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load default locations from config
+            loadDefaultLocations();
+            
+            // Form submission
+            const travelForm = document.getElementById('travelForm');
+            travelForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                getTravelTime();
+            });
+        });
+        
+        async function loadDefaultLocations() {
+            try {
+                const response = await fetch('/config');
+                const data = await response.json();
+                
+                if (data.source && data.destination) {
+                    document.getElementById('source').value = data.source;
+                    document.getElementById('destination').value = data.destination;
+                }
+            } catch (error) {
+                console.error('Error loading default locations:', error);
+            }
+        }
+        
+        async function getTravelTime() {
+            const source = document.getElementById('source').value;
+            const destination = document.getElementById('destination').value;
+            const useMockData = document.getElementById('useMockData').checked;
+            
+            // Show loading indicator
+            document.querySelector('.loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('minTimeNotification').style.display = 'none';
+            
+            try {
+                const response = await fetch('/travel-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        source: source,
+                        destination: destination,
+                        use_mock_data: useMockData
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.querySelector('.loading').style.display = 'none';
+                
+                if (data.success) {
+                    // Display results
+                    const resultElement = document.getElementById('result');
+                    resultElement.innerHTML = `
+                        <h3>Travel Information</h3>
+                        <p><strong>From:</strong> ${data.source}</p>
+                        <p><strong>To:</strong> ${data.destination}</p>
+                        <p><strong>Distance:</strong> ${data.distance}</p>
+                        <p><strong>Travel Time:</strong> ${data.duration}</p>
+                    `;
+                    resultElement.className = 'result success';
+                    resultElement.style.display = 'block';
+                    
+                    // Update stats
+                    document.getElementById('distanceStat').textContent = data.distance;
+                    document.getElementById('durationStat').textContent = data.duration;
+                    
+                    // Check if this is a new minimum time
+                    if (data.minimum_time_info && data.minimum_time_info.new_minimum) {
+                        const minInfo = data.minimum_time_info;
+                        const notification = document.getElementById('minTimeNotification');
+                        notification.innerHTML = `
+                            <strong>New minimum travel time!</strong>
+                            <p>Previous best: ${minInfo.previous_min} minutes</p>
+                            <p>New best: ${minInfo.current_duration} minutes</p>
+                            <p>Time saved: ${minInfo.time_saved} minutes</p>
+                        `;
+                        notification.style.display = 'block';
+                        
+                        // Update min time stat
+                        document.getElementById('minTimeStat').textContent = `${minInfo.current_duration} min`;
+                    } else if (data.minimum_time_info) {
+                        // Update min time stat with current minimum
+                        document.getElementById('minTimeStat').textContent = `${data.minimum_time_info.previous_min} min`;
+                    }
+                    
+                    // Load historical data
+                    loadHistoricalData(source, destination);
+                } else {
+                    // Display error
+                    const resultElement = document.getElementById('result');
+                    resultElement.innerHTML = `
+                        <h3>Error</h3>
+                        <p>${data.error || 'An error occurred while getting travel time data.'}</p>
+                    `;
+                    resultElement.className = 'result error';
+                    resultElement.style.display = 'block';
+                }
+            } catch (error) {
+                // Hide loading indicator
+                document.querySelector('.loading').style.display = 'none';
+                
+                // Display error
+                const resultElement = document.getElementById('result');
+                resultElement.innerHTML = `
+                    <h3>Error</h3>
+                    <p>Failed to connect to the server. Please try again later.</p>
+                `;
+                resultElement.className = 'result error';
+                resultElement.style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+        
+        async function loadHistoricalData(source, destination) {
+            try {
+                const response = await fetch(`/historical-data?source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}`);
+                const data = await response.json();
+                
+                if (data.records && data.records.length > 0) {
+                    const historyTable = document.getElementById('historyTable');
+                    historyTable.innerHTML = '';
+                    
+                    data.records.forEach(record => {
+                        const row = document.createElement('tr');
+                        
+                        const timestampCell = document.createElement('td');
+                        const date = new Date(record.timestamp);
+                        timestampCell.textContent = date.toLocaleString();
+                        row.appendChild(timestampCell);
+                        
+                        const durationCell = document.createElement('td');
+                        durationCell.textContent = `${record.duration_minutes} min`;
+                        row.appendChild(durationCell);
+                        
+                        const distanceCell = document.createElement('td');
+                        distanceCell.textContent = record.distance || 'N/A';
+                        row.appendChild(distanceCell);
+                        
+                        historyTable.appendChild(row);
+                    });
+                } else {
+                    document.getElementById('historyTable').innerHTML = '<tr><td colspan="3">No historical data available</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading historical data:', error);
+                document.getElementById('historyTable').innerHTML = '<tr><td colspan="3">Failed to load historical data</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -14,7 +14,7 @@ DATA_FILE = "travel_times.json"
 
 class MinimumTimeTracker:
     def __init__(self, data_file=DATA_FILE):
-       
+        self.storage_file = data_file
         self.min_records = self._load_data()
         self.last_notified_at = {}
 

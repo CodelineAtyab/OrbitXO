@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Route Monitor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+.container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+.header h1 { margin: 0; font-size: 2.5em; font-weight: 300; }
+.header p { margin: 10px 0 0 0; opacity: 0.9; }
+.content { padding: 30px; }
+.error-message { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb; }
+.success-message { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 30px; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef; font-size: 0.9em; }
+th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 500; }
+tr:nth-child(even) { background-color: #f8f9fa; }
+tr:hover { background-color: #e9ecef; }
+.time-badge { background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 0.8em; display: inline-block; }
+.time-error { background: #dc3545; }
+.time-warning { background: #ffc107; color: #212529; }
+.section-title { font-size: 1.8em; margin: 30px 0 20px 0; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+.button-group { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+form { background: #f8f9fa; padding: 25px; border-radius: 10px; margin-top: 20px; border: 1px solid #e9ecef; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 5px; font-weight: 500; color: #333; }
+input[type="text"], input[type="number"] { padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em; transition: border-color 0.3s; }
+input[type="text"]:focus, input[type="number"]:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2); }
+.btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9em; font-weight: 500; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; display: inline-block; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); color: white; }
+.btn-danger { background: #dc3545; }
+.btn-danger:hover { background: #c82333; box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); }
+.btn-success { background: #28a745; }
+.btn-success:hover { background: #218838; }
+.btn-info { background: #17a2b8; }
+.btn-info:hover { background: #138496; }
+.btn-warning { background: #ffc107; color: #212529; }
+.btn-warning:hover { background: #e0a800; }
+.btn-sm { padding: 6px 12px; font-size: 0.8em; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0; }
+.stat-card { background: #f8f9fa; padding: 8px 12px; border-radius: 8px; text-align: center; border: 1px solid #e9ecef; }
+.stat-card strong { color: #667eea; }
+.route-info { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.arrow { color: #667eea; font-weight: bold; font-size: 1.1em; }
+.empty-state { text-align: center; padding: 60px 20px; color: #6c757d; }
+.empty-state h3 { font-size: 1.5em; margin-bottom: 10px; }
+.auto-refresh-info { background: #e7f3ff; border: 1px solid #bee5eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.auto-refresh-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+@media (max-width: 768px) { 
+    .form-row { grid-template-columns: 1fr; } 
+    table { font-size: 0.8em; } 
+    th, td { padding: 8px; } 
+    .button-group { flex-direction: column; align-items: stretch; }
+    .auto-refresh-controls { flex-direction: column; align-items: stretch; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🗺️ Route Monitor</h1>
+        <p>Track real-time travel times with Google Maps API</p>
+    </div>
+    <div class="content">
+        
+        <div id="error-section"></div>
+
+        <div class="auto-refresh-info">
+            <div class="auto-refresh-controls">
+                <label for="auto-refresh-select"><strong>🔄 Auto-refresh:</strong></label>
+                <select id="auto-refresh-select" onchange="toggleAutoRefresh()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                    <option value="0">Disabled</option>
+                    <option value="1">Every 1 minute</option>
+                    <option value="5">Every 5 minutes</option>
+                    <option value="10">Every 10 minutes</option>
+                    <option value="15">Every 15 minutes</option>
+                    <option value="30">Every 30 minutes</option>
+                </select>
+                <span id="refresh-status" style="color: #6c757d;">Auto-refresh disabled</span>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="refreshRoutes()" class="btn btn-info">🔄 Refresh Now</button>
+            <button onclick="exportRoutes()" class="btn btn-success">📊 Export CSV</button>
+            <button onclick="clearAllRoutes()" class="btn btn-danger">🗑️ Clear All</button>
+            <button onclick="resetStatistics()" class="btn btn-warning">📊 Reset Stats</button>
+        </div>
+
+        <h2 class="section-title">📍 Current Routes (<span id="routes-count">0</span>)</h2>
+
+        <div id="routes-section">
+            <div class="empty-state">
+                <h3>📭 No saved routes</h3>
+                <p>Add your first route below to start monitoring travel times!</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">➕ Add New Route</h2>
+        <form id="add-route-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="source_name">🏠 Source Name:</label>
+                    <input type="text" id="source_name" name="source_name" placeholder="e.g., Home, Office A" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="destination_name">🎯 Destination Name:</label>
+                    <input type="text" id="destination_name" name="destination_name" placeholder="e.g., Work, Mall, Airport" required maxlength="50">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="source_address">📍 Source Address:</label>
+                    <input type="text" id="source_address" name="source_address" placeholder="123 Main St, Muscat, Oman" required>
+                </div>
+                <div class="form-group">
+                    <label for="destination_address">📍 Destination Address:</label>
+                    <input type="text" id="destination_address" name="destination_address" placeholder="456 Work Ave, Muscat, Oman" required>
+                </div>
+            </div>
+            
+            <div style="text-align: right;">
+                <button type="submit" class="btn">➕ Add Route</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+let autoRefreshInterval = null;
+let routes = [];
+
+// API Base URL - adjust if needed
+const API_BASE = '';
+
+// Show error messages
+function showError(message) {
+    const errorSection = document.getElementById('error-section');
+    errorSection.innerHTML = `<div class="error-message">${message}</div>`;
+    setTimeout(() => {
+        errorSection.innerHTML = '';
+    }, 5000);
+}
+
+// Show success messages
+function showSuccess(message) {
+    const errorSection = document.getElementById('error-section');
+    errorSection.innerHTML = `<div class="success-message">${message}</div>`;
+    setTimeout(() => {
+        errorSection.innerHTML = '';
+    }, 3000);
+}
+
+// Load and display routes
+async function loadRoutes() {
+    try {
+        const response = await fetch(`${API_BASE}/api/routes`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            routes = data.routes;
+            displayRoutes();
+        } else {
+            showError('Failed to load routes');
+        }
+    } catch (error) {
+        console.error('Error loading routes:', error);
+        showError('Error connecting to server');
+    }
+}
+
+// Display routes in the UI
+function displayRoutes() {
+    const routesSection = document.getElementById('routes-section');
+    const routesCount = document.getElementById('routes-count');
+    
+    routesCount.textContent = routes.length;
+    
+    if (routes.length === 0) {
+        routesSection.innerHTML = `
+            <div class="empty-state">
+                <h3>📭 No saved routes</h3>
+                <p>Add your first route below to start monitoring travel times!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let tableHTML = `
+        <div style="overflow-x: auto;">
+        <table>
+        <tr>
+            <th>Route</th>
+            <th>Current Time</th>
+            <th>Statistics</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+        </tr>
+    `;
+    
+    routes.forEach((route, index) => {
+        const timeBadgeClass = getTimeBadgeClass(route.travel_time);
+        const timeSaved = route.time_saved && route.time_saved > 0 ? 
+            `<div style="font-size: 0.8em; color: #28a745; margin-top: 5px;">💡 Saved ${route.time_saved.toFixed(1)} min vs worst</div>` : '';
+        
+        tableHTML += `
+        <tr>
+            <td>
+                <div class="route-info">
+                    <span>🛣️ ${route.source_name}</span>
+                    <span class="arrow">→</span>
+                    <span>${route.destination_name}</span>
+                </div>
+                <div style="font-size: 0.8em; color: #6c757d; margin-top: 5px;">
+                    <div>📍 ${route.source_address}</div>
+                    <div>🎯 ${route.destination_address}</div>
+                </div>
+            </td>
+            <td>
+                <span class="time-badge ${timeBadgeClass}">${getTimeDisplay(route.travel_time)}</span>
+                ${timeSaved}
+            </td>
+            <td>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <strong>Best:</strong><br>
+                        🏆 ${route.best_time || "N/A"}
+                    </div>
+                    <div class="stat-card">
+                        <strong>Avg:</strong><br>
+                        📊 ${route.average_time || "N/A"}
+                    </div>
+                    <div class="stat-card">
+                        <strong>Worst:</strong><br>
+                        📈 ${route.worst_time || "N/A"}
+                    </div>
+                </div>
+                ${route.recorded_times ? `<div style="font-size: 0.8em; color: #6c757d;">📈 ${route.recorded_times.length} data points</div>` : ''}
+            </td>
+            <td style="font-size: 0.9em;">
+                📅 ${route.last_recorded || "Never"}
+            </td>
+            <td>
+                <button onclick="deleteRoute(${index})" class="btn btn-danger btn-sm">
+                    🗑️ Delete
+                </button>
+            </td>
+        </tr>
+        `;
+    });
+    
+    tableHTML += `</table></div>`;
+    routesSection.innerHTML = tableHTML;
+}
+
+// Helper functions for UI
+function getTimeBadgeClass(time) {
+    if (!time || time === "N/A") return "time-warning";
+    if (["Error", "No route found", "Address not found"].includes(time)) return "time-error";
+    return "";
+}
+
+function getTimeDisplay(time) {
+    if (!time || time === "N/A") return "⚠️ N/A";
+    if (["Error", "No route found", "Address not found"].includes(time)) return `❌ ${time}`;
+    return `⏱️ ${time}`;
+}
+
+// Auto-refresh functionality
+function enableAutoRefresh(minutes) {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    if (minutes > 0) {
+        autoRefreshInterval = setInterval(async () => {
+            try {
+                const response = await fetch('/auto-refresh');
+                if (response.ok) {
+                    loadRoutes();
+                }
+            } catch (error) {
+                console.error('Auto-refresh failed:', error);
+            }
+        }, minutes * 60 * 1000);
+        
+        document.getElementById('refresh-status').textContent = `Auto-refresh enabled (${minutes} min intervals)`;
+        document.getElementById('refresh-status').style.color = '#28a745';
+    } else {
+        document.getElementById('refresh-status').textContent = 'Auto-refresh disabled';
+        document.getElementById('refresh-status').style.color = '#6c757d';
+    }
+}
+
+function toggleAutoRefresh() {
+    const select = document.getElementById('auto-refresh-select');
+    const minutes = parseInt(select.value);
+    enableAutoRefresh(minutes);
+}
+
+// API Functions
+async function refreshRoutes() {
+    try {
+        const response = await fetch(`${API_BASE}/refresh`);
+        if (response.ok) {
+            showSuccess('Routes refreshed successfully!');
+            loadRoutes();
+        } else {
+            showError('Failed to refresh routes');
+        }
+    } catch (error) {
+        console.error('Error refreshing routes:', error);
+        showError('Error refreshing routes');
+    }
+}
+
+async function exportRoutes() {
+    try {
+        const response = await fetch(`${API_BASE}/export`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `routes_export_${new Date().toISOString().slice(0,16).replace(/:/g,'')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showSuccess('Routes exported successfully!');
+        } else {
+            showError('Failed to export routes');
+        }
+    } catch (error) {
+        console.error('Error exporting routes:', error);
+        showError('Error exporting routes');
+    }
+}
+
+async function clearAllRoutes() {
+    if (!confirm('Are you sure you want to delete ALL routes? This cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/clear_all_routes`, {
+            method: 'POST'
+        });
+        if (response.ok) {
+            showSuccess('All routes cleared successfully!');
+            loadRoutes();
+        } else {
+            showError('Failed to clear routes');
+        }
+    } catch (error) {
+        console.error('Error clearing routes:', error);
+        showError('Error clearing routes');
+    }
+}
+
+async function resetStatistics() {
+    if (!confirm('Reset all statistics? This will clear historical data.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/reset_statistics`, {
+            method: 'POST'
+        });
+        if (response.ok) {
+            showSuccess('Statistics reset successfully!');
+            loadRoutes();
+        } else {
+            showError('Failed to reset statistics');
+        }
+    } catch (error) {
+        console.error('Error resetting statistics:', error);
+        showError('Error resetting statistics');
+    }
+}
+
+async function deleteRoute(index) {
+    const route = routes[index];
+    if (!confirm(`Delete route: ${route.source_name} → ${route.destination_name}?`)) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('index', index);
+        
+        const response = await fetch(`${API_BASE}/delete_route`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            showSuccess('Route deleted successfully!');
+            loadRoutes();
+        } else {
+            showError('Failed to delete route');
+        }
+    } catch (error) {
+        console.error('Error deleting route:', error);
+        showError('Error deleting route');
+    }
+}
+
+// Add route form submission
+document.getElementById('add-route-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch(`${API_BASE}/add_route`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            showSuccess('Route added successfully!');
+            e.target.reset();
+            loadRoutes();
+        } else {
+            showError('Failed to add route');
+        }
+    } catch (error) {
+        console.error('Error adding route:', error);
+        showError('Error adding route');
+    }
+});
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    loadRoutes();
+});
+</script>
+</body>
+</html>
