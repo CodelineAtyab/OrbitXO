@@ -5,6 +5,7 @@ import csv
 import os
 from distance_matrix import get_distance_matrix
 from slack_notifier import send_slack_notification
+from api_logger import log_route_tracking, log_slack_notification, log_error
 
 class RouteTracker:
     """
@@ -94,8 +95,8 @@ class RouteTracker:
                         is_min_duration
                     ])
                 
-                # Return the data
-                return {
+                # Create route data dictionary
+                route_data = {
                     "timestamp": timestamp,
                     "origin": self.origin,
                     "destination": self.destination,
@@ -106,15 +107,27 @@ class RouteTracker:
                     "is_min_distance": is_min_distance,
                     "is_min_duration": is_min_duration
                 }
+                
+                # Log the route tracking
+                log_route_tracking(
+                    route_data, 
+                    continuous_tracking=self.check_interval_seconds > 0,
+                    check_interval=self.check_interval_seconds if self.check_interval_seconds > 0 else None
+                )
+                
+                return route_data
             else:
                 error_message = "No route found"
                 if "error_message" in result:
                     error_message = result["error_message"]
                 print(f"Error: {error_message}")
+                log_error("route_tracker", "check_route", error_message)
                 return None
                 
         except Exception as e:
-            print(f"Error checking route: {str(e)}")
+            error_msg = f"Error checking route: {str(e)}"
+            print(error_msg)
+            log_error("route_tracker", "check_route", error_msg)
             return None
     
     def track_continuously(self):
@@ -166,10 +179,16 @@ class RouteTracker:
             sent = send_slack_notification(route_data)
             if sent:
                 print("✓ Slack notification sent successfully!")
+                log_slack_notification(route_data, success=True)
             else:
-                print("✗ Failed to send Slack notification")
+                error_msg = "Failed to send Slack notification"
+                print(f"✗ {error_msg}")
+                log_slack_notification(route_data, success=False, error_message=error_msg)
         except Exception as e:
-            print(f"✗ Error sending Slack notification: {str(e)}")
+            error_msg = f"Error sending Slack notification: {str(e)}"
+            print(f"✗ {error_msg}")
+            log_slack_notification(route_data, success=False, error_message=error_msg)
+            log_error("route_tracker", "display_results", error_msg)
 
 
 def main():

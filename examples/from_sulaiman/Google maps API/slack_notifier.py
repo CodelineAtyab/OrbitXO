@@ -3,6 +3,7 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from api_logger import log_slack_notification, log_error
 
 # Load environment variables
 load_dotenv()
@@ -38,14 +39,18 @@ def send_slack_notification(route_data, slack_url=None):
         
         if response.status_code == 200:
             print(f"Notification sent to Slack successfully")
+            # We don't log here because the calling code will handle it
             return True
         else:
-            print(f"Failed to send notification to Slack. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
+            error_msg = f"Failed to send notification to Slack. Status code: {response.status_code}. Response: {response.text}"
+            print(error_msg)
+            log_error("slack_notifier", "send_slack_notification", error_msg)
             return False
             
     except Exception as e:
-        print(f"Error sending notification to Slack: {str(e)}")
+        error_msg = f"Error sending notification to Slack: {str(e)}"
+        print(error_msg)
+        log_error("slack_notifier", "send_slack_notification", error_msg)
         return False
 
 def format_slack_message(route_data):

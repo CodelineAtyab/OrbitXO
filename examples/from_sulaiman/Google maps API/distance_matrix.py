@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
+from api_logger import log_api_call, log_error
 
 # Load API key from environment variable
 load_dotenv()
@@ -88,6 +89,20 @@ def get_distance_matrix(origins, destinations, api_key=None, mode="DRIVE", units
                     "response": response
                 })
                 
+                # Log the API call
+                try:
+                    response_data = response.json() if response.status_code == 200 else None
+                    log_api_call(
+                        origin=origin,
+                        destination=destination,
+                        mode=mode,
+                        api_key_used=api_key is not None,
+                        response_status=response.status_code,
+                        response_data=response_data
+                    )
+                except Exception as log_err:
+                    print(f"Error logging API call: {str(log_err)}")
+                
                 # Print debug info for first request only
                 if len(all_responses) == 1:
                     print(f"Sample response status code: {response.status_code}")
@@ -95,6 +110,7 @@ def get_distance_matrix(origins, destinations, api_key=None, mode="DRIVE", units
                     print(f"Sample response content: {response.text[:1000]}...")
                 
             except Exception as e:
+                log_error("distance_matrix", "get_distance_matrix", f"Error requesting route from {origin} to {destination}: {str(e)}")
                 print(f"Error requesting route from {origin} to {destination}: {str(e)}")
     
     # Create a formatted response similar to the Distance Matrix API format
