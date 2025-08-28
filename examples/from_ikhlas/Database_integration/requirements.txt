@@ -1,0 +1,7 @@
+os 
+json 
+requests
+datetime
+dotenv
+APScheduler
+SQLite3
