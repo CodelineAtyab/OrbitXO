@@ -1,32 +1,205 @@
-import sqlite3
+"""
+Database Logger Module for Google Maps Route Tracking System
+
+This module handles all database operations for the route tracking system,
+including logging events and recording travel time data.
+"""
 import logging
 import os
 import time
 import schedule
-from datetime import datetime
+import subprocess
 import json
+from datetime import datetime
 from distance_matrix import get_distance_matrix
+
+# Import MySQL connector
+try:
+    import mysql.connector
+    from mysql.connector import Error
+except ImportError:
+    logging.error("MySQL Connector package not installed. Please run 'pip install mysql-connector-python'")
+    print("Error: MySQL Connector package not installed. Please run 'pip install mysql-connector-python'")
+
+# Import Docker
+try:
+    import docker
+except ImportError:
+    logging.error("Docker SDK not installed. Please run 'pip install docker'")
+    print("Error: Docker SDK not installed. Please run 'pip install docker'")
+
+# Import database config
+try:
+    from db_config import get_db_config
+    # Test if it works
+    DB_CONFIG = get_db_config()
+    logging.info("Successfully loaded database configuration")
+except ImportError as e:
+    logging.error(f"Failed to import db_config: {e}")
+    print(f"Error: Failed to import db_config: {e}")
+    # Define a fallback configuration
+    DB_CONFIG = {
+        'host': 'localhost',
+        'port': 3306,
+        'user': 'route_user',
+        'password': 'route_password',
+        'database': 'route_tracker'
+    }
 
 # Configure basic logging to a file
 logging.basicConfig(
-    filename='api2_logger.logs',
+    filename='logs/database.log',
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.DEBUG
 )
 logger = logging.getLogger(__name__)
 
-# Database configuration
-DB_PATH = 'travel_time.db'  # SQLite database file path
+def check_docker_running():
+    """Check if Docker is running on the system"""
+    try:
+        client = docker.from_env()
+        client.ping()
+        logger.info("Docker is running")
+        return True
+    except Exception as e:
+        logger.error(f"Docker is not running or not accessible: {e}")
+        return False
+
+def start_mysql_container():
+    """Start the MySQL container if it's not running"""
+    try:
+        # Check if Docker is running
+        if not check_docker_running():
+            logger.error("Docker is not running. Cannot start MySQL container.")
+            print("✗ Docker is not running. Please start Docker first.")
+            return False
+        
+        client = docker.from_env()
+        
+        # Check if the container exists
+        try:
+            container = client.containers.get('google_maps_mysql')
+            
+            # Check if the container is running
+            if container.status != 'running':
+                logger.info("MySQL container exists but is not running. Starting it...")
+                container.start()
+                logger.info("MySQL container started")
+                print("✓ MySQL container started")
+                
+                # Wait for MySQL to be ready
+                logger.info("Waiting for MySQL to be ready...")
+                time.sleep(10)  # Simple wait - in production, use healthcheck
+            else:
+                logger.info("MySQL container is already running")
+                print("✓ MySQL container is already running")
+                
+            return True
+            
+        except docker.errors.NotFound:
+            # Container doesn't exist, need to build and run from Dockerfile
+            logger.info("MySQL container does not exist. Building from Dockerfile...")
+            print("MySQL container does not exist. Building from Dockerfile...")
+            
+            from db_config import DOCKER_BUILD_PATH, DOCKER_MYSQL_CONTAINER, DOCKER_MYSQL_IMAGE
+            
+            # Check if Dockerfile exists
+            dockerfile_path = os.path.join(DOCKER_BUILD_PATH, 'Dockerfile')
+            if not os.path.exists(dockerfile_path):
+                logger.error(f"Dockerfile not found at {dockerfile_path}")
+                print(f"✗ Dockerfile not found at {dockerfile_path}")
+                return False
+            
+            try:
+                # Build the image from Dockerfile
+                logger.info("Building MySQL image from Dockerfile...")
+                print("Building MySQL image from Dockerfile...")
+                
+                image, build_logs = client.images.build(
+                    path=DOCKER_BUILD_PATH,
+                    tag='google_maps_mysql:latest',
+                    rm=True
+                )
+                
+                # Run the container
+                logger.info("Starting MySQL container...")
+                print("Starting MySQL container...")
+                
+                container = client.containers.run(
+                    'google_maps_mysql:latest',
+                    name=DOCKER_MYSQL_CONTAINER,
+                    detach=True,
+                    ports={'3306/tcp': 3306},
+                    volumes={
+                        'mysql_data': {'bind': '/var/lib/mysql', 'mode': 'rw'}
+                    }
+                )
+                
+                logger.info("MySQL container started")
+                print("✓ MySQL container started")
+                
+                # Wait for MySQL to be ready
+                logger.info("Waiting for MySQL to be ready...")
+                print("Waiting for MySQL to be ready...")
+                time.sleep(15)  # Simple wait - in production, use healthcheck
+                
+                return True
+                
+            except docker.errors.BuildError as e:
+                logger.error(f"Failed to build MySQL image: {e}")
+                print(f"✗ Failed to build MySQL image: {e}")
+                return False
+                
+            except docker.errors.APIError as e:
+                logger.error(f"Docker API error: {e}")
+                print(f"✗ Docker API error: {e}")
+                return False
+                
+    except Exception as e:
+        logger.error(f"Error managing MySQL container: {e}")
+        print(f"✗ Error managing MySQL container: {e}")
+        return False
 
 def create_db_connection():
-    """Create a connection to the SQLite database"""
-    try:
-        connection = sqlite3.connect(DB_PATH)
-        logger.info(f"Connected to SQLite database: {DB_PATH}")
-        return connection
-    except Exception as e:
-        logger.error(f"Error connecting to SQLite database: {e}")
+    """Create a connection to the MySQL database"""
+    # Make sure the MySQL container is running
+    if not start_mysql_container():
+        logger.error("Failed to ensure MySQL container is running")
         return None
+    
+    # Get database configuration
+    db_config = get_db_config()
+    
+    # Try to connect to the database
+    max_retries = 5
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            connection = mysql.connector.connect(
+                host=db_config['host'],
+                port=db_config['port'],
+                user=db_config['user'],
+                password=db_config['password'],
+                database=db_config['database']
+            )
+            
+            if connection.is_connected():
+                logger.info(f"Connected to MySQL database: {db_config['database']}")
+                return connection
+            
+        except Error as e:
+            retry_count += 1
+            logger.warning(f"Failed to connect to MySQL database (attempt {retry_count}/{max_retries}): {e}")
+            
+            if retry_count < max_retries:
+                time.sleep(2)  # Wait before retrying
+            else:
+                logger.error(f"Failed to connect to MySQL database after {max_retries} attempts: {e}")
+                print(f"✗ Failed to connect to MySQL database after {max_retries} attempts: {e}")
+                return None
+    
+    return None
 
 def setup_database():
     """Create the necessary tables if they don't exist"""
@@ -38,26 +211,26 @@ def setup_database():
             # Create travel_time_logs table
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS travel_time_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 timestamp DATETIME NOT NULL,
-                origin TEXT NOT NULL,
-                destination TEXT NOT NULL,
-                distance_text TEXT,
-                distance_value INTEGER,
-                duration_text TEXT,
-                duration_value INTEGER,
-                status TEXT NOT NULL
+                origin VARCHAR(255) NOT NULL,
+                destination VARCHAR(255) NOT NULL,
+                distance_text VARCHAR(100),
+                distance_value INT,
+                duration_text VARCHAR(100),
+                duration_value INT,
+                status VARCHAR(50) NOT NULL
             )
             ''')
             
             # Create api_logs table for general logging
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS api_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 timestamp DATETIME NOT NULL,
-                log_level TEXT NOT NULL,
+                log_level VARCHAR(20) NOT NULL,
                 message TEXT NOT NULL,
-                source TEXT
+                source VARCHAR(100)
             )
             ''')
             
@@ -65,7 +238,7 @@ def setup_database():
             connection.commit()
             
             # Verify tables were created
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            cursor.execute("SHOW TABLES")
             tables = cursor.fetchall()
             table_names = [table[0] for table in tables]
             
@@ -76,7 +249,7 @@ def setup_database():
                 logger.error(f"Failed to create all required tables. Found: {table_names}")
                 print(f"✗ Failed to create all required tables. Found: {table_names}")
                 
-        except Exception as e:
+        except Error as e:
             logger.error(f"Error setting up database tables: {e}")
             print(f"✗ Error setting up database tables: {e}")
         finally:
@@ -94,14 +267,14 @@ def log_to_database(level, message, source="db_logger"):
             cursor = connection.cursor()
             query = """
             INSERT INTO api_logs (timestamp, log_level, message, source) 
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
             """
-            # Format datetime for SQLite
+            # Format datetime for MySQL
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute(query, (timestamp, level, message, source))
             connection.commit()
             return True
-        except Exception as e:
+        except Error as e:
             logger.error(f"Error logging to database: {e}")
             return False
         finally:
@@ -121,6 +294,12 @@ def record_travel_time(origins, destinations, api_key=None):
         return False
     
     try:
+        # Ensure origins and destinations are lists
+        if isinstance(origins, str):
+            origins = [origins]
+        if isinstance(destinations, str):
+            destinations = [destinations]
+            
         # Get distance matrix data
         logger.info(f"Requesting distance matrix from {origins} to {destinations}")
         print(f"Requesting distance matrix from {origins} to {destinations}")
@@ -147,7 +326,7 @@ def record_travel_time(origins, destinations, api_key=None):
                         query = """
                         INSERT INTO travel_time_logs 
                         (timestamp, origin, destination, distance_text, distance_value, duration_text, duration_value, status)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         """
                         cursor.execute(query, (
                             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Format timestamp for SQLite
@@ -170,15 +349,15 @@ def record_travel_time(origins, destinations, api_key=None):
                             try:
                                 log_query = """
                                 INSERT INTO api_logs (timestamp, log_level, message, source) 
-                                VALUES (?, ?, ?, ?)
+                                VALUES (%s, %s, %s, %s)
                                 """
                                 cursor.execute(log_query, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", log_msg, "record_travel_time"))
-                            except Exception as e:
+                            except Error as e:
                                 logger.error(f"Failed to log to api_logs table: {e}")
                         else:
                             log_msg = f"Failed to get travel time from {origin} to {destination}: {status}"
                             logger.error(log_msg)
-                    except Exception as e:
+                    except Error as e:
                         logger.error(f"Error inserting record into database: {e}")
                         print(f"✗ Error inserting record into database: {e}")
             
@@ -237,12 +416,11 @@ def get_historical_data(origin=None, destination=None, start_time=None, end_time
         return []
     
     try:
-        # Configure SQLite connection to return dictionaries
-        connection.row_factory = sqlite3.Row
-        cursor = connection.cursor()
+        # Create cursor with dictionary=True to return dictionaries
+        cursor = connection.cursor(dictionary=True)
         
         # Check if table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='travel_time_logs'")
+        cursor.execute("SHOW TABLES LIKE 'travel_time_logs'")
         if not cursor.fetchone():
             logger.error("travel_time_logs table does not exist")
             print("✗ travel_time_logs table does not exist")
@@ -253,39 +431,38 @@ def get_historical_data(origin=None, destination=None, start_time=None, end_time
         params = []
         
         if origin:
-            query += " AND origin = ?"
+            query += " AND origin = %s"
             params.append(origin)
             
         if destination:
-            query += " AND destination = ?"
+            query += " AND destination = %s"
             params.append(destination)
             
         if start_time:
-            query += " AND timestamp >= ?"
+            query += " AND timestamp >= %s"
             params.append(start_time)
             
         if end_time:
-            query += " AND timestamp <= ?"
+            query += " AND timestamp <= %s"
             params.append(end_time)
         
-        query += " ORDER BY timestamp DESC LIMIT ?"
+        query += " ORDER BY timestamp DESC LIMIT %s"
         params.append(limit)
         
         cursor.execute(query, params)
         rows = cursor.fetchall()
         
-        # Convert SQLite Row objects to dictionaries for easier handling
-        results = []
-        for row in rows:
-            results.append({key: row[key] for key in row.keys()})
+        # The rows are already dictionaries with MySQL Connector's dictionary=True
+        results = rows
         
         logger.info(f"Retrieved {len(results)} historical travel time records")
         print(f"Retrieved {len(results)} historical travel time records")
         
         # If no results, try checking total count in table
         if len(results) == 0:
-            cursor.execute("SELECT COUNT(*) FROM travel_time_logs")
-            count = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) as count FROM travel_time_logs")
+            count_row = cursor.fetchone()
+            count = count_row['count'] if count_row else 0
             print(f"Note: There are {count} total records in the travel_time_logs table")
             
             if count > 0 and (origin or destination):
@@ -293,17 +470,18 @@ def get_historical_data(origin=None, destination=None, start_time=None, end_time
                 # Print a sample of what's in the table
                 cursor.execute("SELECT origin, destination FROM travel_time_logs LIMIT 3")
                 sample = cursor.fetchall()
-                print(f"Sample data in table: {[dict(row) for row in sample]}")
+                print(f"Sample data in table: {sample}")
         
         return results
         
-    except Exception as e:
+    except Error as e:
         logger.error(f"Error retrieving historical data: {e}")
         print(f"✗ Error retrieving historical data: {e}")
         return []
     finally:
-        cursor.close()
-        connection.close()
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
 def record_scheduled_travel_times():
     """Function to be scheduled to record travel times every 15 minutes"""
@@ -339,22 +517,21 @@ def analyze_travel_pattern(origin, destination, days=7):
         return {"error": "Database connection failed"}
         
     try:
-        # Configure SQLite connection to return dictionaries
-        connection.row_factory = sqlite3.Row
-        cursor = connection.cursor()
+        # Create cursor with dictionary=True to return dictionaries
+        cursor = connection.cursor(dictionary=True)
         
         # Get average travel times by hour of day
         query = """
         SELECT 
-            CAST(strftime('%H', timestamp) AS INTEGER) as hour_of_day,
+            HOUR(timestamp) as hour_of_day,
             AVG(duration_value) as avg_duration_seconds,
             MIN(duration_value) as min_duration_seconds,
             MAX(duration_value) as max_duration_seconds,
             COUNT(*) as sample_count
         FROM travel_time_logs
-        WHERE origin = ? 
-            AND destination = ?
-            AND timestamp >= datetime('now', '-' || ? || ' days')
+        WHERE origin = %s 
+            AND destination = %s
+            AND timestamp >= DATE_SUB(NOW(), INTERVAL %s DAY)
             AND status = 'OK'
         GROUP BY hour_of_day
         ORDER BY hour_of_day
@@ -370,12 +547,13 @@ def analyze_travel_pattern(origin, destination, days=7):
             "hourly_patterns": hourly_patterns
         }
     
-    except Exception as e:
+    except Error as e:
         logger.error(f"Error analyzing travel patterns: {e}")
         return {"error": str(e)}
     finally:
-        cursor.close()
-        connection.close()
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
 def start_scheduler():
     """Start the scheduler for periodic travel time recording"""
@@ -391,6 +569,14 @@ def start_scheduler():
         time.sleep(60)  # Check scheduler every minute
 
 if __name__ == "__main__":
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
+    
+    # Check if Docker is running
+    if not check_docker_running():
+        print("✗ Docker is not running. Please start Docker and try again.")
+        exit(1)
+    
     # Setup database tables
     setup_database()
     
@@ -402,11 +588,26 @@ if __name__ == "__main__":
     # Record initial travel times
     try:
         api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-        origins = ["Seattle, WA"]
-        destinations = ["San Francisco, CA", "Portland, OR"]
-        record_travel_time(origins, destinations, api_key)
-    except Exception as e:
+        if not api_key:
+            print("⚠ Warning: GOOGLE_MAPS_API_KEY not found in environment variables")
+            logger.warning("GOOGLE_MAPS_API_KEY not found in environment variables")
+        else:
+            origins = ["Seattle, WA"]
+            destinations = ["San Francisco, CA", "Portland, OR"]
+            record_travel_time(origins, destinations, api_key)
+    except Error as e:
         logger.error(f"Error during initial travel time recording: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error during initial travel time recording: {str(e)}")
+    
+    print("\nDatabase logger is ready. Starting scheduler...")
     
     # Start the scheduler
-    start_scheduler()
+    try:
+        start_scheduler()
+    except KeyboardInterrupt:
+        print("\nScheduler stopped by user.")
+        logger.info("Scheduler stopped by user.")
+    except Exception as e:
+        print(f"\n✗ Error in scheduler: {str(e)}")
+        logger.error(f"Error in scheduler: {str(e)}")
