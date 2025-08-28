@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🚗 Routes</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fafafa; }
+    h1 { color: purple; text-align: center; }
+    table { width: 90%; margin: auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background: #f4e1f7; color: purple; }
+    .remove-btn { background: red; color: white; border: none; padding: 6px 12px; cursor: pointer; }
+    .form-container { width: 90%; margin: auto; margin-top: 20px; }
+    input { margin: 5px; padding: 8px; width: 200px; }
+    .add-btn { background: purple; color: white; padding: 8px 15px; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🚗 Routes</h1>
+  <table>
+    <tr>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Estimate</th>
+      <th>Action</th>
+    </tr>
+    {% for r in routes %}
+    <tr>
+      <td>{{ r.source_name }}<br><small>{{ r.source_address }}</small></td>
+      <td>{{ r.destination_name }}<br><small>{{ r.destination_address }}</small></td>
+      <td>{{ r.estimate }}</td>
+      <td>
+        <form method="post" action="/remove_route/{{ loop.index0 }}">
+          <button class="remove-btn">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="form-container">
+    <h3>➕ Add New Route</h3>
+    <form method="post" action="/add_route">
+      <input type="text" name="source_name" placeholder="Source Name" required>
+      <input type="text" name="source_address" placeholder="Source Address" required>
+      <input type="text" name="destination_name" placeholder="Destination Name" required>
+      <input type="text" name="destination_address" placeholder="Destination Address" required>
+      <button class="add-btn">Add Route</button>
+    </form>
+  </div>
+</body>
+</html>
