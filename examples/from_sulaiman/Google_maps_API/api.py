@@ -51,6 +51,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Check for Docker availability
+try:
+    import docker
+    DOCKER_AVAILABLE = True
+    logger.info("Docker SDK is available")
+except ImportError:
+    DOCKER_AVAILABLE = False
+    logger.warning("Docker SDK is not available. MySQL features may not work correctly.")
+
 # Pydantic models for request/response validation
 class RouteRequest(BaseModel):
     origin: str
@@ -66,6 +75,19 @@ class RouteResponse(BaseModel):
 
 class ApiStatusResponse(BaseModel):
     api_configured: bool
+    
+class DatabaseStatusResponse(BaseModel):
+    database_connected: bool
+    message: str
+
+# Explicitly load .env file
+from dotenv import load_dotenv, find_dotenv
+dotenv_path = find_dotenv()
+if dotenv_path:
+    print(f"Loading environment from: {dotenv_path}")
+    load_dotenv(dotenv_path)
+else:
+    print("Warning: .env file not found!")
 
 # Setup environment at startup
 setup_environment()
@@ -90,6 +112,16 @@ async def track_route(origin: str = Form(...), destination: str = Form(...)):
             raise HTTPException(status_code=400, detail="Both origin and destination are required")
         
         logger.info(f"API request to track route from {origin} to {destination}")
+        
+        # First, make sure MySQL is running
+        from db_logger import start_mysql_container
+        mysql_ready = start_mysql_container()
+        if not mysql_ready:
+            logger.error("Failed to start MySQL container")
+            return RouteResponse(
+                success=False,
+                message="Failed to start MySQL database. Please run start_mysql.bat first."
+            )
         
         # Call the main system
         result = run_complete_system(
@@ -136,6 +168,70 @@ async def track_route(origin: str = Form(...), destination: str = Form(...)):
     except Exception as e:
         logger.error(f"Error processing route tracking request: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.get("/api/database-status", response_model=DatabaseStatusResponse)
+async def get_database_status():
+    """Check if the MySQL database connection is working"""
+    try:
+        from db_logger import create_db_connection
+        
+        # Try to connect to the database
+        connection = create_db_connection()
+        
+        if connection:
+            # Connection successful
+            cursor = connection.cursor()
+            cursor.execute("SELECT VERSION()")
+            version = cursor.fetchone()[0]
+            cursor.close()
+            connection.close()
+            
+            logger.info(f"Database connection successful. MySQL version: {version}")
+            return DatabaseStatusResponse(
+                database_connected=True,
+                message=f"Connected to MySQL version: {version}"
+            )
+        else:
+            # Connection failed
+            logger.error("Failed to connect to MySQL database")
+            return DatabaseStatusResponse(
+                database_connected=False,
+                message="Failed to connect to MySQL database. Check if Docker and MySQL container are running."
+            )
+    except Exception as e:
+        logger.error(f"Error checking database connection: {str(e)}")
+        return DatabaseStatusResponse(
+            database_connected=False,
+            message=f"Error: {str(e)}"
+        )
+
+@app.post("/api/start-mysql")
+async def start_mysql():
+    """Start the MySQL container if it's not running"""
+    try:
+        from db_logger import start_mysql_container
+        
+        # Try to start the MySQL container
+        success = start_mysql_container()
+        
+        if success:
+            logger.info("MySQL container started successfully")
+            return JSONResponse(
+                content={"success": True, "message": "MySQL container started successfully"},
+                status_code=200
+            )
+        else:
+            logger.error("Failed to start MySQL container")
+            return JSONResponse(
+                content={"success": False, "message": "Failed to start MySQL container. Check logs for details."},
+                status_code=500
+            )
+    except Exception as e:
+        logger.error(f"Error starting MySQL container: {str(e)}")
+        return JSONResponse(
+            content={"success": False, "message": f"Error: {str(e)}"},
+            status_code=500
+        )
 
 # Mount static files directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
