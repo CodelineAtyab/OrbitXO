@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Travel Time — Unified Travel Time API</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:#f6f8fa; color:#0b1220; margin:0; padding:0; }
+    .wrap { max-width:720px; margin:48px auto; background:white; border-radius:8px; box-shadow:0 6px 18px rgba(22,28,37,0.08); padding:28px; }
+    h1 { margin:0 0 12px; font-size:20px; }
+    form { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    input[type="text"] { flex:1 1 220px; padding:10px 12px; border:1px solid #dbe2ea; border-radius:6px; }
+    button { padding:10px 14px; border:0; background:#0066ff; color:white; border-radius:6px; cursor:pointer; }
+    button:disabled { background:#9bb8ff; cursor:default; }
+    .result { margin-top:18px; padding:14px; background:#f3f6fb; border-radius:6px; }
+    .muted { color:#556; font-size:13px; }
+    .error { color:#9b2c2c; }
+    .footer { margin-top:18px; font-size:13px; color:#6b7280; }
+    label { font-size:13px; color:#334155; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Travel Time Checker</h1>
+    <p class="muted">Enter origin and destination, then click <strong>Get Travel Time</strong>. This talks to the /travel-time FastAPI endpoint.</p>
+
+    <form id="routeForm" onsubmit="return false;">
+      <div style="flex:1 1 100%; display:flex; gap:8px;">
+        <div style="flex:1">
+          <label for="origin">Origin</label><br />
+          <input id="origin" type="text" placeholder="e.g. Muscat, Oman" required />
+        </div>
+        <div style="flex:1">
+          <label for="destination">Destination</label><br />
+          <input id="destination" type="text" placeholder="e.g. Nizwa, Oman" required />
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center;">
+        <button id="submitBtn" type="button">Get Travel Time</button>
+        <div id="status" class="muted">Ready</div>
+      </div>
+    </form>
+
+    <div id="output" class="result" style="display:none;"></div>
+
+    <div class="footer">
+      Tip: Make sure your FastAPI server is running and the /travel-time endpoint is available on the same host/port.
+    </div>
+  </div>
+
+  <script>
+    const submitBtn = document.getElementById('submitBtn');
+    const originInput = document.getElementById('origin');
+    const destInput = document.getElementById('destination');
+    const statusEl = document.getElementById('status');
+    const outputEl = document.getElementById('output');
+
+    function showStatus(text) { statusEl.textContent = text; }
+    function showOutput(html, isError = false) {
+      outputEl.style.display = 'block';
+      outputEl.innerHTML = html;
+      outputEl.classList.toggle('error', isError);
+    }
+
+    async function getTravelTime() {
+      const origin = originInput.value.trim();
+      const destination = destInput.value.trim();
+      if (!origin || !destination) {
+        showOutput('Please provide both origin and destination.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      showStatus('Requesting route...');
+      showOutput(''); // clear
+
+      try {
+        // Build URL relative to current host/port
+        const url = new URL('/travel-time', window.location.origin);
+        url.searchParams.set('origin', origin);
+        url.searchParams.set('destination', destination);
+
+        const resp = await fetch(url.toString(), { method: 'GET' });
+        const data = await resp.json();
+
+        if (!resp.ok || data.error) {
+          const err = (data && data.detail) || data.error || JSON.stringify(data);
+          showOutput('Error: ' + err, true);
+          showStatus('Failed');
+        } else {
+          // Expected keys: origin, destination, duration_minutes, distance_km, new_record, previous_best
+          const dm = data.duration_minutes;
+          const dk = data.distance_km;
+          const newRec = data.new_record ? 'Yes' : 'No';
+          const prev = data.previous_best === undefined || data.previous_best === null ? 'N/A' : data.previous_best + ' min';
+          const html = `
+            <strong>Route:</strong> ${escapeHtml(data.origin)} → ${escapeHtml(data.destination)}<br/>
+            <strong>Duration:</strong> ${dm} minute(s)<br/>
+            <strong>Distance:</strong> ${dk !== undefined ? (Number(dk).toLocaleString() + ' km') : 'N/A'}<br/>
+            <strong>New record:</strong> ${newRec}<br/>
+            <strong>Previous best:</strong> ${prev}
+          `;
+          showOutput(html, false);
+          showStatus('Done');
+        }
+      } catch (err) {
+        showOutput('Request failed: ' + (err.message || err), true);
+        showStatus('Error');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    submitBtn.addEventListener('click', getTravelTime);
+    // allow Enter to submit from inputs
+    [originInput, destInput].forEach(el => el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') getTravelTime();
+    }));
+  </script>
+</body>
+</html>
