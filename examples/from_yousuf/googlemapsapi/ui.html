@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>ETA Tracker</title>
+	<style>
+		:root{
+			--bg:#f4f6fb;
+			--card:#ffffff;
+			--muted:#6b7280;
+			--accent:#2563eb;
+			--success:#16a34a;
+			--error:#dc2626;
+			--glass: rgba(255,255,255,0.7);
+			font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+		}
+		html,body{height:100%}
+		body{
+			margin:0;
+			min-height:100%;
+			background:linear-gradient(180deg,#eef2ff 0%, var(--bg) 100%);
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			padding:2rem;
+			color:#0f172a;
+		}
+		.app{
+			width:100%;
+			max-width:960px;
+			background:var(--card);
+			border-radius:12px;
+			box-shadow:0 8px 30px rgba(2,6,23,0.08);
+			overflow:hidden;
+		}
+		.header{
+			padding:1.5rem 1.75rem;
+			background:linear-gradient(90deg, rgba(99,102,241,0.08), rgba(37,99,235,0.03));
+			border-bottom:1px solid rgba(15,23,42,0.03);
+			display:flex;
+			align-items:center;
+			gap:1rem;
+		}
+		.logo{
+			width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent), #7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;
+			box-shadow:0 4px 14px rgba(37,99,235,0.18);
+		}
+		.hgroup{flex:1}
+		h1{margin:0;font-size:1.125rem}
+		.hint{color:var(--muted);font-size:0.9rem;margin-top:0.25rem}
+		.content{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;padding:1.25rem}
+		.left{padding:0.5rem}
+		.right{padding:0.5rem}
+		.controls{
+			display:grid;
+			gap:0.75rem;
+			grid-template-columns:repeat(2,1fr);
+		}
+		.controls .full{grid-column:1/-1}
+		label{display:block;font-size:0.85rem;color:var(--muted)}
+		input[type="text"]{
+			width:100%;
+			padding:0.65rem 0.75rem;
+			border-radius:8px;
+			border:1px solid #e6eef8;
+			background:linear-gradient(180deg, #fff, var(--glass));
+			box-sizing:border-box;
+			outline:none;
+			font-size:0.95rem;
+		}
+		.row-actions{display:flex;gap:0.5rem;align-items:center}
+		button{
+			padding:0.6rem 0.9rem;
+			border-radius:8px;
+			border:0;
+			cursor:pointer;
+			font-weight:600;
+			background:var(--accent);
+			color:white;
+			box-shadow:0 6px 18px rgba(37,99,235,0.12);
+			transition:transform .08s ease, box-shadow .08s ease, opacity .12s;
+		}
+		button.ghost{background:transparent;color:var(--accent);box-shadow:none;border:1px solid rgba(37,99,235,0.12)}
+		button:active{transform:translateY(1px)}
+		.result-card{
+			background:linear-gradient(180deg, #ffffff, #fbfdff);
+			border-radius:10px;
+			padding:1rem;
+			box-shadow:0 4px 16px rgba(2,6,23,0.04);
+			border:1px solid rgba(15,23,42,0.03);
+			min-height:160px;
+			display:flex;
+			flex-direction:column;
+			justify-content:space-between;
+			gap:0.5rem;
+		}
+		.meta{display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center}
+		.badge{padding:0.25rem 0.5rem;border-radius:999px;font-size:0.85rem;background:#f1f9f6;color:var(--success);display:inline-block}
+		.badge.error{background:#fff5f5;color:var(--error)}
+		.kv{display:flex;justify-content:space-between;gap:1rem;font-size:0.95rem;padding:0.35rem 0;border-bottom:1px dashed rgba(15,23,42,0.03)}
+		.kv:last-child{border-bottom:0}
+		pre{margin:0;background:transparent;white-space:pre-wrap;word-break:break-word;font-size:0.9rem}
+		.toolbar{display:flex;gap:0.5rem;justify-content:flex-end}
+		.small{font-size:0.82rem;color:var(--muted)}
+		.controls-cta{display:flex;gap:0.5rem;align-items:center}
+		.copy-btn{background:#0f172a;color:white;padding:0.45rem 0.6rem;border-radius:8px;font-weight:600;border:0}
+		.spinner{
+			width:36px;height:36px;border-radius:50%;
+			border:4px solid rgba(255,255,255,0.55);
+			border-top-color:rgba(37,99,235,0.9);
+			animation:spin 1s linear infinite;
+			display:inline-block;
+		}
+		.overlay{
+			position:absolute;inset:0;background:rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;border-radius:12px;
+		}
+		.wrapper{position:relative}
+		@keyframes spin{to{transform:rotate(1turn)}}
+		@media (max-width:880px){
+			.content{grid-template-columns:1fr; padding:1rem}
+			.right{order:2}
+		}
+	</style>
+</head>
+<body>
+	<div class="app" role="application" aria-labelledby="title">
+		<div class="header">
+			<div class="logo" aria-hidden="true">ETA</div>
+			<div class="hgroup">
+				<h1 id="title">ETA Tracker</h1>
+				<div class="hint">Quickly check travel time. Leave fields blank to use defaults.</div>
+			</div>
+			<div style="display:flex;gap:0.5rem;align-items:center">
+				<button id="openApiBtn" class="ghost" title="Open raw /route endpoint">Open API</button>
+			</div>
+		</div>
+
+		<div class="content">
+			<div class="left">
+				<div class="controls" aria-live="polite">
+					<div class="full">
+						<label for="source">Source</label>
+						<input id="source" type="text" placeholder="e.g. 123 Main St, Anytown" />
+					</div>
+					<div class="full">
+						<label for="destination">Destination</label>
+						<input id="destination" type="text" placeholder="e.g. Office, City" />
+					</div>
+
+					<div class="full row-actions">
+						<button id="checkBtn">Check ETA</button>
+						<button id="copyBtn" class="copy-btn" title="Copy last result">Copy</button>
+						<div class="small" id="lastUpdated">No checks yet</div>
+					</div>
+				</div>
+
+				<div style="height:12px"></div>
+
+				<div class="wrapper">
+					<div id="resultCard" class="result-card" aria-live="polite" aria-atomic="true">
+						<div>
+							<div class="meta" id="statusMeta">
+								<span class="small">Status: <strong id="statusText">Idle</strong></span>
+								<span id="badges"></span>
+							</div>
+
+							<div id="fields" style="margin-top:0.5rem">
+								<div class="kv"><div>Source</div><div id="outSource" class="small muted"></div></div>
+								<div class="kv"><div>Destination</div><div id="outDestination" class="small muted"></div></div>
+								<div class="kv"><div>Distance</div><div id="outDistance" class="small muted"></div></div>
+								<div class="kv"><div>Duration</div><div id="outDuration" class="small muted"></div></div>
+							</div>
+						</div>
+
+						<div>
+							<div style="display:flex;gap:0.5rem;align-items:center;justify-content:space-between">
+								<div class="small">Raw JSON</div>
+								<div class="toolbar small">
+									<button id="toggleRaw" class="ghost">Toggle Raw</button>
+								</div>
+							</div>
+							<pre id="raw" style="max-height:180px;overflow:auto;margin-top:0.5rem;display:none;background:transparent"></pre>
+						</div>
+					</div>
+					<div id="overlay" class="overlay" style="display:none"><div class="spinner" role="status" aria-label="Loading"></div></div>
+				</div>
+			</div>
+
+			<div class="right">
+				<div style="font-weight:700;margin-bottom:0.5rem">Notes</div>
+				<div class="small" style="color:var(--muted)">
+					- The page uses the /route endpoint on this host.<br>
+					- If inputs are empty, configured defaults will be used.<br>
+					- Copy button copies the last raw JSON to clipboard.
+				</div>
+
+				<div style="height:12px"></div>
+
+				<div style="font-weight:700;margin-bottom:0.5rem">Last checks</div>
+				<div id="history" style="display:flex;flex-direction:column;gap:0.5rem">
+					<div class="small" style="color:var(--muted)">No history yet</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		(function(){
+			const checkBtn = document.getElementById('checkBtn');
+			const openApiBtn = document.getElementById('openApiBtn');
+			const resultEl = document.getElementById('raw');
+			const overlay = document.getElementById('overlay');
+			const statusText = document.getElementById('statusText');
+			const badges = document.getElementById('badges');
+			const outSource = document.getElementById('outSource');
+			const outDestination = document.getElementById('outDestination');
+			const outDistance = document.getElementById('outDistance');
+			const outDuration = document.getElementById('outDuration');
+			const lastUpdated = document.getElementById('lastUpdated');
+			const historyEl = document.getElementById('history');
+			const toggleRaw = document.getElementById('toggleRaw');
+			const copyBtn = document.getElementById('copyBtn');
+
+			let lastResult = null;
+			let hist = [];
+
+			function showRaw(obj){
+				resultEl.textContent = JSON.stringify(obj, null, 2);
+			}
+			function setStatus(text, type){
+				statusText.textContent = text;
+				badges.innerHTML = '';
+				if(type === 'ok'){
+					const s = document.createElement('span'); s.className='badge'; s.textContent='OK'; badges.appendChild(s);
+				}else if(type === 'new'){
+					const s = document.createElement('span'); s.className='badge'; s.textContent='NEW MIN'; badges.appendChild(s);
+				}else if(type === 'err'){
+					const s = document.createElement('span'); s.className='badge error'; s.textContent='ERROR'; badges.appendChild(s);
+				}
+			}
+
+			function addHistory(entry){
+				hist.unshift(entry);
+				if(hist.length>6) hist.pop();
+				historyEl.innerHTML = '';
+				for(const h of hist){
+					const el = document.createElement('div');
+					el.className='small';
+					el.textContent = `${new Date(h.t).toLocaleTimeString()} · ${h.src} → ${h.dest} · ${h.min} min`;
+					historyEl.appendChild(el);
+				}
+			}
+
+			checkBtn.addEventListener('click', async () => {
+				const source = document.getElementById('source').value.trim();
+				const destination = document.getElementById('destination').value.trim();
+				const params = new URLSearchParams();
+				if (source) params.set('source', source);
+				if (destination) params.set('destination', destination);
+
+				overlay.style.display = 'flex';
+				setStatus('Checking...', 'loading');
+				outSource.textContent = outDestination.textContent = outDistance.textContent = outDuration.textContent = '';
+				resultEl.style.display = 'none';
+				document.getElementById('raw').style.display='none';
+				try {
+					const resp = await fetch('/route' + (params.toString() ? ('?' + params.toString()) : ''));
+					const data = await resp.json().catch(()=>({ error: 'Invalid JSON response', status: resp.status }));
+					if(!resp.ok){
+						setStatus('Error', 'err');
+						showRaw(data);
+						resultEl.style.display='block';
+						lastResult = data;
+						overlay.style.display='none';
+						lastUpdated.textContent = `Error ${resp.status} · ${new Date().toLocaleTimeString()}`;
+						addHistory({t:Date.now(), src: source || 'cfg', dest: destination || 'cfg', min: 'err'});
+						return;
+					}
+
+					// populate fields
+					outSource.textContent = data.source || source || 'n/a';
+					outDestination.textContent = data.destination || destination || 'n/a';
+					outDistance.textContent = data.distance_text || data.distance || 'n/a';
+					outDuration.textContent = data.duration_text || `${data.duration_minutes || 'n/a'} min`;
+
+					const state = data.new_minimum ? 'new' : 'ok';
+					setStatus(state === 'new' ? 'New minimum' : 'OK', state);
+					showRaw(data);
+					resultEl.style.display='block';
+					lastResult = data;
+					lastUpdated.textContent = `Last checked ${new Date().toLocaleTimeString()}`;
+					addHistory({t:Date.now(), src: outSource.textContent, dest: outDestination.textContent, min: data.duration_minutes || '?'});
+				} catch (e){
+					setStatus('Error', 'err');
+					showRaw({error: String(e)});
+					resultEl.style.display='block';
+					lastResult = {error: String(e)};
+					lastUpdated.textContent = `Error · ${new Date().toLocaleTimeString()}`;
+				} finally {
+					overlay.style.display = 'none';
+				}
+			});
+
+			openApiBtn.addEventListener('click', () => {
+				const source = document.getElementById('source').value.trim();
+				const destination = document.getElementById('destination').value.trim();
+				const params = new URLSearchParams();
+				if (source) params.set('source', source);
+				if (destination) params.set('destination', destination);
+				window.open('/route' + (params.toString() ? ('?' + params.toString()) : ''), '_blank');
+			});
+
+			toggleRaw.addEventListener('click', ()=>{
+				const raw = document.getElementById('raw');
+				raw.style.display = raw.style.display === 'block' ? 'none' : 'block';
+			});
+
+			copyBtn.addEventListener('click', async ()=>{
+				if(!lastResult){ alert('No result to copy'); return; }
+				try{
+					await navigator.clipboard.writeText(JSON.stringify(lastResult, null, 2));
+					copyBtn.textContent = 'Copied';
+					setTimeout(()=>copyBtn.textContent='Copy',1100);
+				}catch(e){
+					alert('Copy failed: '+e);
+				}
+			});
+		})();
+	</script>
+</body>
+</html>
