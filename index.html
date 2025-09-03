@@ -150,8 +150,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             margin-top: 1rem;
-            /* Commented out as requested */
-            display: none;
         }
 
         .reset-btn:hover {
@@ -253,7 +251,7 @@
         <div class="loading" id="loadingIndicator">🤖 Bot is thinking...</div>
         
         <!-- Reset button commented out as requested -->
-        <!-- <button class="reset-btn" id="resetBtn">🔄 New Game</button> -->
+        <button class="reset-btn" id="resetBtn">🔄 New Game</button>
     </div>
 
     <script>
@@ -469,21 +467,21 @@
         });
 
         // Reset button functionality (commented out as requested)
-        // document.getElementById('resetBtn').addEventListener('click', async () => {
-        //     try {
-        //         const response = await fetch('/board/main_game/reset', {
-        //             method: 'POST'
-        //         });
-        //         
-        //         if (response.ok) {
-        //             isGameOver = false;
-        //             isPlayerTurn = true;
-        //             initializeBoard();
-        //         }
-        //     } catch (error) {
-        //         console.error('Error resetting game:', error);
-        //     }
-        // });
+        document.getElementById('resetBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/board/main_game/reset', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    isGameOver = false;
+                    isPlayerTurn = true;
+                    initializeBoard();
+                }
+            } catch (error) {
+                console.error('Error resetting game:', error);
+            }
+        });
     </script>
 </body>
 </html>

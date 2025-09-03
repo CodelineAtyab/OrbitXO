@@ -82,7 +82,7 @@ games[DEFAULT_BOARD_ID] = initialize_game()
 async def serve_index():
     """Serve the main game interface"""
     try:
-        with open("index.html", "r") as f:
+        with open("index.html", "rb") as f:
             return HTMLResponse(content=f.read(), status_code=200)
     except FileNotFoundError:
         return HTMLResponse(
@@ -190,18 +190,18 @@ async def get_board_state(board_id: str):
     }
 
 # Reset endpoint (commented out as requested)
-# @app.post("/board/{board_id}/reset")
-# async def reset_board(board_id: str):
-#     """Reset the board to start a new game"""
-#     if board_id not in games:
-#         raise HTTPException(status_code=404, detail="Board not found")
-#     
-#     games[board_id] = initialize_game()
-#     return {
-#         "board_id": board_id,
-#         "board": games[board_id]["board"],
-#         "message": "Board reset successfully"
-#     }
+@app.post("/board/{board_id}/reset")
+async def reset_board(board_id: str):
+    """Reset the board to start a new game"""
+    if board_id not in games:
+        raise HTTPException(status_code=404, detail="Board not found")
+    
+    games[board_id] = initialize_game()
+    return {
+        "board_id": board_id,
+        "board": games[board_id]["board"],
+        "message": "Board reset successfully"
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8888)
