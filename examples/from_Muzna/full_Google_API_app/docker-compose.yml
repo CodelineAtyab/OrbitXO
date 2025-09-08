@@ -1,0 +1,43 @@
+services:
+  backend:
+    build: .
+    container_name: travel_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env  
+    environment:
+      DB_HOST: "db"
+    depends_on:
+      - db
+    restart: always
+    command: uvicorn main_app:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app 
+
+  db:
+    image: mysql:latest
+    container_name: travel_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: travel_data
+      MYSQL_USER: travel_user
+      MYSQL_PASSWORD: travel_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  frontend:
+    image: nginx:alpine
+    container_name: travel_frontend
+    volumes:
+      - ./ui:/usr/share/nginx/html 
+    ports:
+      - "8080:80"
+    restart: always
+
+volumes:
+  db_data:
