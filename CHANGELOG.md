@@ -1,6 +1,6 @@
 ### [0.0.3] [9/08/2025]
 ## Added Features
-- Added API endpoint to get the current version of the application.
+- Added API endpoint to get the current version of the application which is accessible at /version
 
 ### [0.0.2] [9/08/2025]
 ## Added Features
