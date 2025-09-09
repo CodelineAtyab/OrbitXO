@@ -1,3 +1,7 @@
+### [0.0.3] [9/08/2025]
+## Added Features
+- Added API endpoint to get the current version of the application.
+
 ### [0.0.2] [9/08/2025]
 ## Added Features
 - Added reset button functionality.
