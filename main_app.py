@@ -13,10 +13,19 @@ import time
 import uuid
 from typing import Dict, List, Optional
 
+
+app_version = "latest"
+try:
+    with open("version.txt") as version_file:
+        app_version = version_file.read().strip()
+except FileNotFoundError:
+    pass
+
+    
 app = FastAPI(
     title="OrbitXO Tic-Tac-Toe API",
     description="A player vs bot tic-tac-toe game with colorful UI",
-    version="1.0.0"
+    version=app_version
 )
 
 # Enable CORS for all origins
@@ -89,6 +98,13 @@ async def serve_index():
             content="<h1>Game interface not found. Please ensure index.html exists.</h1>",
             status_code=404
         )
+
+
+@app.get("/version")
+async def get_version():
+    """Get the current version of the application"""
+    return {"version": app_version}
+
 
 @app.post("/board/player/{position}")
 async def make_player_move(position: int):
@@ -174,6 +190,7 @@ async def make_player_move(position: int):
         "message": "Your turn!"
     }
 
+
 @app.get("/board/{board_id}")
 async def get_board_state(board_id: str):
     """Get the current state of the specified board"""
@@ -189,6 +206,7 @@ async def get_board_state(board_id: str):
         "winner": game["winner"]
     }
 
+
 # Reset endpoint (commented out as requested)
 @app.post("/board/{board_id}/reset")
 async def reset_board(board_id: str):
@@ -202,6 +220,7 @@ async def reset_board(board_id: str):
         "board": games[board_id]["board"],
         "message": "Board reset successfully"
     }
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8888)
