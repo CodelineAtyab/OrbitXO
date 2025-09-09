@@ -1,3 +1,7 @@
+### [0.0.5] [9/09/2025]
+## Added
+- Added a docker-compose file for easier deployment.
+
 ### [0.0.4] [9/09/2025]
 ## Updated
 - Version updated to test CD Job on Jenkins.
