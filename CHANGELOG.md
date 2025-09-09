@@ -1,3 +1,7 @@
+### [0.0.7] [9/09/2025]
+## Updated
+- Version updated to test CI Job on Jenkins.
+
 ### [0.0.6] [9/09/2025]
 ## Updated
 - Version updated to test CD Job on Jenkins AGAIN.
