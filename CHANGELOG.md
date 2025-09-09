@@ -1,3 +1,7 @@
+### [0.0.4] [9/09/2025]
+## Updated
+- Version updated to test CD Job on Jenkins
+
 ### [0.0.3] [9/08/2025]
 ## Added Features
 - Added API endpoint to get the current version of the application which is accessible at /version
