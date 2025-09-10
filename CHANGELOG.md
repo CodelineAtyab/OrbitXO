@@ -1,3 +1,7 @@
+### [0.0.8] [9/10/2025]
+## Updated
+- Version is now displayed on the web page.
+
 ### [0.0.7] [9/09/2025]
 ## Updated
 - Version updated to test CI Job on Jenkins.
