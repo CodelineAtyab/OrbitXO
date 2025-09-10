@@ -1,10 +1,10 @@
 ### [0.0.12] [9/11/2025]
 ## Updated
-- Version updated to test the new implementation of CI/CD job on Jenkins. 3rd Attempt.
+- Version updated to test the new implementation of CI/CD job on Jenkins. 3rd Attempt
 
 ### [0.0.11] [9/11/2025]
 ## Updated
-- Version updated to test the new implementation of CI/CD job on Jenkins. 2nd Attempt.
+- Version updated to test the new implementation of CI/CD job on Jenkins. 2nd Attempt
 
 ### [0.0.10] [9/11/2025]
 ## Updated
