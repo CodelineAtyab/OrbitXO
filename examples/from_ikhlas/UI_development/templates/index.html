@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Route Monitor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Route Monitor</h1>
+
+  <h2>Current Routes</h2>
+  <table>
+    <tr>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Action</th>
+    </tr>
+    {% for route in routes %}
+    <tr>
+      <td>{{ route.source_name }} → {{ route.source_address }}</td>
+      <td>{{ route.destination_name }} → {{ route.destination_address }}</td>
+      <td>
+        <!-- Remove button using GET request -->
+        <a href="/remove?index={{ loop.index0 }}">Remove</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Add New Route</h2>
+  <form action="/add" method="post">
+    <label>Source Name: <input type="text" name="source_name" required></label><br>
+    <label>Source Address: <input type="text" name="source_address" required></label><br>
+    <label>Destination Name: <input type="text" name="destination_name" required></label><br>
+    <label>Destination Address: <input type="text" name="destination_address" required></label><br>
+    <button type="submit">Add Route</button>
+  </form>
+</body>
+</html>

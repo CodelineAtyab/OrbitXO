@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  route-monitor:
+    build:
+      context: .
+      dockerfile: docker/dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./travel_times.db:/app/travel_times.db
+      - ./config.json:/app/config.json
+    environment:
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+    restart: unless-stopped

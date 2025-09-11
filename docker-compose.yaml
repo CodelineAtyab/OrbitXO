@@ -1,0 +1,7 @@
+services:
+  api:
+    image: codelineatyab/orbitxo-app:latest
+    container_name: orbitxo-api
+    ports:
+      - "8888:8888"
+    restart: always
