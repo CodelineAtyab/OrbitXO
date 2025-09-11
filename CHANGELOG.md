@@ -1,3 +1,7 @@
+### [0.0.13] [9/11/2025]
+## Added
+- Logging to file support along with stdout
+
 ### [0.0.12] [9/11/2025]
 ## Updated
 - Version updated to test the new implementation of CI/CD job on Jenkins. 3rd Attempt
