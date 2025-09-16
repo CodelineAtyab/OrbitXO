@@ -4,4 +4,6 @@ services:
     container_name: orbitxo-api
     ports:
       - "8888:8888"
+    volumes:
+      - ./cont_logs:/app/logs
     restart: always
