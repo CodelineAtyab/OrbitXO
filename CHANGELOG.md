@@ -1,3 +1,7 @@
+### [0.0.14] [9/16/2025]
+## Added
+- Bind mount in docker compose to share logs
+
 ### [0.0.13] [9/11/2025]
 ## Added
 - Logging to file support along with stdout
