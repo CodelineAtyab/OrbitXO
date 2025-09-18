@@ -2,6 +2,7 @@
 FastAPI Tic-Tac-Toe Game - Player vs Bot
 Serves a colorful HTML interface and provides API endpoints for gameplay.
 """
+import os
 import random
 import time
 import uvicorn
@@ -13,8 +14,10 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app_logger import logger
+from app_logger import get_logger
 
+# Initialize logger
+logger = get_logger(os.path.basename(__file__))
 
 app_version = "latest"
 try:
@@ -60,6 +63,7 @@ def check_winner(board: List[str], player: str) -> bool:
     ]
     for combo in win_combinations:
         if all(board[pos] == player for pos in combo):
+            logger.debug(f"Winning combination for player {player}: {combo}")
             return True
     return False
 
@@ -111,7 +115,7 @@ async def serve_index():
 @app.get("/version")
 async def get_version():
     """Get the current version of the application"""
-    logger.info(f"Version info returned: {app_version}")
+    logger.info(f"Version info returned: {app_version}", extra={"version": app_version})
     return {"version": app_version}
 
 
