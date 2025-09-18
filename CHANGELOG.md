@@ -1,3 +1,7 @@
+### [0.0.15] [9/18/2025]
+## Added
+- JSON file handler to generate a .json log file.
+
 ### [0.0.14] [9/16/2025]
 ## Added
 - Bind mount in docker compose to share logs
