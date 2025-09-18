@@ -1,3 +1,7 @@
+### [0.0.16] [9/18/2025]
+## Fixed
+- Added a missing package in requirements.
+
 ### [0.0.15] [9/18/2025]
 ## Added
 - JSON file handler to generate a .json log file.
