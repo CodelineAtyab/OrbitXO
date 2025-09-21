@@ -37,12 +37,32 @@ json_handler = RotatingFileHandler(
 )
 json_handler.setFormatter(json_formatter)
 
+# Create error-specific handlers
+error_file_handler = RotatingFileHandler(
+    './logs/myapp.error.log',
+    maxBytes=10*1024*1024,  # 10 MB
+    backupCount=7
+)
+error_file_handler.setFormatter(standard_formatter)
+error_file_handler.setLevel(logging.ERROR)  # Only capture ERROR and above
+
+# Create JSON error file handler
+error_json_handler = RotatingFileHandler(
+    './logs/myapp.error.json',
+    maxBytes=10*1024*1024,  # 10 MB
+    backupCount=7
+)
+error_json_handler.setFormatter(json_formatter)
+error_json_handler.setLevel(logging.ERROR)  # Only capture ERROR and above
+
 # Configure root logger
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.INFO)
 root_logger.addHandler(file_handler)
 root_logger.addHandler(console_handler)
 root_logger.addHandler(json_handler)
+root_logger.addHandler(error_file_handler)
+root_logger.addHandler(error_json_handler)
 
 def get_logger(name=None):
     """Get a configured logger instance"""

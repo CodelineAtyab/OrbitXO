@@ -115,7 +115,9 @@ async def serve_index():
 @app.get("/version")
 async def get_version():
     """Get the current version of the application"""
-    logger.info(f"Version info returned: {app_version}", extra={"version": app_version})
+    # logger.info(f"Version info returned: {app_version}", extra={"version": app_version})
+    logger.error(f"Unable to get the version! File doesn't exist in /var/lib/jenkins", extra={"error_msg": app_version})
+    raise Exception("Unable to get the version! File doesn't exist in /var/lib/jenkins")
     return {"version": app_version}
 
 

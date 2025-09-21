@@ -1,3 +1,7 @@
+### [0.0.17] [9/21/2025]
+## Updated
+- Updated Logging Module to include error logs in a separate file.
+
 ### [0.0.16] [9/18/2025]
 ## Fixed
 - Added a missing package in requirements.
