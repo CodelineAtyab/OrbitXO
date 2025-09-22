@@ -1,3 +1,7 @@
+### [0.0.18] [9/22/2025]
+## Updated
+- Added UUID to log statements temporarily for testing unique logs
+
 ### [0.0.17] [9/21/2025]
 ## Updated
 - Updated Logging Module to include error logs in a separate file.

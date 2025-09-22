@@ -2,6 +2,7 @@
 FastAPI Tic-Tac-Toe Game - Player vs Bot
 Serves a colorful HTML interface and provides API endpoints for gameplay.
 """
+import uuid
 import os
 import random
 import time
@@ -116,7 +117,9 @@ async def serve_index():
 async def get_version():
     """Get the current version of the application"""
     # logger.info(f"Version info returned: {app_version}", extra={"version": app_version})
-    logger.error(f"Unable to get the version! File doesn't exist in /var/lib/jenkins", extra={"error_msg": app_version})
+    # Get a UUID in string format
+    log_statement_id = str(uuid.uuid4())
+    logger.error(f"[{log_statement_id}] Unable to get the version! File doesn't exist in /var/lib/jenkins", extra={"error_msg": app_version, "id": log_statement_id})
     raise Exception("Unable to get the version! File doesn't exist in /var/lib/jenkins")
     return {"version": app_version}
 
