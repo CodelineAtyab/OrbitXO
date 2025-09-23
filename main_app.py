@@ -124,7 +124,7 @@ async def get_version():
     # Get a UUID in string format
     log_statement_id = str(uuid.uuid4())
     logger.error(f"[{log_statement_id}] Unable to get the version! File doesn't exist in /var/lib/jenkins", extra={"error_msg": app_version, "id": log_statement_id})
-    raise Exception("Unable to get the version! File doesn't exist in /var/lib/jenkins")
+    # raise Exception("Unable to get the version! File doesn't exist in /var/lib/jenkins")
     return {"version": app_version}
 
 

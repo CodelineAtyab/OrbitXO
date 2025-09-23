@@ -1,3 +1,9 @@
+### [0.0.19] [9/23/2025]
+## Added
+- Added Prometheus metrics endpoint for monitoring application performance.
+- Added Documentation for Prometheus and Grafana Setup.
+- Added Monitoring Docker related files.
+
 ### [0.0.18] [9/22/2025]
 ## Updated
 - Added UUID to log statements temporarily for testing unique logs
