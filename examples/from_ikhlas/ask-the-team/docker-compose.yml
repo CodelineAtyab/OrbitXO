@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: 
+      POSTGRES_PASSWORD: 
+      POSTGRES_DB:
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - asknet
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE= ${DB_POSTGRESDB_DATABASE}
+      - DB_POSTGRESDB_USER= ${DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD= ${DB_POSTGRESDB_PASSWORD}
+      - N8N_ENCRYPTION_KEY= ${N8N_ENCRYPTION_KEY}
+      - GENERIC_TIMEZONE=UTC
+    depends_on:
+      - postgres
+      - backend
+    networks:
+      - asknet
+
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - asknet
+
+volumes:
+  postgres_data:
+
+networks:
+  asknet:
+    driver: bridge
