@@ -1,0 +1,167 @@
+{
+  "name": "AskTheTeam",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "067bb35e-51cc-420a-83ad-b942b711de83",
+      "name": "When chat message received",
+      "webhookId": "55483f50-c5fc-4d6d-ab74-cbe9edffcbd2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "0ee1807f-38f2-4eca-a6d9-cca27c5887d1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get the list of all teams available",
+        "language": "python",
+        "pythonCode": "import json\n\nteams= {\"team\":[\"Code Orbit\",\"Brain & Bytes\"]}\nreturn json.dumps(teams)"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        192
+      ],
+      "id": "c3253d19-dcd2-404c-b7fe-da53fc2a1954",
+      "name": "get_all_teams"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        176
+      ],
+      "id": "edf87641-e86a-41e4-a77c-aff6ad2a6897",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cpebQAUJnQGn2Vyg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get all members of a specified team",
+        "language": "python",
+        "pythonCode": "import json\n\nmembers = {\"Code Orbit\": [\"Hanan\",\"Fatma\",\"Tufool\",\"Muzna\",\"Ikhlas\",\"Sundus\",\"Suhaila\",\"Yousif\"],\n           \"Brain & Bytes\": [\"Fatma\",\"Quds\",\"Janna\",\"Hajer\",\"Malik\"]\n          }\n\nreturn json.dumps(members)"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        176
+      ],
+      "id": "48c2377b-eec3-4b22-9dfc-555e249ec23f",
+      "name": "get_team_members"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        160
+      ],
+      "id": "ac22943d-a060-46e1-aeb7-71074b3a0dd0",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "uIsyiPdRQQmqje5U",
+          "name": "Postgres account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_all_teams": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_team_members": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7554d38e-404a-43ae-a384-9504ff1f5cf8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0f241aad1c8cc264a06fb12123d3108ad675110f3fe94f242f7bc13507e3d0c4"
+  },
+  "id": "8uYCSqAtjkJePRHf",
+  "tags": []
+}
