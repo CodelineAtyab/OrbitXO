@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_DATABASE: "api_log_db"
+      MYSQL_USER: "your_username"
+      MYSQL_PASSWORD: "your_password"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app:rw
+      - ./logs:/app/logs:rw
+    environment:
+      DB_HOST: db
+      DB_USER: your_username
+      DB_PASS: your_password
+      DB_NAME: api_log_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

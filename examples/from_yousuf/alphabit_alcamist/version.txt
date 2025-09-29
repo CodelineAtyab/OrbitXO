@@ -1,0 +1,5 @@
+0.0.2
+
+# Notes
+0.0.1 — initial feature set (API, processing rules, logging, docker-compose)
+0.0.2 — added CHANGELOG.md and this version.txt
