@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: aiops_app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+      - ./outputs:/app/outputs
+    environment:
+      - LOG_DIR=/app/logs
+      - OUTPUT_DIR=/app/outputs
+      - PORT=8080
+    restart: always
