@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS ai_ops_db;
+USE ai_ops_db;
+
+CREATE TABLE IF NOT EXISTS interactions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  request_id VARCHAR(64) NOT NULL,
+  method VARCHAR(16),
+  path VARCHAR(255),
+  request_body VARCHAR(2048),
+  response_body VARCHAR(2048),
+  status INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

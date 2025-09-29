@@ -1,0 +1,52 @@
+#version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai_ops_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ai_ops_db
+      MYSQL_USER: aiops
+      MYSQL_PASSWORD: aiopspass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./int.sql:/docker-entrypoint-initdb.d/01_int.sql:ro
+
+  app:
+    build: .
+    container_name: ai_ops_app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      MY_DATABASE_URL: "mysql+pymysql://aiops:aiopspass@mysql:3306/ai_ops_db"
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    working_dir: /app
+
+  log_writer:
+    build: .
+    container_name: ai_ops_log_writer
+    command: ["python", "log_to_mysql.py"]
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - app
+    environment:
+      DB_HOST: "mysql"
+      DB_PORT: "3306"
+      DB_USER: "aiops"
+      DB_PASSWORD: "aiopspass"
+      DB_NAME: "ai_ops_db"
+    volumes:
+      - ./:/app
+    working_dir: /app
+
+volumes:
+  mysql_data:
