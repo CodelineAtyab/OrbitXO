@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+loguru
+mysql-connector-python
+sqlalchemy
+pydantic
+databases
