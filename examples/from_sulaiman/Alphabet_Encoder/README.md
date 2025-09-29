@@ -2,6 +2,8 @@
 
 A FastAPI-based service that encodes alphabetical input strings and stores logs in both MySQL database and log files.
 
+**Current Version**: 0.0.2 (See [VERSION.txt](VERSION.txt))
+
 ## Project Overview
 
 This project provides a RESTful API service that processes string inputs using an alphabet-based encoding algorithm. The service logs all requests and responses to a MySQL database and log files for auditing and monitoring purposes.
@@ -88,6 +90,8 @@ curl "http://localhost:8010/?input=abc123"
 ├── docker-compose.yml   # Service orchestration
 ├── requirements.txt     # Python dependencies
 ├── .dockerignore        # Files excluded from Docker build
+├── CHANGELOG.md         # Documentation of all project changes
+├── VERSION.txt          # Current version of the application
 └── logs/                # Directory for log files
     ├── app.log          # Application logs
     └── api_requests.log # API request/response logs
@@ -183,6 +187,16 @@ docker-compose exec db mysql -u root -ppassword -e "USE alphabet_logs; SELECT * 
 **Log files not being created**:
 1. Check if the logs volume is correctly mounted
 2. Verify permissions in the logs directory
+
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) principles:
+
+- MAJOR version for incompatible API changes
+- MINOR version for added functionality in a backward-compatible manner
+- PATCH version for backward-compatible bug fixes
+
+The current version is maintained in [VERSION.txt](VERSION.txt) and all changes are documented in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
