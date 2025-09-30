@@ -66,7 +66,4 @@ if __name__ == "__main__":
     print(convert_measurements("zdaaaaaaaabaaaaaaaabaaaaaaaabbaa"))  # [34]
     print(convert_measurements("zza_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_a_")) # [26]
     print(convert_measurements("za_a_a_a_a_a_a_a_a_a_a_a_a_azaaa")) # [40, 1]
-    print(convert_measurements("_"))                       # [0]
-    print(convert_measurements("_ad"))                    # [0]
-    print(convert_measurements("_zzzb"))                  # [0]
-    print(convert_measurements("__"))                     # [0]
+    
