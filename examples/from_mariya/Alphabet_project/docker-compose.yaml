@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: alphabet_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: measurements
+    ports:
+      - "3307:3306"  # البورت الخارجي على جهازك صار 3307 حتى ما يصطدم مع MySQL المثبت محلياً
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build: .
+    container_name: alphabet_api
+    command: ["python", "main_app.py", "8080"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./logs:/app/logs
+      - .:/app
+
+volumes:
+  db_data:
