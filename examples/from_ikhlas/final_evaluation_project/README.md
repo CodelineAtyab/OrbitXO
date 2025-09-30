@@ -44,3 +44,5 @@ GET /history
 Logs are written to logs/app.log - Mounted to host via Docker volume.
 
 
+## SQLite
+- The SQLite database will be automatically created in ./data/db.sqlite3
