@@ -1,0 +1,10 @@
+
+services:
+  alphabet_alchemist_app:
+    build: .
+    container_name: alphabet_alchemist_app
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./logs:/app/logs       # Mount logs directory to host
+    restart: always
