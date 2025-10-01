@@ -1,8 +1,8 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 import uvicorn
 from fastapi import FastAPI
-from logsql import log_request_response  # For database logging
-from log_config import api_logger         # For file logging
+from logsql import log_request_response
+from log_config import api_logger
 
 app = FastAPI(
     title="String Processor API",
@@ -10,83 +10,69 @@ app = FastAPI(
     version="1.0.0",
 )
 
-def char_score(ch: str) -> int:
-    """Return 1..26 for a..z (case-insensitive), otherwise 0."""
-    if not ch:
-        return 0
-    c = ch.lower()
-    if 'a' <= c <= 'z':
-        return ord(c) - ord('a') + 1
+def _get_char_num_lower(char: str) -> int:
+    if 'a' <= char <= 'z':
+        return ord(char) - ord('a') + 1
     return 0
 
-def string_to_number_list(s: str) -> List[int]:
-    """
-    Processes a string according to the defined rules and returns a list of numbers.
-    Any character not in 'a'...'z' is treated as having a value of 0.
-    """
-    s = s.lower()  # Convert input string to lowercase
-
-    def get_char_value(char: str) -> int:
-        """Helper function to get the value of a character."""
-        if 'a' <= char <= 'z':
-            return ord(char) - ord('a') + 1
+def char_num(ch: str) -> int:
+    if not ch:
         return 0
+    return _get_char_num_lower(ch.lower())
 
+def _read_count(s: str, i: int) -> Tuple[int, int]:
+    count = 0
+    while i < len(s) and s[i] == 'z':
+        count += 26
+        i += 1
+    if i < len(s):
+        count += _get_char_num_lower(s[i])
+        i += 1
+    return count, i
+
+def _read_item(s: str, i: int) -> Tuple[str, int]:
+    if i >= len(s):
+        return "", i
+
+    if s[i] != 'z':
+        return s[i], i + 1
+
+    item_start_index = i
+    while i < len(s) and s[i] == 'z':
+        i += 1
+    if i < len(s):
+        i += 1
+    return s[item_start_index:i], i
+
+def string_to_num_list(s: str) -> List[int]:
+    s = s.lower()
     result: List[int] = []
     i = 0
     while i < len(s):
-        # If a character's value is 0, it's a standalone sequence resulting in 0.
-        if get_char_value(s[i]) == 0:
+        if _get_char_num_lower(s[i]) == 0:
             result.append(0)
             i += 1
             continue
 
-        # 1. Determine the count using the chained 'z' rule for counts
-        count = 0
-        while i < len(s) and s[i] == 'z':
-            count += 26
-            i += 1
+        count, i = _read_count(s, i)
 
-        if i < len(s):
-            count += get_char_value(s[i])
-            i += 1
-
-        # 2. Collect and sum characters based on the item rule
         sub_chars: List[str] = []
-        items_collected = 0
+        for _ in range(count):
+            if i >= len(s):
+                break
+            item_str, i = _read_item(s, i)
+            sub_chars.extend(list(item_str))
 
-        while items_collected < count and i < len(s):
-            # Check if the item is a z-chain
-            if s[i] == 'z':
-                # This is a z-chain item. Collect all z's and the char after.
-                item_start_index = i
-                while i < len(s) and s[i] == 'z':
-                    i += 1
-                if i < len(s):  # Include the character that terminates the z-chain
-                    i += 1
-                sub_chars.extend(list(s[item_start_index:i]))
-            else:
-                # This is a single character item.
-                sub_chars.append(s[i])
-                i += 1
-
-            items_collected += 1
-
-        # 3. Sum and store the result
-        current_sum = sum(get_char_value(c) for c in sub_chars)
+        current_sum = sum(_get_char_num_lower(c) for c in sub_chars)
         result.append(current_sum)
 
     return result
 
 @app.get("/convert-measurements")
-def process_string_endpoint(input: str):
-    """
-    Takes a string 'input' as a query parameter, processes it, and logs the transaction.
-    """
-    output = string_to_number_list(input)
+def convert_measurements_endpoint(input: str):
+    output = string_to_num_list(input)
     response_data = {"input_string": input, "output": output}
 
-    # Log to both the database and the file
     log_request_response(input, response_data)
     api_logger.info(f"Request processed: {response_data}")
 
@@ -94,4 +80,3 @@ def process_string_endpoint(input: str):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080)
-
