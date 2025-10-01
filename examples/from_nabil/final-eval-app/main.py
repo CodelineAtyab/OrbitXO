@@ -4,91 +4,103 @@ from logsql import log_request_response  # For database logging
 from log_config import api_logger         # For file logging
 
 
-def get_char_value(char: str) -> int:
+def _get_character_value(character: str) -> int:
     """Helper function to get the value of a character."""
-    if 'a' <= char <= 'z':
-        return ord(char) - ord('a') + 1
+    if 'a' <= character <= 'z':
+        return ord(character) - ord('a') + 1
     return 0
 
 
-def process_count_sequence(s: str, start_index: int) -> tuple[int, int]:
+def _parse_count_from_string(input_string: str, start_index: int) -> tuple[int, int]:
     """
     Process the count sequence using the chained 'z' rule.
     Returns (count, next_index).
     """
+    current_index = start_index
     count = 0
-    i = start_index
+
+    # First, count the number of 'z' characters from the start index.
+    z_end_index = current_index
+    while z_end_index < len(input_string) and input_string[z_end_index] == 'z':
+        z_end_index += 1
     
-    while i < len(s) and s[i] == 'z':
-        count += 26
-        i += 1
+    z_count = z_end_index - current_index
+    count += z_count * 26
+    current_index = z_end_index
+
+    # Then, process the character that follows the 'z' sequence.
+    if current_index < len(input_string):
+        count += _get_character_value(input_string[current_index])
+        current_index += 1
     
-    if i < len(s):
-        count += get_char_value(s[i])
-        i += 1
-    
-    return count, i
+    return count, current_index
 
 
-def collect_items(s: str, start_index: int, count: int) -> tuple[list[str], int]:
+def _collect_string_items(input_string: str, start_index: int, item_count: int) -> tuple[list[str], int]:
     """
     Collect and return items based on the item rule.
     Returns (sub_chars, next_index).
     """
-    sub_chars = []
-    items_collected = 0
-    i = start_index
-    
-    while items_collected < count and i < len(s):
-        # Check if the item is a z-chain
-        if s[i] == 'z':
-            # This is a z-chain item. Collect all z's and the char after.
-            item_start_index = i
-            while i < len(s) and s[i] == 'z':
-                i += 1
-            if i < len(s): # Include the character that terminates the z-chain
-                i += 1
-            sub_chars.extend(list(s[item_start_index:i]))
+    collected_chars = []
+    current_index = start_index
+
+    for _ in range(item_count):
+        if current_index >= len(input_string):
+            break  # Stop if we're at the end of the string
+
+        # A single item is collected in each iteration of this loop.
+        # An item can be a single character or a 'z'-chain.
+
+        item_start_pos = current_index
+        if input_string[item_start_pos] == 'z':
+            # This is a z-chain item. Find its end.
+            item_end_pos = item_start_pos
+            while item_end_pos < len(input_string) and input_string[item_end_pos] == 'z':
+                item_end_pos += 1
+            if item_end_pos < len(input_string):  # Also include the terminating character
+                item_end_pos += 1
+            
+            # Add all characters of the z-chain item
+            collected_chars.extend(list(input_string[item_start_pos:item_end_pos]))
+            current_index = item_end_pos
         else:
-            # This is a single character item.
-            sub_chars.append(s[i])
-            i += 1
-        
-        items_collected += 1
-    
-    return sub_chars, i
+            # This is a single-character item.
+            collected_chars.append(input_string[item_start_pos])
+            current_index += 1
+
+    return collected_chars, current_index
 
 
-def string_to_number_list(s: str) -> list[int]:
+def convert_string_to_number_list(input_string: str) -> list[int]:
     """
     Processes a string according to the defined rules and returns a list of numbers.
     Any character not in 'a'...'z' is treated as having a value of 0.
     """
-    s = s.lower() # Convert input string to lowercase
-    result = []
-    i = 0
+    input_string = input_string.lower() # Convert input string to lowercase
+    number_list = []
+    current_index = 0
     
-    while i < len(s):
+    while current_index < len(input_string):
         # If a character's value is 0, it's a standalone sequence resulting in 0.
-        if get_char_value(s[i]) == 0:
-            result.append(0)
-            i += 1
+        if _get_character_value(input_string[current_index]) == 0:
+            number_list.append(0)
+            current_index += 1
             continue
 
         # 1. Determine the count using the chained 'z' rule for counts
-        count, i = process_count_sequence(s, i)
+        item_count, current_index = _parse_count_from_string(input_string, current_index)
         
         # 2. Collect and sum characters based on the item rule
-        sub_chars, i = collect_items(s, i, count)
+        collected_items, current_index = _collect_string_items(input_string, current_index, item_count)
 
         # 3. Sum and store the result
-        current_sum = sum(get_char_value(c) for c in sub_chars)
-        result.append(current_sum)
+        sum_of_items = sum(_get_character_value(c) for c in collected_items)
+        number_list.append(sum_of_items)
         
-    return result
+    return number_list
 
 
-def create_app() -> FastAPI:
+def create_fastapi_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     app = FastAPI(
         title="String Processor API",
@@ -97,15 +109,10 @@ def create_app() -> FastAPI:
     )
     
     @app.get("/convert-measurements")
-    def process_string_endpoint(input: str):
-        """
-        Takes a string 's' as a query parameter, processes it, and logs the transaction.
-        """
-        output = string_to_number_list(input)
-        response_data = {"input_string": input, "output": output}
-        
-        # Log to both the database and the file
-        log_request_response(input, response_data)
+    def process_string(input_str: str):
+        processed_output = convert_string_to_number_list(input_str)
+        response_data = {"input_string": input_str, "output": processed_output}
+        log_request_response(input_str, response_data)
         api_logger.info(f"Request processed: {response_data}")
         
         return response_data
@@ -114,7 +121,7 @@ def create_app() -> FastAPI:
 
 
 # Create the app instance
-app = create_app()
+app = create_fastapi_app()
 
 
 if __name__ == "__main__":
