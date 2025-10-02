@@ -1,4 +1,23 @@
 services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aiops_db
+      MYSQL_USER: aiops_user
+      MYSQL_PASSWORD: aiops_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     container_name: aiops_app
@@ -8,7 +27,15 @@ services:
       - ./logs:/app/logs
       - ./outputs:/app/outputs
     environment:
-      - LOG_DIR=/app/logs
-      - OUTPUT_DIR=/app/outputs
-      - PORT=8080
+      LOG_DIR: /app/logs
+      OUTPUT_DIR: /app/outputs
+      PORT: 8080
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: aiops_db
+      DB_USER: aiops_user
+      DB_PASSWORD: aiops_pass
     restart: always
+    depends_on:
+      db:
+        condition: service_healthy

@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS aiops_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE aiops_db;
+
+CREATE TABLE IF NOT EXISTS operations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    input_string VARCHAR(255) NOT NULL,
+    output_result VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
