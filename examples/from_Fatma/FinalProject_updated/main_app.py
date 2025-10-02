@@ -2,6 +2,7 @@ import time
 import mysql.connector
 from fastapi import FastAPI
 from parser import parse_measurement
+from log_config import logger
 
 # Wait for MySQL to be ready
 db_ready = False
@@ -34,6 +35,7 @@ def get_db_connection():
 
 @app.get("/convert-measurements")
 def convert_measurements(input: str):
+    logger.info(f"Received conversion request for: '{input}'")
     result = parse_measurement(input)
     conn = get_db_connection()
     cursor = conn.cursor()
