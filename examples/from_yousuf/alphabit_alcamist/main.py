@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import List
 import uvicorn
 from fastapi import FastAPI
 from logsql import log_request_response
@@ -10,67 +10,67 @@ app = FastAPI(
     version="1.0.0",
 )
 
-def _get_char_num_lower(char: str) -> int:
+
+def get_char_value(char: str) -> int:
+    """Return the numeric value of a character."""
     if 'a' <= char <= 'z':
         return ord(char) - ord('a') + 1
-    return 0
-
-def char_num(ch: str) -> int:
-    if not ch:
+    else:
         return 0
-    return _get_char_num_lower(ch.lower())
 
-def _read_count(s: str, i: int) -> Tuple[int, int]:
-    count = 0
-    while i < len(s) and s[i] == 'z':
-        count += 26
-        i += 1
-    if i < len(s):
-        count += _get_char_num_lower(s[i])
-        i += 1
-    return count, i
-
-def _read_item(s: str, i: int) -> Tuple[str, int]:
-    if i >= len(s):
-        return "", i
-
-    if s[i] != 'z':
-        return s[i], i + 1
-
-    item_start_index = i
-    while i < len(s) and s[i] == 'z':
-        i += 1
-    if i < len(s):
-        i += 1
-    return s[item_start_index:i], i
-
-def string_to_num_list(s: str) -> List[int]:
-    s = s.lower()
-    result: List[int] = []
+def decode_cipher(encoded_string: str) -> List[int]:
+    """Decode the cipher string according to the rules."""
+    result = []
     i = 0
-    while i < len(s):
-        if _get_char_num_lower(s[i]) == 0:
-            result.append(0)
-            i += 1
-            continue
-
-        count, i = _read_count(s, i)
-
-        sub_chars: List[str] = []
-        for _ in range(count):
-            if i >= len(s):
+    
+    while i < len(encoded_string):
+        counter_value = 0
+        
+        if encoded_string[i] == 'z':
+            while i < len(encoded_string) and encoded_string[i] == 'z':
+                counter_value += 26
+                i += 1
+            
+            if i < len(encoded_string):
+                counter_value += get_char_value(encoded_string[i])
+                i += 1
+            else:
                 break
-            item_str, i = _read_item(s, i)
-            sub_chars.extend(list(item_str))
-
-        current_sum = sum(_get_char_num_lower(c) for c in sub_chars)
-        result.append(current_sum)
-
+        else:
+            counter_value = get_char_value(encoded_string[i])
+            i += 1
+        
+        if i >= len(encoded_string):
+            break
+        
+        total_sum = 0
+        values_read = 0
+        
+        while values_read < counter_value and i < len(encoded_string):
+            current_value = 0
+            
+            if encoded_string[i] == 'z':
+                while i < len(encoded_string) and encoded_string[i] == 'z':
+                    current_value += 26
+                    i += 1
+                
+                if i < len(encoded_string):
+                    current_value += get_char_value(encoded_string[i])
+                    i += 1
+            else:
+                current_value = get_char_value(encoded_string[i])
+                i += 1
+            
+            total_sum += current_value
+            values_read += 1
+        
+        result.append(total_sum)
+    
     return result
 
 @app.get("/convert-measurements")
 def convert_measurements_endpoint(input: str):
-    output = string_to_num_list(input)
+    output = decode_cipher(input)
     response_data = {"input_string": input, "output": output}
 
     log_request_response(input, response_data)
