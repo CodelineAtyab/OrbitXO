@@ -19,9 +19,9 @@ logging.basicConfig(
 app = FastAPI()
 
 # 🔹 Database setup
-DATABASE_URL = "mysql+pymysql://user:password@db:3306/measurements"
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+DATABASE_URL = "mysql+pymysql://aiops:aiopspass@mysql:3306/ai_ops_db"
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 class History(Base):
@@ -30,26 +30,40 @@ class History(Base):
     input_str = Column(String(255))
     output_str = Column(String(255))
 
-Base.metadata.create_all(bind=engine)
+# ✅ إنشاء الجداول عند بدء التطبيق
+@app.on_event("startup")
+def on_startup():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logging.info("✅ Database tables ensured at startup.")
+    except Exception as e:
+        logging.error(f"❌ Error creating tables: {e}")
 
 @app.get("/convert-measurements")
 def convert_measurements_endpoint(input: str = Query(...)):
     result = convert_measurements(input)
 
-    # Save to DB
     db = SessionLocal()
-    entry = History(input_str=input, output_str=str(result))
-    db.add(entry)
-    db.commit()
-    db.close()
+    try:
+        entry = History(input_str=input, output_str=str(result))
+        db.add(entry)
+        db.commit()
+        logging.info(f"New request saved: input={input}, output={result}")
+    except Exception as e:
+        logging.error(f"❌ Error saving to DB: {e}")
+    finally:
+        db.close()
 
-    # Log
-    logging.info(f"New request: input={input}, output={result}")
-    return result
+    return {"input": input, "output": result}
 
 @app.get("/history")
 def get_history():
     db = SessionLocal()
-    records = db.query(History).all()
-    db.close()
-    return [{"id": r.id, "input": r.input_str, "output": r.output_str} for r in records]
+    try:
+        records = db.query(History).all()
+        return [{"id": r.id, "input": r.input_str, "output": r.output_str} for r in records]
+    except Exception as e:
+        logging.error(f"❌ Error fetching history: {e}")
+        return []
+    finally:
+        db.close()

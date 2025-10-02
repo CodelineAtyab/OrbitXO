@@ -1,4 +1,5 @@
-#version: '3.8'
+version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
@@ -14,13 +15,19 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./int.sql:/docker-entrypoint-initdb.d/01_int.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   app:
     build: .
     container_name: ai_ops_app
     restart: unless-stopped
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       MY_DATABASE_URL: "mysql+pymysql://aiops:aiopspass@mysql:3306/ai_ops_db"
       PORT: "8080"
@@ -29,6 +36,8 @@ services:
     volumes:
       - ./:/app
     working_dir: /app
+    command: ["sh", "-c", "sleep 10 && uvicorn app_service:app --host 0.0.0.0 --port 8080"]
+    # ^ sleep 10 يعطي MySQL فرصة يجهز قبل تشغيل الـ app
 
   log_writer:
     build: .
@@ -36,8 +45,10 @@ services:
     command: ["python", "log_to_mysql.py"]
     restart: unless-stopped
     depends_on:
-      - mysql
-      - app
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
     environment:
       DB_HOST: "mysql"
       DB_PORT: "3306"
