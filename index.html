@@ -150,8 +150,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             margin-top: 1rem;
-            /* Commented out as requested */
-            display: none;
         }
 
         .reset-btn:hover {
@@ -231,9 +229,45 @@
         .player-o {
             background: var(--warning-color);
         }
+
+        /* Version display styling */
+        .version-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .version-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--warning-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .version-container:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes version-appear {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+    <!-- Version display -->
+    <div class="version-container" style="animation: version-appear 1s ease forwards;">
+        <div class="version-text" id="versionDisplay">v?.?.?</div>
+    </div>
+
     <div class="container">
         <h1 class="title">🚀 OrbitXO 🎯</h1>
         <p class="subtitle">Challenge the Bot in Space Tic-Tac-Toe!</p>
@@ -253,7 +287,7 @@
         <div class="loading" id="loadingIndicator">🤖 Bot is thinking...</div>
         
         <!-- Reset button commented out as requested -->
-        <!-- <button class="reset-btn" id="resetBtn">🔄 New Game</button> -->
+        <button class="reset-btn" id="resetBtn">🔄 Reset Board </button>
     </div>
 
     <script>
@@ -270,6 +304,7 @@
         const statusElement = document.getElementById('gameStatus');
         const loadingElement = document.getElementById('loadingIndicator');
         const boardElement = document.getElementById('gameBoard');
+        const versionElement = document.getElementById('versionDisplay');
 
         /**
          * Initialize the game board and create cell elements
@@ -462,28 +497,45 @@
             }
         }
 
+        /**
+         * Fetch and display the application version
+         */
+        async function fetchVersion() {
+            try {
+                const response = await fetch('/version');
+                if (response.ok) {
+                    const versionData = await response.json();
+                    versionElement.textContent = `v${versionData.version}`;
+                }
+            } catch (error) {
+                console.error('Error fetching version:', error);
+                versionElement.textContent = 'Version Unknown';
+            }
+        }
+
         // Initialize the game when page loads
         document.addEventListener('DOMContentLoaded', () => {
             initializeBoard();
             fetchBoardState();
+            fetchVersion(); // Fetch and display version
         });
 
         // Reset button functionality (commented out as requested)
-        // document.getElementById('resetBtn').addEventListener('click', async () => {
-        //     try {
-        //         const response = await fetch('/board/main_game/reset', {
-        //             method: 'POST'
-        //         });
-        //         
-        //         if (response.ok) {
-        //             isGameOver = false;
-        //             isPlayerTurn = true;
-        //             initializeBoard();
-        //         }
-        //     } catch (error) {
-        //         console.error('Error resetting game:', error);
-        //     }
-        // });
+        document.getElementById('resetBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/board/main_game/reset', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    isGameOver = false;
+                    isPlayerTurn = true;
+                    initializeBoard();
+                }
+            } catch (error) {
+                console.error('Error resetting game:', error);
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
+      MYSQL_DATABASE: 'api_log_db'
+      MYSQL_USER: 'your_username'
+      MYSQL_PASSWORD: 'your_password'
+    ports:
+      # Expose MySQL on the host machine for direct access if needed
+      - "3306:3306"
+    volumes:
+      # Persist database data
+      - db_data:/var/lib/mysql
+      # Run the init script on first startup
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount current directory to reflect code changes without rebuilding
+      - .:/app
+      # Add this line to persist the log files on your host machine
+      - ./logs:/app/logs
+    depends_on:
+      - db
+
+volumes:
+  db_data:

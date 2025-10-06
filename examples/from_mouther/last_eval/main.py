@@ -160,6 +160,7 @@ async def save_to_history(input_str: str, result: list):
     )
     await database.execute(query)
 
+
 @app.get("/convert-measurements")
 async def get_convert_measurements_api_with_db(input: str):
     """
@@ -169,6 +170,9 @@ async def get_convert_measurements_api_with_db(input: str):
     result = convert_measurements(input)
     await save_to_history(input, result)
     return result
+
+
+
 
 
 

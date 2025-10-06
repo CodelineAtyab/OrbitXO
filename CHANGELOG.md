@@ -1,0 +1,80 @@
+### [0.0.19] [9/23/2025]
+## Added
+- Added Prometheus metrics endpoint for monitoring application performance.
+- Added Documentation for Prometheus and Grafana Setup.
+- Added Monitoring Docker related files.
+
+### [0.0.18] [9/22/2025]
+## Updated
+- Added UUID to log statements temporarily for testing unique logs
+
+### [0.0.17] [9/21/2025]
+## Updated
+- Updated Logging Module to include error logs in a separate file.
+
+### [0.0.16] [9/18/2025]
+## Fixed
+- Added a missing package in requirements.
+
+### [0.0.15] [9/18/2025]
+## Added
+- JSON file handler to generate a .json log file.
+
+### [0.0.14] [9/16/2025]
+## Added
+- Bind mount in docker compose to share logs
+
+### [0.0.13] [9/11/2025]
+## Added
+- Logging to file support along with stdout
+
+### [0.0.12] [9/11/2025]
+## Updated
+- Version updated to test the new implementation of CI/CD job on Jenkins. 3rd Attempt
+
+### [0.0.11] [9/11/2025]
+## Updated
+- Version updated to test the new implementation of CI/CD job on Jenkins. 2nd Attempt
+
+### [0.0.10] [9/11/2025]
+## Updated
+- Version updated to test the new implementation of CI/CD job on Jenkins.
+
+### [0.0.9] [9/10/2025]
+## Updated
+- Version updated to test the new implementation of CD job on Jenkins.
+
+### [0.0.8] [9/10/2025]
+## Updated
+- Version is now displayed on the web page.
+
+### [0.0.7] [9/09/2025]
+## Updated
+- Version updated to test CI Job on Jenkins.
+
+### [0.0.6] [9/09/2025]
+## Updated
+- Version updated to test CD Job on Jenkins AGAIN.
+
+### [0.0.5] [9/09/2025]
+## Added
+- Added a docker-compose file for easier deployment.
+
+### [0.0.4] [9/09/2025]
+## Updated
+- Version updated to test CD Job on Jenkins.
+
+### [0.0.3] [9/08/2025]
+## Added Features
+- Added API endpoint to get the current version of the application which is accessible at /version
+
+### [0.0.2] [9/08/2025]
+## Added Features
+- Added reset button functionality.
+## Updated Functionality
+- Improved game AI for better performance.
+- Enhanced user interface for a more engaging experience.
+
+### [0.0.1] [10/07/2025]
+## Added Features
+- Initial release of OrbitXO with basic game functionality.

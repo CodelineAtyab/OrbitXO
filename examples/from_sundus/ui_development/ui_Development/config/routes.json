@@ -1,0 +1,34 @@
+[
+  {
+    "id": "295bcefe-d67f-4c46-a667-ac61c76a912b",
+    "source_name": "Home",
+    "source_address": "123 Home Alansab, Muscat, Oman",
+    "destination_name": "Work",
+    "destination_address": "456 Office Codeline, Muscat, Oman",
+    "last_estimate_min": 25
+  },
+  {
+    "id": "c152f8cf-d5fd-47bc-98af-8aabd1da60c7",
+    "source_name": "Home",
+    "source_address": "123 Home Alansab, Muscat, Oman",
+    "destination_name": "Gym",
+    "destination_address": "789 Gym Street, Muscat, Oman",
+    "last_estimate_min": 15
+  },
+  {
+    "id": "3804cdcb-faf9-4333-856e-3ef5be5b8f91",
+    "source_name": "Work",
+    "source_address": "456 Office Codeline, Muscat, Oman",
+    "destination_name": "Restaurant",
+    "destination_address": "202 Food Ave, Muscat, Oman",
+    "last_estimate_min": 8
+  },
+  {
+    "source_name": "Home",
+    "source_address": "Alansab,muscat",
+    "destination_name": "Codeline",
+    "destination_address": "Ghala,Muscat",
+    "last_estimate_min": null,
+    "id": "f9a5dd10-a0bc-4cc2-b8f9-e540dd1391f4"
+  }
+]
