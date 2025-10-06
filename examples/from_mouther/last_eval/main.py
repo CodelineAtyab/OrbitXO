@@ -160,25 +160,17 @@ async def save_to_history(input_str: str, result: list):
     )
     await database.execute(query)
 
-@app.get("/convert-measurements", response_model=dict)
-async def get_convert_measurements_api_with_db(input_str: str):
+@app.get("/convert-measurements")
+async def get_convert_measurements_api_with_db(input: str):
     """
     GET endpoint to process a string, save to history, and return measurement values.
     """
-    logger.info(f"GET /convert-measurements for str: '{input_str}'")
-    result = convert_measurements(input_str)
-    await save_to_history(input_str, result)
-    return {"input_str": input_str, "result": result}
+    logger.info(f"GET /convert-measurements for str: '{input}'")
+    result = convert_measurements(input)
+    await save_to_history(input, result)
+    return result
 
-@app.post("/convert-measurements", response_model=dict)
-async def post_convert_measurements_api_with_db(request: ConvertRequest):
-    """
-    POST endpoint to process a string, save to history, and return measurement values.
-    """
-    logger.info(f"POST /convert-measurements with str: '{request.input_str}'")
-    result = convert_measurements(request.input_str)
-    await save_to_history(request.input_str, result)
-    return {"input_str": request.input_str, "result": result}
+
 
 @app.get("/history")
 async def get_history():
