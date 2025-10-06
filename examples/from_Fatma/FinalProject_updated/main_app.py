@@ -48,7 +48,7 @@ def convert_measurements(input: str):
     cursor.close()
     conn.close()
     
-    return {"input": input, "result": result}
+    return result
 
 @app.get("/history")
 def get_history():
