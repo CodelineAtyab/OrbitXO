@@ -1,4 +1,5 @@
 services:
+  
   app:
     build: .
     ports:
@@ -9,6 +10,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    volumes:
+      - .:/app
 
   db:
     image: mysql:8.0

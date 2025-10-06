@@ -136,19 +136,13 @@ async def log_history(input_str: str, results: list):
 
 
 @app.get("/convert-measurements")
-async def convert_get(input_str: str):
-    logger.info(f"GET request received: {input_str}")
-    results = convert_measurements_logic(input_str)
-    await log_history(input_str, results)
-    return {"input": input_str, "result": results}
+async def convert_get(input: str):
+    logger.info(f"GET request received: {input}")
+    results = convert_measurements_logic(input)
+    await log_history(input, results)
+    return results
 
 
-@app.post("/convert-measurements")
-async def convert_post(req: ConversionInput):
-    logger.info(f"POST request received: {req.input_str}")
-    results = convert_measurements_logic(req.input_str)
-    await log_history(req.input_str, results)
-    return {"input": req.input_str, "result": results}
 
 
 @app.get("/history")
