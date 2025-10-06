@@ -7,8 +7,8 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./logs:/app/logs  # persist logs to host
-      - ./db.sqlite3:/app/db.sqlite3  # persist sqlite db to host
+      - ./logs:/app/logs 
+      - ./data:/app/data 
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped

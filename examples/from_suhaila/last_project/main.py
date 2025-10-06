@@ -145,6 +145,7 @@ async def convert_get(input: str):
 
 
 
+
 @app.get("/history")
 async def get_history():
     logger.info("Fetching history")

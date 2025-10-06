@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## version [0.0.5] - 30-09-2025
+### Fixed 
+- Fix SQLite database error.
+
+
+
 ## version [0.0.4] - 30-09-2025
 ### Fixed 
 - Modify README.md file.

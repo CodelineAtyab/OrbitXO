@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: measurement_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: measurement_db
+      MYSQL_USER: measurement_user
+      MYSQL_PASSWORD: measurement_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - measurement_network
+
+  api:
+    build: .
+    container_name: measurement_api
+    ports:
+      - "8080:8000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: measurement_user
+      DB_PASSWORD: measurement_pass
+      DB_NAME: measurement_db
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - measurement_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  measurement_network:
+    driver: bridge

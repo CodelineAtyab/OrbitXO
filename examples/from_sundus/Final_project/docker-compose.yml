@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    container_name: examples-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: measurements
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 3s
+      retries: 10
+
+  api:
+    build: .
+    container_name: examples-api
+    restart: always
+    environment:
+      DATABASE_URL: mysql+pymysql://appuser:apppass@db:3306/measurements
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"  # expose FastAPI port for Swagger

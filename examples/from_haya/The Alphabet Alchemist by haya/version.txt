@@ -1,0 +1,15 @@
+1.0.1 - 2025-09-28
+- Added API documentation endpoint
+- Improved error handling and logging
+- Added database fallback mechanism
+- Fixed docker deployment issues
+
+1.0.0 - 2025-09-25
+- Initial release of the Package Measurement Conversion API
+- Conversion endpoint with character-to-value mapping and 'z' termination rule
+- Custom port functionality
+- Logging to console and file (rotated 7 days)
+- History persistence in MySQL
+- History retrieval endpoint
+- Dockerized application
+- README.md with setup instructions
