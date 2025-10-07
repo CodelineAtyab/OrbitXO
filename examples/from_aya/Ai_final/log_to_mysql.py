@@ -5,7 +5,7 @@ import pymysql
 from datetime import datetime
 
 LOG_PATH = os.path.join(os.path.dirname(__file__), 'app_service.log')
-DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
+DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_PORT = int(os.getenv('DB_PORT', '3306'))
 DB_USER = os.getenv('DB_USER', 'aiops')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'aiopspass')
