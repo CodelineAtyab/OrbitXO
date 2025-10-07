@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# Enable debug mode
+set -x
+
+echo "Script started at $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
+echo "Current user: $USER"
+
+# Read version from version.txt
+if [ -f "version.txt" ]; then
+    VERSION=$(cat version.txt | tr -d '[:space:]')
+    echo "Read version '$VERSION' from version.txt"
+else
+    echo "ERROR: version.txt file not found"
+    exit 1
+fi
+
+# Check if docker image with this version already exists
+echo "Checking if docker image muzna11/hackathon_golf1-app:$VERSION already exists..." 
+if docker image ls muzna11/hackathon_golf1-app:$VERSION | grep -q "$VERSION"; then
+    echo "WARNING: Docker image muzna11/hackathon_golf1-app:$VERSION already exists"
+    echo "Existing docker images:"
+    docker image ls muzna11/hackathon_golf1-app
+else
+    echo "Docker image muzna11/hackathon_golf1-app:$VERSION does not exist"
+    echo "Building docker image muzna11/hackathon_golf1-app:$VERSION..." 
+
+    # Build the Docker image
+    if docker build -t muzna11/hackathon_golf1-app:$VERSION --network=host .; then
+        echo "SUCCESS: Docker image build completed"
+    else
+        echo "ERROR: Docker image build failed"
+        exit 1
+    fi
+fi
+
+# Check Docker login status and login if needed
+echo "Checking Docker login status..."  
+if ! docker info 2>/dev/null | grep -q "Username"; then  
+    echo "Not logged in to Docker. Attempting login..."
+
+    # Login to Docker using environment variable
+    if [ -z "$DOCKER_PASSWORD" ]; then
+        echo "ERROR: DOCKER_PASSWORD environment variable not set"
+        echo "Please run: export DOCKER_PASSWORD='your_password'"
+        exit 1
+    fi
+    
+    if echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; then  
+        echo "SUCCESS: Docker login completed"  
+    else  
+        echo "ERROR: Docker login failed"  
+        exit 1  
+    fi  
+else  
+    echo "Already logged in to Docker"  
+fi  
+
+# Tag the image as latest  
+echo "Tagging muzna11/hackathon_golf1-app:$VERSION as latest..."  
+if docker tag muzna11/hackathon_golf1-app:$VERSION muzna11/hackathon_golf1-app:latest; then  
+    echo "SUCCESS: Image tagged as latest"  
+else  
+    echo "ERROR: Failed to tag image as latest"  
+    exit 1  
+fi  
+
+# Push the versioned image
+echo "Pushing muzna11/hackathon_golf1-app:$VERSION to Docker Hub..."  
+if docker push muzna11/hackathon_golf1-app:$VERSION; then  
+    echo "SUCCESS: Versioned image push completed"  
+else  
+    echo "ERROR: Versioned image push failed"  
+    exit 1  
+fi
+
+# Push the latest tag
+echo "Pushing muzna11/hackathon_golf1-app:latest to Docker Hub..."
+if docker push muzna11/hackathon_golf1-app:latest; then
+    echo "SUCCESS: Latest image push completed"
+else
+    echo "ERROR: Latest image push failed"
+    exit 1
+fi
+
+echo "All operations completed successfully!"
+echo "Script completed at $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
