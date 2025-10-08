@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+echo "Starting Continuous Deployment for muzna11/hackathon_golf1-app"
+echo "Timestamp: $(date)"
+
+CONTAINER_NAME="hackathon_golf1-app"
+IMAGE_NAME="muzna11/hackathon_golf1-app:latest"
+
+echo "Listing existing containers..."
+docker ps -a
+
+echo "Stopping and removing any existing container named $CONTAINER_NAME..."
+docker stop $CONTAINER_NAME || true
+docker rm $CONTAINER_NAME || true
+
+echo "Removing old image if it exists..."
+docker rmi $IMAGE_NAME || true
+
+echo "Pulling latest image from Docker Hub..."
+docker pull $IMAGE_NAME
+
+echo "Running new container..."
+docker run -d \
+  --name $CONTAINER_NAME \
+  -p 8501:8501 \
+  --restart always \
+  $IMAGE_NAME
+
+echo "Deployment completed successfully!"
+docker ps | grep $CONTAINER_NAME
