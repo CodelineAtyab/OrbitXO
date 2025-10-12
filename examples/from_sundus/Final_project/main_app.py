@@ -5,7 +5,6 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from typing import List
 from fastapi import FastAPI, Query
-from pydantic import BaseModel
 from datetime import datetime
 import os
 import time
@@ -64,18 +63,22 @@ def convert_measurements(s: str):
 
     return results
 
+
 # ----- Logging setup -----
 log_dir = os.environ.get("LOG_DIR", "./logs")
 os.makedirs(log_dir, exist_ok=True)
 logger = logging.getLogger("measurement_api")
 logger.setLevel(logging.INFO)
+
 fh = TimedRotatingFileHandler(os.path.join(log_dir, "app.log"), when="D", interval=1, backupCount=7)
 fmt = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 fh.setFormatter(fmt)
 logger.addHandler(fh)
+
 ch = logging.StreamHandler()
 ch.setFormatter(fmt)
 logger.addHandler(ch)
+
 
 # ----- DB setup with retry -----
 Base = declarative_base()
@@ -102,6 +105,7 @@ else:
 
 SessionLocal = sessionmaker(bind=engine)
 
+
 class History(Base):
     __tablename__ = "history"
     id = Column(Integer, primary_key=True, index=True)
@@ -109,16 +113,15 @@ class History(Base):
     result_json = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+
 Base.metadata.create_all(bind=engine)
+
 
 # ----- FastAPI app -----
 app = FastAPI(title="Package Measurement Conversion API")
 
-class ConvertResponse(BaseModel):
-    input: str
-    result: List[int]
 
-@app.get("/convert-measurements", response_model=ConvertResponse)
+@app.get("/convert-measurements")
 def convert_endpoint(input: str = Query(..., alias="input")):
     logger.info(f"Received input: {input}")
     result = convert_measurements(input)
@@ -128,16 +131,20 @@ def convert_endpoint(input: str = Query(..., alias="input")):
     db.commit()
     db.close()
     logger.info(f"Result: {result}")
-    return {"input": input, "result": result}
+    # Return the list directly
+    return result
+
 
 @app.get("/history")
 def get_history(limit: int = 50):
     db = SessionLocal()
     rows = db.query(History).order_by(History.created_at.desc()).limit(limit).all()
-    out = [{"id": r.id, "input": r.input_str, "result": json.loads(r.result_json), "created_at": r.created_at.isoformat()} for r in rows]
+    out = [json.loads(r.result_json) for r in rows]
     db.close()
     return out
 
+
+# ----- App entrypoint -----
 if __name__ == "__main__":
     import uvicorn
     port = 8000  # fixed to 8000 for Docker/Swagger
@@ -148,3 +155,4 @@ if __name__ == "__main__":
             pass
     logger.info(f"Starting server on 0.0.0.0:{port}")
     uvicorn.run("main_app:app", host="0.0.0.0", port=port, log_level="info")
+
